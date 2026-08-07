@@ -82,6 +82,7 @@ test("選択便をブランド付きPNG共有カードとして共有できる",
   assert.match(share, /new File/);
   assert.match(share, /naoshi-git\.github\.io\/handai-shuttle/);
   assert.match(share, /shareTargetUrl/);
-  assert.match(share, /pr-preview\/pr-/);
+  assert.match(share, /pr-preview/);
+  assert.match(share, /window\.location\.origin/);
   assert.match(css, /share-card-dialog/);
 });
