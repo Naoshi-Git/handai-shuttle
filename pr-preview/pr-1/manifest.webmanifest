@@ -8,5 +8,12 @@
   "background_color": "#ffffff",
   "theme_color": "#2d287f",
   "lang": "ja",
-  "icons": []
+  "icons": [
+    {
+      "src": "./assets/brand/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
