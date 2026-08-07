@@ -3,3 +3,4 @@
 import "./features-v3-core.mjs";
 import "./brand-integration.mjs";
 import "./ui-v4.mjs";
+import "./ads.mjs";
