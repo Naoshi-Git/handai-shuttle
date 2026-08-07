@@ -20,9 +20,10 @@ test("ホームの次便重複を除外するcontractを保持する", async () 
 test("時刻表はcompact rowとdetail sheetを備える", async () => {
   const source = await read("src/ui-v4.mjs");
   const css = await read("ui-v4.css");
-  assert.match(source, /data-v4-compact/);
+  assert.match(source, /dataset\.v4Compact/);
   assert.match(source, /tt-detail-sheet/);
   assert.match(source, /showModal/);
+  assert.match(css, /data-v4-compact/);
   assert.match(css, /tt-compact-row/);
   assert.match(css, /touch-action:manipulation/);
 });
