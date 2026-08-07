@@ -43,6 +43,7 @@ jobs:
           node --check source/src/features-v3.mjs
           node --check source/src/features-v3-core.mjs
           node --check source/src/brand-integration.mjs
+          node --check source/src/brand-canvas.mjs
           node --check source/src/ui-v4.mjs
           node --check source/src/ui-v4-polish.mjs
           node --check source/src/crowding-prediction.mjs
