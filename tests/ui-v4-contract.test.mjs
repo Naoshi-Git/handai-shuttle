@@ -27,3 +27,13 @@ test("時刻表はcompact rowとdetail sheetを備える", async () => {
   assert.match(css, /tt-compact-row/);
   assert.match(css, /touch-action:manipulation/);
 });
+
+test("トップ・検索結果・時刻表へ混雑予想を装飾するcontractを保持する", async () => {
+  const source = await read("src/ui-v4.mjs");
+  const css = await read("ui-v4.css");
+  assert.match(source, /predictCrowding/);
+  assert.match(source, /decorateNextCardCrowding/);
+  assert.match(source, /#search-results \.journey-card/);
+  assert.match(source, /tt-sheet-crowding/);
+  assert.match(css, /crowding-lv5/);
+});
