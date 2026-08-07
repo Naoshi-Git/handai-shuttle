@@ -52,11 +52,8 @@
   object-fit: contain;
 }
 
-.house-ad-card.is-compact .house-ad-creative img,
-@media (max-width: 360px) {
-  .house-ad-card:not(.is-compact) .house-ad-creative img {
-    aspect-ratio: 640 / 128;
-  }
+.house-ad-card.is-compact .house-ad-creative img {
+  aspect-ratio: 640 / 128;
 }
 
 .house-ad-creative:active {
@@ -66,11 +63,6 @@
 .house-ad-creative:focus-visible {
   outline: 3px solid rgba(57, 61, 205, 0.28);
   outline-offset: 3px;
-}
-
-.house-ad-creative[data-share-state="copied"]::after {
-  content: "リンクをコピーしました";
-  position: absolute;
 }
 
 .ad-slot-search-results {
@@ -112,4 +104,10 @@
 
 .adsense-mount {
   min-height: 76px;
+}
+
+@media (max-width: 360px) {
+  .house-ad-card:not(.is-compact) .house-ad-creative img {
+    aspect-ratio: 640 / 128;
+  }
 }
