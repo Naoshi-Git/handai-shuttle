@@ -17,11 +17,11 @@ function timePair(text = "") {
   return matches?.length >= 2 ? matches.slice(0, 2) : null;
 }
 
-function crowdingBadge(prediction, { compact = false } = {}) {
-  const text = compact
-    ? `Lv${prediction.level} ${prediction.label}`
-    : crowdingBadgeText(prediction);
-  return `<span class="crowding-badge crowding-lv${prediction.level}" data-crowding-badge="true" title="${prediction.reason}" aria-label="${crowdingBadgeText(prediction)}">${text}</span>`;
+function crowdingIcon(prediction, { legend = false } = {}) {
+  const people = Array.from({ length: 5 }, (_, index) =>
+    `<span class="crowding-person ${index < prediction.level ? "is-active" : ""}" aria-hidden="true"></span>`
+  ).join("");
+  return `<span class="crowding-icon crowding-lv${prediction.level} ${legend ? "is-legend" : ""}" data-crowding-badge="true" role="img" title="${prediction.reason}" aria-label="${crowdingBadgeText(prediction)}">${people}</span>`;
 }
 
 function removeFeaturedDuplicate() {
@@ -43,7 +43,7 @@ function decorateNextCardCrowding() {
   if (!meta || !pair || meta.querySelector("[data-crowding-badge]")) return;
   const prediction = predictCrowding({ departureTime: pair[0], arrivalTime: pair[1] });
   const wrap = document.createElement("span");
-  wrap.innerHTML = crowdingBadge(prediction);
+  wrap.innerHTML = crowdingIcon(prediction);
   meta.append(...wrap.childNodes);
 }
 
@@ -53,7 +53,7 @@ function decorateJourneyCrowding(card) {
   const details = card.querySelector(".journey-details");
   if (!pair || !details) return;
   const prediction = predictCrowding({ departureTime: pair[0], arrivalTime: pair[1] });
-  details.insertAdjacentHTML("beforeend", crowdingBadge(prediction));
+  details.insertAdjacentHTML("beforeend", crowdingIcon(prediction));
   card.dataset.crowdingDecorated = "true";
 }
 
@@ -62,7 +62,7 @@ function decorateRoundLegCrowding(leg) {
   const pair = timePair(leg.querySelector(".journey-time strong")?.textContent || "");
   if (!pair) return;
   const prediction = predictCrowding({ departureTime: pair[0], arrivalTime: pair[1] });
-  leg.insertAdjacentHTML("beforeend", `<div class="crowding-round-row">${crowdingBadge(prediction)}</div>`);
+  leg.insertAdjacentHTML("beforeend", `<div class="crowding-round-row">${crowdingIcon(prediction)}</div>`);
   leg.dataset.crowdingDecorated = "true";
 }
 
@@ -112,7 +112,7 @@ function ensureDetailSheet() {
       <div class="tt-sheet-meta">
         <span id="tt-sheet-route-type" class="pill pill-soft"></span>
         <span id="tt-sheet-crowding"></span>
-        <span id="tt-sheet-next" class="tt-sheet-next is-hidden">現在時刻から次の便</span>
+        <span id="tt-sheet-next" class="tt-sheet-next is-hidden">次の便</span>
       </div>
       <p id="tt-sheet-crowding-reason" class="tt-sheet-crowding-reason"></p>
       <div class="tt-sheet-stops" id="tt-sheet-stops"></div>
@@ -134,12 +134,11 @@ function openDetail(tripId) {
   const routeType = $("#tt-sheet-route-type", dialog);
   routeType.textContent = detail.routeType;
   routeType.className = `pill ${detail.via ? "pill-warning" : "pill-soft"}`;
-  $("#tt-sheet-crowding", dialog).innerHTML = crowdingBadge(detail.crowding);
-  $("#tt-sheet-crowding-reason", dialog).textContent = `${detail.crowding.reason}。時間割からの推定です。`;
+  $("#tt-sheet-crowding", dialog).innerHTML = crowdingIcon(detail.crowding);
+  $("#tt-sheet-crowding-reason", dialog).textContent = `${detail.crowding.reason}（時間割ベースの推定）`;
   $("#tt-sheet-next", dialog)?.classList.toggle("is-hidden", !detail.isNext);
   $("#tt-sheet-stops", dialog).innerHTML = detail.stops.map((stop, index) => `
     <div class="tt-sheet-stop ${index === 0 ? "is-origin" : ""} ${index === detail.stops.length - 1 ? "is-destination" : ""}">
-      <span class="tt-sheet-line" aria-hidden="true"></span>
       <span class="tt-sheet-dot" aria-hidden="true"></span>
       <span class="tt-sheet-stop-name">${stop.name}</span>
       <strong>${stop.time}</strong>
@@ -186,7 +185,7 @@ function compactTimetableCard(card) {
       <div class="tt-compact-time"><strong>${pair[0]}</strong><span>→</span><strong>${pair[1]}</strong></div>
       <div class="tt-compact-badges">
         <span class="pill ${detail.via ? "pill-warning" : "pill-soft"}">${routeType}</span>
-        ${crowdingBadge(crowding, { compact: true })}
+        ${crowdingIcon(crowding)}
         ${detail.isNext ? '<span class="tt-next-mini">次の便</span>' : ""}
       </div>
       <span class="tt-compact-chevron" aria-hidden="true">›</span>
@@ -224,16 +223,17 @@ function ensureCrowdingInfo() {
   if ($("#crowding-info-card")) return;
   const sourceCard = $(".source-card");
   if (!sourceCard) return;
+  const labels = ["", "空きやすい", "混雑小", "やや混雑", "混雑", "かなり混雑"];
   const section = document.createElement("section");
   section.id = "crowding-info-card";
   section.className = "settings-card crowding-info-card";
   section.innerHTML = `
     <h3>混雑予想について</h3>
-    <p>2026年度の授業開始・終了時刻と各便の発着時刻から推定した目安です。乗車人数の実測、リアルタイム混雑、満席情報ではありません。</p>
+    <p>1〜5限の開始・終了時刻と各便の発着時刻から推定した目安です。5限終了後は、その日の最後の移動ラッシュとして強めに評価します。実測人数・リアルタイム混雑・満席情報ではありません。</p>
     <div class="crowding-legend">
       ${[1, 2, 3, 4, 5].map((level) => {
-        const prediction = { level, label: ["", "空きやすい", "混雑小", "やや混雑", "混雑", "かなり混雑"][level], reason: "" };
-        return crowdingBadge(prediction, { compact: true });
+        const prediction = { level, label: labels[level], reason: "" };
+        return `<div class="crowding-legend-item">${crowdingIcon(prediction, { legend: true })}<span>Lv${level} ${labels[level]}</span></div>`;
       }).join("")}
     </div>`;
   sourceCard.before(section);
