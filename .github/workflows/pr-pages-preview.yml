@@ -43,6 +43,10 @@ jobs:
           node --check source/src/features-v3.mjs
           node --check source/src/features-v3-core.mjs
           node --check source/src/ui-v4.mjs
+          node --check source/src/ui-v4-polish.mjs
+          node --check source/src/crowding-prediction.mjs
+          node --check source/src/share-card.mjs
+          node --check source/data/location-points.mjs
           node --test source/tests/*.test.mjs
       - name: Prepare preview
         run: |
