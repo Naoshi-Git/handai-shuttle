@@ -21,5 +21,7 @@ jobs:
           node --check src/features-v3.mjs
           node --check src/features-v3-core.mjs
           node --check src/ui-v4.mjs
+          node --check src/crowding-prediction.mjs
+          node --check src/share-card.mjs
           node --check data/location-points.mjs
           node --test tests/*.test.mjs
