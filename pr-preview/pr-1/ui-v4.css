@@ -1,4 +1,4 @@
-/* v4 presentation refinements: compact timetable, detail bottom sheet and crowding estimate. */
+/* v4 presentation refinements: compact timetable, detail bottom sheet, crowding estimate and sharing. */
 #timetable-list.timetable-list{gap:6px}
 .route-timetable-card[data-v4-compact="true"]{padding:0!important;min-height:0;border-radius:14px;overflow:hidden;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;scroll-margin-top:calc(190px + env(safe-area-inset-top))}
 .route-timetable-card[data-v4-compact="true"]:active{transform:scale(.993)}
@@ -9,6 +9,16 @@
 .tt-compact-time span{font-size:11px;color:var(--muted)}
 .tt-compact-badges{min-width:0;display:flex;align-items:center;justify-content:flex-start;gap:5px;white-space:nowrap;overflow:hidden}
 .tt-compact-chevron{font-size:21px;line-height:1;color:#aaa8bb;justify-self:end}
+
+/* Home next-card metadata stays on a single clean baseline. Route type is already shown above. */
+.next-card-actions{display:flex;align-items:center;gap:7px;position:relative;z-index:2}
+.next-share-button,.journey-share-button,.tt-sheet-share{display:inline-grid;place-items:center;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.14);color:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.next-share-button{width:34px;height:34px;border-radius:50%;color:#fff}
+.next-share-button svg,.journey-share-button svg,.tt-sheet-share svg{width:18px;height:18px;display:block}
+.next-share-button:disabled{opacity:.4}
+.next-meta.next-meta-v4{display:flex;align-items:center;flex-wrap:nowrap!important;gap:6px!important;overflow:hidden;white-space:nowrap;margin-top:18px}
+.next-meta.next-meta-v4>span:not(.crowding-icon){box-sizing:border-box;flex:0 1 auto;min-width:0;padding:6px 8px!important;font-size:10.5px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next-meta.next-meta-v4>span:nth-child(3):not(.crowding-icon){max-width:120px}
 
 /* Keep every compact metadata item on the same 22px visual baseline. */
 .tt-compact-badges .pill,.tt-next-mini,.tt-sheet-meta .pill,.tt-sheet-next{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;height:22px;min-height:22px;line-height:1;margin:0;white-space:nowrap;flex:0 0 auto}
@@ -23,10 +33,15 @@
 .crowding-person.is-active{color:var(--crowd-color)}
 .crowding-lv1{--crowd-color:#2c9a78}.crowding-lv2{--crowd-color:#3c9b62}.crowding-lv3{--crowd-color:#c99524}.crowding-lv4{--crowd-color:#df762d}.crowding-lv5{--crowd-color:#d24b5d}
 /* style.css applies .next-meta span to every nested span, so reset that legacy rule for the icon. */
-.next-meta .crowding-icon{margin-left:2px;padding:0 4px!important;border-radius:999px!important;background:rgba(255,255,255,.92)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.next-meta .crowding-icon{margin-left:0;padding:0 4px!important;border-radius:999px!important;background:rgba(255,255,255,.92)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;flex:0 0 45px!important}
 .next-meta .crowding-person{padding:0!important;border-radius:0!important;background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .journey-details .crowding-icon{margin-left:auto}
 .crowding-round-row{display:flex;align-items:center;margin-top:6px}
+
+/* Share affordance on result/upcoming cards. */
+.journey-card-shareable{position:relative}
+.journey-card-shareable .journey-route{padding-right:34px}
+.journey-share-button{position:absolute;top:11px;right:11px;width:30px;height:30px;border-radius:50%;border-color:var(--line);background:#fff;color:var(--ou-800);box-shadow:0 3px 10px rgba(35,31,102,.08)}
 
 .tt-detail-sheet{box-sizing:border-box;width:min(100%,720px);max-width:720px;max-height:min(78dvh,680px);margin:auto auto 0;border:0;border-radius:24px 24px 0 0;padding:0;background:#fff;color:var(--ink);box-shadow:0 -18px 50px rgba(24,21,72,.20);overflow:hidden}
 .tt-detail-sheet[open]{animation:tt-sheet-in .18s ease-out}
@@ -34,9 +49,11 @@
 @keyframes tt-sheet-in{from{transform:translateY(28px);opacity:.5}to{transform:translateY(0);opacity:1}}
 .tt-sheet-shell{padding:8px 18px calc(20px + env(safe-area-inset-bottom));overflow:auto;max-height:min(78dvh,680px)}
 .tt-sheet-handle{width:38px;height:4px;border-radius:999px;background:#d7d6df;margin:2px auto 11px}
-.tt-sheet-head{display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:12px;align-items:start}
+.tt-sheet-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start}
 .tt-sheet-title-wrap{min-width:0}.tt-sheet-kicker{display:block;color:var(--ou-900);font-size:9px;font-weight:900;letter-spacing:.12em}.tt-sheet-title-wrap h3{margin:3px 0 3px;font-size:25px;font-variant-numeric:tabular-nums}.tt-sheet-title-wrap p{margin:0;color:var(--muted);font-size:10px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tt-sheet-close{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;background:#fff;color:var(--ou-900);font-size:23px;touch-action:manipulation}
+.tt-sheet-head-actions{display:flex;align-items:center;gap:7px}
+.tt-sheet-close,.tt-sheet-share{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;background:#fff;color:var(--ou-900);touch-action:manipulation}
+.tt-sheet-close{font-size:23px}.tt-sheet-share{display:grid}
 .tt-sheet-meta{display:flex;align-items:center;gap:6px;margin:13px 0 5px;flex-wrap:wrap}.tt-sheet-meta .pill{font-size:9px;padding:0 8px}.tt-sheet-next{border-radius:999px;background:var(--ou-900);color:#fff;padding:0 8px;font-size:9px;font-weight:900}#tt-sheet-crowding{display:inline-flex;align-items:center;height:22px}
 .tt-sheet-crowding-reason{margin:0 0 8px;color:var(--muted);font-size:9px;line-height:1.5}
 
@@ -49,4 +66,12 @@
 
 .crowding-info-card p{margin:0 0 11px;color:var(--muted);font-size:11px;line-height:1.65}.crowding-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 10px}.crowding-legend-item{display:flex;align-items:center;gap:7px;min-width:0}.crowding-legend-item span:last-child{font-size:10px;font-weight:800;color:var(--muted);white-space:nowrap}.crowding-legend-item .crowding-icon{margin:0}
 
-@media(max-width:380px){.tt-compact-row{gap:6px;padding-left:9px;padding-right:9px}.tt-compact-time{gap:4px}.tt-compact-time strong{font-size:16px}.tt-compact-badges .pill,.tt-next-mini{font-size:7px;padding-left:5px;padding-right:5px}.crowding-icon{min-width:36px;gap:1px}.crowding-person{width:5.5px;flex-basis:5.5px}.crowding-person::after{width:5.5px}.tt-detail-sheet{border-radius:22px 22px 0 0}.tt-sheet-shell{padding-left:16px;padding-right:16px}.crowding-legend{grid-template-columns:1fr}}
+/* Branded 4:5 share-card preview. The actual PNG is rendered on Canvas at 1080×1350. */
+.share-card-dialog{box-sizing:border-box;width:min(calc(100% - 18px),540px);max-width:540px;max-height:94dvh;margin:auto auto 0;border:0;border-radius:26px 26px 0 0;padding:0;background:#fff;color:var(--ink);box-shadow:0 -22px 60px rgba(24,21,72,.24);overflow:hidden}
+.share-card-dialog::backdrop{background:rgba(19,18,38,.46);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.share-card-shell{padding:12px 16px calc(18px + env(safe-area-inset-bottom));overflow:auto;max-height:94dvh}
+.share-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.share-card-head span{display:block;color:var(--ou-800);font-size:9px;font-weight:900;letter-spacing:.14em}.share-card-head h3{margin:2px 0 0;font-size:20px}.share-card-close{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ou-900);font-size:22px;touch-action:manipulation}
+.share-card-preview{display:grid;place-items:center;border-radius:18px;padding:8px;background:#f1f1f8;border:1px solid #e4e3ed;overflow:hidden}.share-card-preview img{display:block;width:100%;max-height:57dvh;aspect-ratio:4/5;object-fit:contain;border-radius:12px;box-shadow:0 8px 26px rgba(31,27,88,.16)}
+.share-card-copy{margin:10px 2px;color:var(--muted);font-size:10px;line-height:1.55}.share-card-actions{display:grid;grid-template-columns:1.3fr 1fr;gap:8px}.share-card-actions button{min-height:44px;border-radius:13px;font-weight:900;font-size:12px;touch-action:manipulation}.share-card-primary{border:0;background:linear-gradient(135deg,var(--ou-700),var(--ou-900));color:#fff;box-shadow:0 7px 16px rgba(45,40,127,.18)}.share-card-secondary{border:1px solid var(--line);background:#fff;color:var(--ou-900)}.share-card-status{min-height:16px;margin:7px 2px 0;color:var(--muted);font-size:9px;text-align:center}
+
+@media(max-width:380px){.tt-compact-row{gap:6px;padding-left:9px;padding-right:9px}.tt-compact-time{gap:4px}.tt-compact-time strong{font-size:16px}.tt-compact-badges .pill,.tt-next-mini{font-size:7px;padding-left:5px;padding-right:5px}.crowding-icon{min-width:36px;gap:1px}.crowding-person{width:5.5px;flex-basis:5.5px}.crowding-person::after{width:5.5px}.next-meta.next-meta-v4{gap:4px!important}.next-meta.next-meta-v4>span:not(.crowding-icon){font-size:9.5px;padding-left:6px!important;padding-right:6px!important}.next-meta.next-meta-v4>span:nth-child(3):not(.crowding-icon){max-width:98px}.next-meta .crowding-icon{flex-basis:40px!important;min-width:40px}.tt-detail-sheet{border-radius:22px 22px 0 0}.tt-sheet-shell{padding-left:16px;padding-right:16px}.crowding-legend{grid-template-columns:1fr}.share-card-dialog{width:100%;border-radius:22px 22px 0 0}.share-card-shell{padding-left:13px;padding-right:13px}}
