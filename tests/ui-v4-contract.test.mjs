@@ -17,6 +17,15 @@ test("ホームの次便重複を除外するcontractを保持する", async () 
   assert.match(source, /#upcoming-list/);
 });
 
+test("トップのメタ情報は重複route tagを除き1行表示を維持する", async () => {
+  const source = await read("src/ui-v4.mjs");
+  const css = await read("ui-v4.css");
+  assert.match(source, /compactNextMeta/);
+  assert.match(source, /node\.textContent\.trim\(\) === topType/);
+  assert.match(css, /next-meta\.next-meta-v4/);
+  assert.match(css, /flex-wrap:nowrap/);
+});
+
 test("時刻表はcompact rowとdetail sheetを備える", async () => {
   const source = await read("src/ui-v4.mjs");
   const css = await read("ui-v4.css");
@@ -49,4 +58,21 @@ test("Bottom Sheetの経路線は全停留所共通の1本軸で描画する", a
   assert.match(css, /\.tt-sheet-stops::before/);
   assert.match(css, /--tt-axis-x/);
   assert.match(css, /justify-self:center/);
+});
+
+test("選択便をブランド付きPNG共有カードとして共有できる", async () => {
+  const source = await read("src/ui-v4.mjs");
+  const share = await read("src/share-card.mjs");
+  const css = await read("ui-v4.css");
+  assert.match(source, /openSharePreview/);
+  assert.match(source, /next-share-button/);
+  assert.match(source, /journey-share-button/);
+  assert.match(source, /tt-sheet-share/);
+  assert.match(share, /CARD_WIDTH = 1080/);
+  assert.match(share, /CARD_HEIGHT = 1350/);
+  assert.match(share, /阪大シャトル/);
+  assert.match(share, /navigator\.share/);
+  assert.match(share, /new File/);
+  assert.match(share, /naoshi-git\.github\.io\/handai-shuttle/);
+  assert.match(css, /share-card-dialog/);
 });
