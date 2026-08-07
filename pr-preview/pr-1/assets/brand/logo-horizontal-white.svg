@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 600" role="img" aria-label="阪大シャトル HANDAI SHUTTLE">
+  <image href="./brand-icon-rounded.svg" x="80" y="90" width="420" height="420" preserveAspectRatio="xMidYMid meet"/>
+  <g fill="#FFFFFF">
+    <text x="560" y="300" font-family="Noto Sans JP, Hiragino Sans, Yu Gothic, sans-serif" font-size="170" font-weight="800" letter-spacing="-8">阪大シャトル</text>
+    <text x="565" y="405" font-family="Inter, Arial, sans-serif" font-size="58" font-weight="700" letter-spacing="16">HANDAI SHUTTLE</text>
+  </g>
+</svg>
