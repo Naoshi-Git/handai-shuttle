@@ -40,13 +40,15 @@ jobs:
           node --check source/data/location-points.mjs
           test -f source/assets/brand/app-icon.svg
           test -f source/assets/brand/brand-icon-rounded.svg
+          test -f source/lp/index.html
+          test -f source/lp/lp.css
           node --test source/tests/*.test.mjs
       - name: Sync production while preserving PR previews
         run: |
-          rm -rf pages/assets pages/data pages/src
+          rm -rf pages/assets pages/data pages/src pages/lp
           rm -f pages/index.html pages/manifest.webmanifest pages/style.css pages/ui-v2.css pages/ui-v3.css pages/ui-v4.css
           cp source/index.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css pages/
-          cp -R source/assets source/data source/src pages/
+          cp -R source/assets source/data source/src source/lp pages/
           touch pages/.nojekyll
       - name: Publish
         run: |
