@@ -1,0 +1,34 @@
+{
+  "name": "handai-shuttle-house-share-v1",
+  "runtime": {
+    "home": "house-mobile-320x100.png",
+    "search": "house-mobile-320x100.png",
+    "timetable": "house-mobile-320x50.png"
+  },
+  "assets": [
+    {
+      "file": "house-mobile-320x50.png",
+      "width": 320,
+      "height": 50,
+      "format": "PNG",
+      "bytes": 2508,
+      "googleUploadedDisplaySize": true
+    },
+    {
+      "file": "house-mobile-320x100.png",
+      "width": 320,
+      "height": 100,
+      "format": "PNG",
+      "bytes": 4349,
+      "googleUploadedDisplaySize": true
+    }
+  ],
+  "sourceMasters": [
+    "../house-share-640x128.svg",
+    "../house-share-640x180.svg"
+  ],
+  "notes": [
+    "Static PNG is used for v0.3; GIF is intentionally avoided to reduce visual distraction in a timetable/search utility.",
+    "Both uploaded-display-compatible PNG files are below Google's 150KB maximum."
+  ]
+}
