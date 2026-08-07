@@ -43,9 +43,12 @@ async function shareHandaiShuttle(button) {
       return;
     }
     await navigator.clipboard?.writeText(`${payload.text}\n${payload.url}`);
-    const original = button.textContent;
-    button.textContent = "リンクをコピーしました";
-    window.setTimeout(() => { button.textContent = original; }, 1800);
+    button.dataset.shareState = "copied";
+    button.setAttribute("aria-label", "リンクをコピーしました");
+    window.setTimeout(() => {
+      delete button.dataset.shareState;
+      button.setAttribute("aria-label", "阪大シャトルを友達に共有");
+    }, 1800);
   } catch (error) {
     if (error?.name !== "AbortError") console.warn("Handai Shuttle share failed", error);
   }
@@ -53,17 +56,21 @@ async function shareHandaiShuttle(button) {
 
 function houseAdMarkup(placement) {
   const compact = placement === AD_PLACEMENTS.TIMETABLE_FEED;
+  const primary = compact
+    ? "./assets/ads/house-share-640x128.svg"
+    : "./assets/ads/house-share-640x180.svg";
+  const width = 640;
+  const height = compact ? 128 : 180;
+
   return `
     <article class="ad-card house-ad-card ${compact ? "is-compact" : ""}" data-ad-provider="house">
-      <div class="ad-card-label"><span>阪大シャトルからのお知らせ</span><span class="ad-card-kind">自社案内</span></div>
-      <div class="ad-card-body">
-        <img class="ad-card-icon" src="./assets/brand/brand-icon-rounded.svg" alt="" aria-hidden="true">
-        <div class="ad-card-copy">
-          <strong>${compact ? "友達にも、次の便を。" : "阪大シャトルを友達におすすめしよう"}</strong>
-          <p>${compact ? "便利だったら共有してみませんか？" : "豊中・箕面・吹田の移動を、もっと迷わず。リンクを友達に共有できます。"}</p>
-        </div>
-        <button class="ad-card-cta" type="button" data-house-share>共有する</button>
-      </div>
+      <button class="house-ad-creative" type="button" data-house-share aria-label="阪大シャトルを友達に共有">
+        ${compact ? "" : `<picture>
+          <source media="(max-width: 360px)" srcset="./assets/ads/house-share-640x128.svg">
+          <img src="${primary}" width="${width}" height="${height}" alt="友達にも、次の便を。阪大シャトルを共有する">
+        </picture>`}
+        ${compact ? `<img src="${primary}" width="${width}" height="${height}" alt="友達にも、次の便を。阪大シャトルを共有する">` : ""}
+      </button>
     </article>`;
 }
 
