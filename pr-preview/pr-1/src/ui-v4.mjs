@@ -1,4 +1,5 @@
 import { crowdingBadgeText, predictCrowding } from "./crowding-prediction.mjs";
+import { openSharePreview } from "./share-card.mjs";
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -21,7 +22,109 @@ function crowdingIcon(prediction, { legend = false } = {}) {
   const people = Array.from({ length: 5 }, (_, index) =>
     `<span class="crowding-person ${index < prediction.level ? "is-active" : ""}" aria-hidden="true"></span>`
   ).join("");
-  return `<span class="crowding-icon crowding-lv${prediction.level} ${legend ? "is-legend" : ""}" data-crowding-badge="true" role="img" title="${prediction.reason}" aria-label="${crowdingBadgeText(prediction)}">${people}</span>`;
+  return `<span class="crowding-icon crowding-lv${prediction.level} ${legend ? "is-legend" : ""}" data-crowding-badge="true" data-crowding-level="${prediction.level}" role="img" title="${prediction.reason}" aria-label="${crowdingBadgeText(prediction)}">${people}</span>`;
+}
+
+function shareIconMarkup() {
+  return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0-11 4 4m-4-4L8 7M5 11v8h14v-8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+function displayDateToday() {
+  return new Intl.DateTimeFormat("ja-JP", { month: "numeric", day: "numeric", weekday: "short" }).format(new Date());
+}
+
+function routeNames(root) {
+  return $$(".journey-route > span:not(.arrow)", root).map((node) => node.textContent.trim()).filter(Boolean);
+}
+
+function journeyShareData(card, sourceLabel = "検索結果") {
+  const pair = timePair(card.querySelector(".journey-time strong")?.textContent || "");
+  if (!pair) return null;
+  const names = routeNames(card);
+  const pills = $$(".journey-details .pill", card).map((node) => node.textContent.trim());
+  const routeType = pills.find((value) => value === "直行" || value === "箕面経由") || "運行便";
+  const tripId = pills.find((value) => /^[EW]\d+便$/.test(value)) || "";
+  return {
+    sourceLabel,
+    origin: names[0] || "出発",
+    destination: names.at(-1) || "到着",
+    originDetail: names[0] || "",
+    destinationDetail: names.at(-1) || "",
+    departure: pair[0],
+    arrival: pair[1],
+    duration: card.querySelector(".journey-time small")?.textContent?.trim() || "",
+    routeType,
+    tripId,
+    date: card.querySelector(".journey-date")?.textContent?.trim() || displayDateToday(),
+    crowdingLevel: predictCrowding({ departureTime: pair[0], arrivalTime: pair[1] }).level
+  };
+}
+
+function nextShareData() {
+  const pair = timePair($("#next-card-content .next-times")?.textContent || "");
+  if (!pair) return null;
+  const names = $$("#next-card-content .next-route > span:not(.arrow)").map((node) => node.textContent.trim()).filter(Boolean);
+  const meta = $$("#next-card-content .next-meta > span:not(.crowding-icon)").map((node) => node.textContent.trim());
+  const metaRoute = meta.find((value) => value === "直行" || value === "箕面経由");
+  const duration = meta.find((value) => /^\d+分$/.test(value)) || "";
+  const originDetail = (meta.find((value) => /から$/.test(value)) || "").replace(/から$/, "");
+  const topType = $("#next-route-type")?.textContent?.trim() || "";
+  const prediction = predictCrowding({ departureTime: pair[0], arrivalTime: pair[1] });
+  return {
+    sourceLabel: "次の便",
+    origin: names[0] || "出発",
+    destination: names.at(-1) || "到着",
+    originDetail,
+    destinationDetail: names.at(-1) || "",
+    departure: pair[0],
+    arrival: pair[1],
+    duration,
+    routeType: metaRoute || (topType === "最終便" ? "運行便" : topType) || "運行便",
+    date: displayDateToday(),
+    crowdingLevel: prediction.level
+  };
+}
+
+function compactNextMeta() {
+  const meta = $("#next-card-content .next-meta");
+  if (!meta) return;
+  const topType = $("#next-route-type")?.textContent?.trim();
+  if (topType === "直行" || topType === "箕面経由") {
+    $$(':scope > span:not(.crowding-icon)', meta).forEach((node) => {
+      if (node.textContent.trim() === topType) node.remove();
+    });
+  }
+  meta.classList.add("next-meta-v4");
+}
+
+function ensureNextShareButton() {
+  const top = $("#next-card .next-card-top");
+  const routeType = $("#next-route-type");
+  if (!top || !routeType) return;
+  let group = $(".next-card-actions", top);
+  if (!group) {
+    group = document.createElement("div");
+    group.className = "next-card-actions";
+    routeType.before(group);
+    group.append(routeType);
+  }
+  let button = $("#next-share-button");
+  if (!button) {
+    button = document.createElement("button");
+    button.id = "next-share-button";
+    button.className = "next-share-button";
+    button.type = "button";
+    button.setAttribute("aria-label", "次の便を共有");
+    button.innerHTML = shareIconMarkup();
+    button.addEventListener("click", async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const data = nextShareData();
+      if (data) await openSharePreview(data);
+    });
+    group.append(button);
+  }
+  button.disabled = !nextShareData();
 }
 
 function removeFeaturedDuplicate() {
@@ -57,6 +160,26 @@ function decorateJourneyCrowding(card) {
   card.dataset.crowdingDecorated = "true";
 }
 
+function decorateJourneyShare(card) {
+  if (card.querySelector(".journey-share-button")) return;
+  const sourceLabel = card.closest("#upcoming-list") ? "このあとの便" : "検索結果";
+  const data = journeyShareData(card, sourceLabel);
+  if (!data) return;
+  card.classList.add("journey-card-shareable");
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "journey-share-button";
+  button.setAttribute("aria-label", "この便を共有");
+  button.innerHTML = shareIconMarkup();
+  button.addEventListener("click", async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const latest = journeyShareData(card, sourceLabel);
+    if (latest) await openSharePreview(latest);
+  });
+  card.append(button);
+}
+
 function decorateRoundLegCrowding(leg) {
   if (leg.dataset.crowdingDecorated === "true") return;
   const pair = timePair(leg.querySelector(".journey-time strong")?.textContent || "");
@@ -68,8 +191,13 @@ function decorateRoundLegCrowding(leg) {
 
 function decorateCrowdingSurfaces() {
   decorateNextCardCrowding();
-  $$("#upcoming-list .journey-card, #search-results .journey-card").forEach(decorateJourneyCrowding);
+  $$("#upcoming-list .journey-card, #search-results .journey-card").forEach((card) => {
+    decorateJourneyCrowding(card);
+    decorateJourneyShare(card);
+  });
   $$("#search-results .round-leg").forEach(decorateRoundLegCrowding);
+  compactNextMeta();
+  ensureNextShareButton();
 }
 
 function observeDynamicSurfaces() {
@@ -92,6 +220,22 @@ function observeDynamicSurfaces() {
 
 const timetableDetails = new Map();
 
+function timetableShareData(detail) {
+  return {
+    sourceLabel: "時刻表",
+    origin: detail.stops[0]?.name || "出発",
+    destination: detail.stops.at(-1)?.name || "到着",
+    originDetail: detail.stops[0]?.name || "",
+    destinationDetail: detail.stops.at(-1)?.name || "",
+    departure: detail.departure,
+    arrival: detail.arrival,
+    routeType: detail.routeType,
+    tripId: detail.tripId,
+    date: "2026年度 通常ダイヤ",
+    crowdingLevel: detail.crowding.level
+  };
+}
+
 function ensureDetailSheet() {
   let dialog = $("#tt-detail-sheet");
   if (dialog) return dialog;
@@ -107,7 +251,10 @@ function ensureDetailSheet() {
           <h3 id="tt-sheet-title"></h3>
           <p id="tt-sheet-caption"></p>
         </div>
-        <button type="button" class="tt-sheet-close" aria-label="詳細を閉じる">×</button>
+        <div class="tt-sheet-head-actions">
+          <button type="button" class="tt-sheet-share" aria-label="この便を共有">${shareIconMarkup()}</button>
+          <button type="button" class="tt-sheet-close" aria-label="詳細を閉じる">×</button>
+        </div>
       </header>
       <div class="tt-sheet-meta">
         <span id="tt-sheet-route-type" class="pill pill-soft"></span>
@@ -119,6 +266,10 @@ function ensureDetailSheet() {
     </div>`;
   document.body.append(dialog);
   $(".tt-sheet-close", dialog)?.addEventListener("click", () => dialog.close());
+  $(".tt-sheet-share", dialog)?.addEventListener("click", async () => {
+    const detail = timetableDetails.get(dialog.dataset.tripId);
+    if (detail) await openSharePreview(timetableShareData(detail));
+  });
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
   });
@@ -129,6 +280,7 @@ function openDetail(tripId) {
   const detail = timetableDetails.get(tripId);
   if (!detail) return;
   const dialog = ensureDetailSheet();
+  dialog.dataset.tripId = tripId;
   $("#tt-sheet-title", dialog).textContent = `${detail.departure} → ${detail.arrival}`;
   $("#tt-sheet-caption", dialog).textContent = detail.caption;
   const routeType = $("#tt-sheet-route-type", dialog);
