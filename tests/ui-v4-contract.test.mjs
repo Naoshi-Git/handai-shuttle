@@ -51,6 +51,13 @@ test("トップ・検索結果・時刻表では文字タグではなく人型�
   assert.match(css, /\.next-meta \.crowding-person/);
 });
 
+test("混雑凡例の5人目だけlegacy last-child色になる回帰を補正する", async () => {
+  const polish = await read("src/ui-v4-polish.mjs");
+  assert.match(polish, /crowding-legend-item \.crowding-person/);
+  assert.match(polish, /crowding-person\.is-active/);
+  assert.match(polish, /var\(--crowd-color\)/);
+});
+
 test("Bottom Sheetの経路線は全停留所共通の1本軸で描画する", async () => {
   const source = await read("src/ui-v4.mjs");
   const css = await read("ui-v4.css");
@@ -74,5 +81,7 @@ test("選択便をブランド付きPNG共有カードとして共有できる",
   assert.match(share, /navigator\.share/);
   assert.match(share, /new File/);
   assert.match(share, /naoshi-git\.github\.io\/handai-shuttle/);
+  assert.match(share, /shareTargetUrl/);
+  assert.match(share, /pr-preview\/pr-/);
   assert.match(css, /share-card-dialog/);
 });
