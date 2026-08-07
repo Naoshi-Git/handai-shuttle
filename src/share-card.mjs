@@ -1,9 +1,18 @@
+import "./ui-v4-polish.mjs";
+
 const APP_URL = "https://naoshi-git.github.io/handai-shuttle/";
+const DISPLAY_URL = "naoshi-git.github.io/handai-shuttle/";
 const CARD_WIDTH = 1080;
 const CARD_HEIGHT = 1350;
 
 let activePreviewUrl = null;
 let activeShare = null;
+
+function shareTargetUrl() {
+  if (typeof window === "undefined") return APP_URL;
+  const previewPath = window.location.pathname.match(/^\/handai-shuttle\/pr-preview\/pr-\d+\//)?.[0];
+  return previewPath ? `${window.location.origin}${previewPath}` : APP_URL;
+}
 
 function font(ctx, weight, size) {
   ctx.font = `${weight} ${size}px system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif`;
@@ -48,14 +57,6 @@ function drawPill(ctx, text, x, y, { fill = "rgba(255,255,255,.16)", color = "#f
 
 function crowdColor(level) {
   return ["#2c9a78", "#2c9a78", "#3c9b62", "#c99524", "#df762d", "#d24b5d"][level] || "#2c9a78";
-}
-
-function drawPerson(ctx, x, y, active, color) {
-  ctx.fillStyle = active ? color : "rgba(255,255,255,.34)";
-  ctx.beginPath();
-  ctx.arc(x + 9, y + 8, 7, 0, Math.PI * 2);
-  ctx.fill();
-  fillRoundRect(ctx, x, y + 19, 18, 30, 8, ctx.fillStyle);
 }
 
 function drawCrowding(ctx, x, y, level, { dark = false } = {}) {
@@ -193,7 +194,7 @@ function drawShareCard(data) {
   ctx.fillStyle = "#fff";
   font(ctx, 800, 20);
   ctx.textAlign = "center";
-  ctx.fillText("naoshi-git.github.io/handai-shuttle/", 540, 1211);
+  ctx.fillText(DISPLAY_URL, 540, 1211);
   ctx.textAlign = "left";
 
   ctx.fillStyle = "#8a8999";
@@ -241,7 +242,8 @@ function ensureDialog() {
     if (!activeShare) return;
     const status = dialog.querySelector("#share-card-status");
     const file = new File([activeShare.blob], "handai-shuttle-route.png", { type: "image/png" });
-    const payload = { title: "阪大シャトル", text: shareText(activeShare.data), url: APP_URL };
+    const targetUrl = shareTargetUrl();
+    const payload = { title: "阪大シャトル", text: shareText(activeShare.data), url: targetUrl };
     try {
       if (navigator.canShare?.({ files: [file] })) payload.files = [file];
       if (navigator.share) {
@@ -249,7 +251,7 @@ function ensureDialog() {
         if (status) status.textContent = "共有シートを開きました。";
         return;
       }
-      await navigator.clipboard?.writeText(`${shareText(activeShare.data)}\n${APP_URL}`);
+      await navigator.clipboard?.writeText(`${shareText(activeShare.data)}\n${targetUrl}`);
       if (status) status.textContent = "共有リンクをコピーしました。";
     } catch (error) {
       if (error?.name === "AbortError") return;
@@ -260,11 +262,12 @@ function ensureDialog() {
   dialog.querySelector("#share-card-copy")?.addEventListener("click", async () => {
     if (!activeShare) return;
     const status = dialog.querySelector("#share-card-status");
+    const targetUrl = shareTargetUrl();
     try {
-      await navigator.clipboard.writeText(`${shareText(activeShare.data)}\n${APP_URL}`);
+      await navigator.clipboard.writeText(`${shareText(activeShare.data)}\n${targetUrl}`);
       if (status) status.textContent = "リンクをコピーしました。";
     } catch {
-      if (status) status.textContent = APP_URL;
+      if (status) status.textContent = targetUrl;
     }
   });
   return dialog;
@@ -289,4 +292,4 @@ export async function openSharePreview(data) {
   }
 }
 
-export { APP_URL, CARD_WIDTH, CARD_HEIGHT };
+export { APP_URL, CARD_WIDTH, CARD_HEIGHT, shareTargetUrl };
