@@ -7,6 +7,21 @@ export const AD_PLACEMENTS = Object.freeze({
   TIMETABLE_FEED: "timetable-feed"
 });
 
+const HOUSE_CREATIVES = Object.freeze({
+  standard: {
+    src: "./assets/ads/house/house-mobile-320x100.png",
+    width: 320,
+    height: 100,
+    alt: "友達にも、次の便を。阪大シャトルを共有"
+  },
+  compact: {
+    src: "./assets/ads/house/house-mobile-320x50.png",
+    width: 320,
+    height: 50,
+    alt: "友達にも、次の便を。阪大シャトルを共有"
+  }
+});
+
 export function getAdsMode() {
   try {
     return localStorage.getItem(ADS_MODE_KEY) || DEFAULT_MODE;
@@ -43,35 +58,25 @@ async function shareHandaiShuttle(button) {
       return;
     }
     await navigator.clipboard?.writeText(`${payload.text}\n${payload.url}`);
-    button.dataset.shareState = "copied";
-    button.setAttribute("aria-label", "リンクをコピーしました");
-    window.setTimeout(() => {
-      delete button.dataset.shareState;
-      button.setAttribute("aria-label", "阪大シャトルを友達に共有");
-    }, 1800);
+    button.dataset.feedback = "copied";
+    window.setTimeout(() => { delete button.dataset.feedback; }, 1600);
   } catch (error) {
     if (error?.name !== "AbortError") console.warn("Handai Shuttle share failed", error);
   }
 }
 
 function houseAdMarkup(placement) {
-  const compact = placement === AD_PLACEMENTS.TIMETABLE_FEED;
-  const primary = compact
-    ? "./assets/ads/house-share-640x128.svg"
-    : "./assets/ads/house-share-640x180.svg";
-  const width = 640;
-  const height = compact ? 128 : 180;
+  const creative = placement === AD_PLACEMENTS.TIMETABLE_FEED
+    ? HOUSE_CREATIVES.compact
+    : HOUSE_CREATIVES.standard;
 
   return `
-    <article class="ad-card house-ad-card ${compact ? "is-compact" : ""}" data-ad-provider="house">
-      <button class="house-ad-creative" type="button" data-house-share aria-label="阪大シャトルを友達に共有">
-        ${compact ? "" : `<picture>
-          <source media="(max-width: 360px)" srcset="./assets/ads/house-share-640x128.svg">
-          <img src="${primary}" width="${width}" height="${height}" alt="友達にも、次の便を。阪大シャトルを共有する">
-        </picture>`}
-        ${compact ? `<img src="${primary}" width="${width}" height="${height}" alt="友達にも、次の便を。阪大シャトルを共有する">` : ""}
+    <aside class="ad-card house-ad-card" data-ad-provider="house" aria-label="阪大シャトルの自社広告">
+      <div class="ad-card-label"><span>自社広告</span></div>
+      <button class="house-ad-creative" type="button" data-house-share aria-label="阪大シャトルを友達に共有する">
+        <img src="${creative.src}" width="${creative.width}" height="${creative.height}" alt="${creative.alt}" decoding="async">
       </button>
-    </article>`;
+    </aside>`;
 }
 
 function adsensePlaceholderMarkup() {
@@ -107,9 +112,7 @@ function insertHomeSlot() {
 function insertSearchSlot() {
   const container = document.querySelector("#search-results");
   if (!container || container.querySelector(`[data-ad-slot="${AD_PLACEMENTS.SEARCH_RESULTS}"]`)) return;
-  const cards = [...container.children].filter((node) =>
-    node.matches?.(".journey-card, .round-result, .round-trip-card")
-  );
+  const cards = [...container.children].filter((node) => node.matches?.(".journey-card, .round-result, .round-trip-card"));
   if (cards.length < 2) return;
   cards[1].insertAdjacentElement("afterend", createSlot(AD_PLACEMENTS.SEARCH_RESULTS));
 }
@@ -117,9 +120,7 @@ function insertSearchSlot() {
 function insertTimetableSlot() {
   const container = document.querySelector("#timetable-list");
   if (!container || container.querySelector(`[data-ad-slot="${AD_PLACEMENTS.TIMETABLE_FEED}"]`)) return;
-  const rows = [...container.children].filter((node) =>
-    node.matches?.("[data-tt-trip], .timetable-card")
-  );
+  const rows = [...container.children].filter((node) => node.matches?.("[data-tt-trip], .timetable-card"));
   if (rows.length < 5) return;
   rows[4].insertAdjacentElement("afterend", createSlot(AD_PLACEMENTS.TIMETABLE_FEED));
 }
@@ -135,11 +136,7 @@ export function refreshAdSlots() {
 }
 
 function observeDynamicFeeds() {
-  const targets = [
-    document.querySelector("#search-results"),
-    document.querySelector("#timetable-list")
-  ].filter(Boolean);
-
+  const targets = [document.querySelector("#search-results"), document.querySelector("#timetable-list")].filter(Boolean);
   let queued = false;
   const observer = new MutationObserver(() => {
     if (queued) return;
@@ -159,9 +156,6 @@ export function initAds() {
 }
 
 if (typeof document !== "undefined") {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initAds, { once: true });
-  } else {
-    initAds();
-  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initAds, { once: true });
+  else initAds();
 }
