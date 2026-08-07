@@ -18,6 +18,21 @@
 - 選択した便を「阪大シャトル」のブランド付き画像として共有
 - iPhone向けのモバイルUI
 
+## LP / Launch
+
+サービス紹介用LPを `lp/` に実装しています。
+
+PR Preview:
+
+- App: https://naoshi-git.github.io/handai-shuttle/pr-preview/pr-1/
+- LP: https://naoshi-git.github.io/handai-shuttle/pr-preview/pr-1/lp/
+
+広報・ローンチ運用:
+
+- `marketing/GO-TO-MARKET.md` — ターゲット、訴求、ローンチ時期、獲得導線、KPI
+- `marketing/SNS-PLAYBOOK.md` — Instagram / Xのアカウント設計、投稿企画、拡散テンプレ
+- `marketing/CAMPUS-LAUNCH.md` — 学内掲示、O+PUS、QR、団体展開の実行案
+
 ## データ
 
 2026年4月1日改正の大阪大学公式時刻表を基にしています。
