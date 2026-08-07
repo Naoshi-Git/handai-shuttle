@@ -31,16 +31,29 @@ function arrivalPressure(arrivalMinutes) {
 function departurePressure(departureMinutes) {
   if (departureMinutes == null) return { level: 1, reason: null, period: null, after: null };
   let best = { level: 1, reason: null, period: null, after: null };
+
   for (const period of CLASS_PERIODS) {
     const end = toMinutes(period.end);
     const after = departureMinutes - end;
-    if (after < 0 || after > 35) continue;
-    const candidate = after <= 10
-      ? { level: 4, reason: `${period.period}限終了${after}分後に出発`, period: period.period, after }
-      : after <= 20
-        ? { level: 3, reason: `${period.period}限終了${after}分後に出発`, period: period.period, after }
-        : { level: 2, reason: `${period.period}限終了${after}分後に出発`, period: period.period, after };
-    if (candidate.level > best.level) best = candidate;
+    if (after < 0) continue;
+
+    let candidate = null;
+    if (period.finalRush) {
+      // Period 5 is the final meaningful daytime class peak. Students leaving
+      // campus after 18:20 concentrate into the following shuttle departures.
+      if (after <= 15) candidate = { level: 5, reason: `5限終了${after}分後の移動ラッシュ`, period: 5, after };
+      else if (after <= 30) candidate = { level: 4, reason: `5限終了${after}分後の移動ラッシュ`, period: 5, after };
+      else if (after <= 50) candidate = { level: 3, reason: `5限終了${after}分後の移動ラッシュ`, period: 5, after };
+      else if (after <= 75) candidate = { level: 2, reason: `5限終了${after}分後の移動ラッシュ`, period: 5, after };
+    } else if (after <= 35) {
+      candidate = after <= 10
+        ? { level: 4, reason: `${period.period}限終了${after}分後に出発`, period: period.period, after }
+        : after <= 20
+          ? { level: 3, reason: `${period.period}限終了${after}分後に出発`, period: period.period, after }
+          : { level: 2, reason: `${period.period}限終了${after}分後に出発`, period: period.period, after };
+    }
+
+    if (candidate && candidate.level > best.level) best = candidate;
   }
   return best;
 }
@@ -50,8 +63,9 @@ export function predictCrowding({ departureTime, arrivalTime }) {
   const departure = departurePressure(toMinutes(departureTime));
   let level = Math.max(arrival.level, departure.level);
 
-  // A bus that is simultaneously just after one class and close to the next class
-  // is more likely to accumulate inter-campus demand from both directions of movement.
+  // Inter-class movement can combine students leaving one class with students
+  // trying to reach the next class. Period 5's final rush is already scored
+  // strongly above, so this correction mainly applies to periods 1-4.
   if (arrival.level >= 4 && departure.level >= 3) level = Math.min(5, level + 1);
 
   const reasons = [arrival.reason, departure.reason].filter(Boolean);
@@ -59,8 +73,8 @@ export function predictCrowding({ departureTime, arrivalTime }) {
   return {
     ...descriptor,
     reasons,
-    reason: reasons.length ? reasons.join("・") : "授業開始・終了のピーク時間帯から外れています",
-    methodology: "2026年度の授業開始・終了時刻と便の発着時刻から推定した目安です。実測混雑ではありません。"
+    reason: reasons.length ? reasons.join("・") : "1〜5限の授業開始・終了ピークから外れています",
+    methodology: "1〜5限の授業開始・終了時刻と便の発着時刻から推定した目安です。5限終了後は最終の移動ラッシュとして補正しています。実測混雑ではありません。"
   };
 }
 
