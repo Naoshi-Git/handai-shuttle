@@ -39,6 +39,7 @@ test("トップ・検索結果・時刻表では文字タグではなく人型�
   assert.match(css, /\.crowding-icon/);
   assert.match(css, /\.crowding-person/);
   assert.match(css, /crowding-lv5/);
+  assert.match(css, /\.next-meta \.crowding-person/);
 });
 
 test("Bottom Sheetの経路線は全停留所共通の1本軸で描画する", async () => {
