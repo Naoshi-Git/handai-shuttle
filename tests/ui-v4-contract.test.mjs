@@ -28,12 +28,24 @@ test("時刻表はcompact rowとdetail sheetを備える", async () => {
   assert.match(css, /touch-action:manipulation/);
 });
 
-test("トップ・検索結果・時刻表へ混雑予想を装飾するcontractを保持する", async () => {
+test("トップ・検索結果・時刻表では文字タグではなく人型混雑アイコンを使う", async () => {
   const source = await read("src/ui-v4.mjs");
   const css = await read("ui-v4.css");
-  assert.match(source, /predictCrowding/);
+  assert.match(source, /function crowdingIcon/);
+  assert.match(source, /crowding-person/);
   assert.match(source, /decorateNextCardCrowding/);
   assert.match(source, /#search-results \.journey-card/);
   assert.match(source, /tt-sheet-crowding/);
+  assert.match(css, /\.crowding-icon/);
+  assert.match(css, /\.crowding-person/);
   assert.match(css, /crowding-lv5/);
+});
+
+test("Bottom Sheetの経路線は全停留所共通の1本軸で描画する", async () => {
+  const source = await read("src/ui-v4.mjs");
+  const css = await read("ui-v4.css");
+  assert.doesNotMatch(source, /tt-sheet-line/);
+  assert.match(css, /\.tt-sheet-stops::before/);
+  assert.match(css, /--tt-axis-x/);
+  assert.match(css, /justify-self:center/);
 });
