@@ -1,0 +1,25 @@
+name: Validate app
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate JavaScript and tests
+        run: |
+          node --check src/search-engine.mjs
+          node --check src/app.mjs
+          node --check src/enhancements.mjs
+          node --check src/features-v3.mjs
+          node --check src/features-v3-core.mjs
+          node --check src/ui-v4.mjs
+          node --check data/location-points.mjs
+          node --test tests/*.test.mjs

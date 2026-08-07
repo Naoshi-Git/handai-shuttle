@@ -1,0 +1,33 @@
+/* v4 presentation refinements: denser timetable rows and a mobile detail sheet. */
+#timetable-list.timetable-list{gap:6px}
+.route-timetable-card[data-v4-compact="true"]{padding:0!important;min-height:0;border-radius:14px;overflow:hidden;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;scroll-margin-top:calc(190px + env(safe-area-inset-top))}
+.route-timetable-card[data-v4-compact="true"]:active{transform:scale(.993)}
+.route-timetable-card[data-v4-compact="true"].is-next{border:1.5px solid var(--ou-700);background:linear-gradient(180deg,#fff,var(--ou-50));box-shadow:0 6px 16px rgba(45,40,127,.09)}
+.tt-compact-row{display:grid;grid-template-columns:112px minmax(0,1fr) 14px;align-items:center;gap:9px;min-height:56px;padding:9px 11px}
+.tt-compact-time{display:flex;align-items:baseline;gap:5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tt-compact-time strong{font-size:17px;line-height:1;font-weight:900;color:var(--ink)}
+.tt-compact-time span{font-size:11px;color:var(--muted)}
+.tt-compact-info{min-width:0;display:grid;gap:4px}
+.tt-compact-badges{display:flex;align-items:center;gap:5px;min-width:0}
+.tt-compact-badges .pill{font-size:8px;padding:3px 6px}
+.tt-next-mini{display:inline-flex;align-items:center;border-radius:999px;background:var(--ou-900);color:#fff;padding:3px 6px;font-size:8px;font-weight:900;white-space:nowrap}
+.tt-compact-caption{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:9px;font-weight:700}
+.tt-compact-chevron{font-size:22px;line-height:1;color:#aaa8bb}
+
+.tt-detail-sheet{box-sizing:border-box;width:min(100%,720px);max-width:720px;max-height:min(78dvh,680px);margin:auto auto 0;border:0;border-radius:24px 24px 0 0;padding:0;background:#fff;color:var(--ink);box-shadow:0 -18px 50px rgba(24,21,72,.20);overflow:hidden}
+.tt-detail-sheet[open]{animation:tt-sheet-in .18s ease-out}
+.tt-detail-sheet::backdrop{background:rgba(18,17,37,.36);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+@keyframes tt-sheet-in{from{transform:translateY(28px);opacity:.5}to{transform:translateY(0);opacity:1}}
+.tt-sheet-shell{padding:8px 18px calc(20px + env(safe-area-inset-bottom));overflow:auto;max-height:min(78dvh,680px)}
+.tt-sheet-handle{width:38px;height:4px;border-radius:999px;background:#d7d6df;margin:2px auto 11px}
+.tt-sheet-head{display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:12px;align-items:start}
+.tt-sheet-title-wrap{min-width:0}.tt-sheet-kicker{display:block;color:var(--ou-900);font-size:9px;font-weight:900;letter-spacing:.12em}.tt-sheet-title-wrap h3{margin:3px 0 3px;font-size:25px;font-variant-numeric:tabular-nums}.tt-sheet-title-wrap p{margin:0;color:var(--muted);font-size:10px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt-sheet-close{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;background:#fff;color:var(--ou-900);font-size:23px;touch-action:manipulation}
+.tt-sheet-meta{display:flex;align-items:center;gap:7px;margin:13px 0 8px}.tt-sheet-next{display:inline-flex;border-radius:999px;background:var(--ou-900);color:#fff;padding:5px 8px;font-size:9px;font-weight:900}
+.tt-sheet-stops{display:grid;padding:4px 0 2px}
+.tt-sheet-stop{position:relative;display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:9px;min-height:48px;padding:0 3px}
+.tt-sheet-line{position:absolute;left:11px;top:0;bottom:0;width:2px;background:#dcd9ef}.tt-sheet-stop:first-child .tt-sheet-line{top:50%}.tt-sheet-stop:last-child .tt-sheet-line{bottom:50%}
+.tt-sheet-dot{position:relative;z-index:1;width:10px;height:10px;border:3px solid #fff;border-radius:50%;background:#aaa6d9;box-shadow:0 0 0 1px #c9c6e8}.tt-sheet-stop.is-origin .tt-sheet-dot,.tt-sheet-stop.is-destination .tt-sheet-dot{background:var(--ou-900);box-shadow:0 0 0 1px var(--ou-700)}
+.tt-sheet-stop-name{font-size:13px;font-weight:800}.tt-sheet-stop strong{font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}
+
+@media(max-width:380px){.tt-compact-row{grid-template-columns:106px minmax(0,1fr) 12px;padding-left:9px;padding-right:9px}.tt-compact-time{gap:4px}.tt-compact-time strong{font-size:16px}.tt-detail-sheet{border-radius:22px 22px 0 0}.tt-sheet-shell{padding-left:16px;padding-right:16px}}
