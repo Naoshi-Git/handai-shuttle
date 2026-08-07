@@ -21,7 +21,7 @@ function crowdingBadge(prediction, { compact = false } = {}) {
   const text = compact
     ? `Lv${prediction.level} ${prediction.label}`
     : crowdingBadgeText(prediction);
-  return `<span class="crowding-badge crowding-lv${prediction.level}" title="${prediction.reason}" aria-label="${crowdingBadgeText(prediction)}">${text}</span>`;
+  return `<span class="crowding-badge crowding-lv${prediction.level}" data-crowding-badge="true" title="${prediction.reason}" aria-label="${crowdingBadgeText(prediction)}">${text}</span>`;
 }
 
 function removeFeaturedDuplicate() {
@@ -43,7 +43,6 @@ function decorateNextCardCrowding() {
   if (!meta || !pair || meta.querySelector("[data-crowding-badge]")) return;
   const prediction = predictCrowding({ departureTime: pair[0], arrivalTime: pair[1] });
   const wrap = document.createElement("span");
-  wrap.dataset.crowdingBadge = "true";
   wrap.innerHTML = crowdingBadge(prediction);
   meta.append(...wrap.childNodes);
 }
