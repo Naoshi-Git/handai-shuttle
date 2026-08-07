@@ -51,13 +51,15 @@ jobs:
           node --check source/data/location-points.mjs
           test -f source/assets/brand/app-icon.svg
           test -f source/assets/brand/brand-icon-rounded.svg
+          test -f source/lp/index.html
+          test -f source/lp/lp.css
           node --test source/tests/*.test.mjs
       - name: Prepare preview
         run: |
           rm -rf "pages/${PREVIEW_PATH}"
           mkdir -p "pages/${PREVIEW_PATH}"
           cp source/index.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css "pages/${PREVIEW_PATH}/"
-          cp -R source/assets source/data source/src "pages/${PREVIEW_PATH}/"
+          cp -R source/assets source/data source/src source/lp "pages/${PREVIEW_PATH}/"
           touch pages/.nojekyll
       - name: Publish preview
         env:
@@ -76,7 +78,9 @@ jobs:
           done
           exit 1
       - name: Preview address
-        run: echo "${PREVIEW_URL}"
+        run: |
+          echo "App: ${PREVIEW_URL}"
+          echo "LP: ${PREVIEW_URL}lp/"
 
   cleanup:
     if: github.event.action == 'closed'
