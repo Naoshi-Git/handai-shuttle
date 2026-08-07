@@ -12,9 +12,32 @@ function ensureHeadLink(rel, href, type = "") {
   if (type) link.type = type;
 }
 
+function installBrandStyles() {
+  if (document.getElementById("brand-assets-v2-style")) return;
+  const style = document.createElement("style");
+  style.id = "brand-assets-v2-style";
+  style.textContent = `
+    .brand-mark {
+      background: transparent !important;
+      box-shadow: none !important;
+      overflow: visible;
+      flex: 0 0 42px;
+    }
+    .brand-mark img {
+      display: block;
+      width: 42px;
+      height: 42px;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+    }
+  `;
+  document.head.append(style);
+}
+
 function installBrand() {
   ensureHeadLink("icon", APP_ICON, "image/svg+xml");
   ensureHeadLink("apple-touch-icon", APP_ICON);
+  installBrandStyles();
 
   const mark = document.querySelector(".brand-mark");
   if (mark && !mark.querySelector("img")) {
