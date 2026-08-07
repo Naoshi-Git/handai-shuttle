@@ -21,6 +21,7 @@ jobs:
           node --check src/features-v3.mjs
           node --check src/features-v3-core.mjs
           node --check src/brand-integration.mjs
+          node --check src/brand-canvas.mjs
           node --check src/ui-v4.mjs
           node --check src/ui-v4-polish.mjs
           node --check src/crowding-prediction.mjs
