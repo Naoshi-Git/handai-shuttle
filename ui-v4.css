@@ -22,7 +22,9 @@
 .crowding-person::after{content:"";position:absolute;left:0;bottom:1px;width:6px;height:8px;border-radius:3px 3px 1.5px 1.5px;background:currentColor}
 .crowding-person.is-active{color:var(--crowd-color)}
 .crowding-lv1{--crowd-color:#2c9a78}.crowding-lv2{--crowd-color:#3c9b62}.crowding-lv3{--crowd-color:#c99524}.crowding-lv4{--crowd-color:#df762d}.crowding-lv5{--crowd-color:#d24b5d}
-.next-meta .crowding-icon{margin-left:2px}
+/* style.css applies .next-meta span to every nested span, so reset that legacy rule for the icon. */
+.next-meta .crowding-icon{margin-left:2px;padding:0 4px!important;border-radius:999px!important;background:rgba(255,255,255,.92)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.next-meta .crowding-person{padding:0!important;border-radius:0!important;background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .journey-details .crowding-icon{margin-left:auto}
 .crowding-round-row{display:flex;align-items:center;margin-top:6px}
 
