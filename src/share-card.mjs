@@ -1,4 +1,5 @@
 import "./ui-v4-polish.mjs";
+import { drawBrandMark } from "./brand-canvas.mjs";
 
 const APP_URL = "https://naoshi-git.github.io/handai-shuttle/";
 const DISPLAY_URL = "naoshi-git.github.io/handai-shuttle/";
@@ -89,27 +90,19 @@ function drawShareCard(data) {
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
 
-  // Brand header
-  const mark = ctx.createLinearGradient(72, 70, 166, 166);
-  mark.addColorStop(0, "#5548c3");
-  mark.addColorStop(1, "#2d287f");
-  fillRoundRect(ctx, 72, 70, 96, 96, 28, mark);
-  ctx.fillStyle = "#fff";
-  font(ctx, 900, 34);
-  ctx.textBaseline = "middle";
-  ctx.fillText("OU", 94, 120);
-
+  // Brand header: same strict 1:1 mark used by the app shell and manifest.
+  drawBrandMark(ctx, 72, 70, 96);
   ctx.fillStyle = "#2d287f";
   font(ctx, 900, 26);
-  ctx.fillText("HAN-DAI SHUTTLE", 196, 92);
-  ctx.fillStyle = "#17152d";
+  ctx.textBaseline = "middle";
+  ctx.fillText("HANDAI SHUTTLE", 196, 92);
+  ctx.fillStyle = "#2d287f";
   font(ctx, 900, 48);
   ctx.fillText("阪大シャトル", 196, 138);
   ctx.fillStyle = "#77768a";
   font(ctx, 700, 21);
   ctx.fillText("大阪大学 学内連絡バス 非公式Webアプリ", 196, 174);
 
-  // Main route panel
   const panel = ctx.createLinearGradient(72, 230, 1008, 820);
   panel.addColorStop(0, "#292477");
   panel.addColorStop(.58, "#38318d");
@@ -173,7 +166,6 @@ function drawShareCard(data) {
     ctx.textAlign = "left";
   }
 
-  // Discovery / marketing footer
   fillRoundRect(ctx, 72, 900, 936, 354, 48, "#ffffff");
   ctx.fillStyle = "#2d287f";
   font(ctx, 900, 34);
