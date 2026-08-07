@@ -13,7 +13,7 @@
 }
 
 .ad-card { width: 100%; box-sizing: border-box; }
-.house-ad-card { max-width: 340px; background: transparent; border: 0; }
+.house-ad-card { max-width: 328px; background: transparent; border: 0; }
 .ad-card-label {
   display: flex;
   align-items: center;
@@ -28,22 +28,31 @@
 
 .house-ad-creative {
   display: block;
-  width: 100%;
-  margin: 0;
+  width: min(100%, 320px);
+  aspect-ratio: var(--house-ad-ratio, 16 / 5);
+  margin: 0 auto;
   padding: 0;
   border: 0;
   border-radius: 15px;
   background: transparent;
+  overflow: hidden;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
+.house-ad-creative picture,
 .house-ad-creative img {
   display: block;
-  width: min(100%, 320px);
-  height: auto;
-  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.house-ad-creative img {
+  object-fit: contain;
+  object-position: center;
   border-radius: inherit;
 }
 
@@ -51,7 +60,7 @@
 .house-ad-creative:focus-visible { outline: 3px solid rgba(45, 40, 127, .25); outline-offset: 3px; }
 .ad-slot-search-results { margin-block: 12px; }
 .ad-slot-timetable-feed { margin-block: 8px 10px; }
-.ad-slot-timetable-feed .house-ad-card { max-width: 330px; }
+.ad-slot-timetable-feed .house-ad-card { max-width: 328px; }
 .ad-slot-timetable-feed .house-ad-creative { border-radius: 11px; }
 .adsense-ad-card {
   width: 100%;
