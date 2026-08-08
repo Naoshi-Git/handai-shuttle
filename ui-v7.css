@@ -1,4 +1,4 @@
-/* v7: single-surface ad clipping and normalized favorite navigation. */
+/* v7/v8: PNG-rasterized ad presentation and normalized favorite navigation. */
 
 body.ui-v7 .house-ad-card {
   --ad-shell-radius: 14px;
@@ -6,11 +6,9 @@ body.ui-v7 .house-ad-card {
   overflow: hidden !important;
   border: 1px solid #E1E1EA !important;
   border-radius: var(--ad-shell-radius) !important;
-  background: #FAFAFC !important;
+  background: #FFFFFF !important;
   isolation: isolate;
-  clip-path: inset(0 round var(--ad-shell-radius));
-  -webkit-mask-image: -webkit-radial-gradient(white, black);
-  transform: translateZ(0);
+  contain: paint;
 }
 body.ui-v7 .house-ad-creative,
 body.ui-v7 .house-ad-creative img {
@@ -18,11 +16,25 @@ body.ui-v7 .house-ad-creative img {
 }
 body.ui-v7 .house-ad-creative {
   overflow: hidden !important;
-  background: transparent !important;
+  background: #FFFFFF !important;
+  box-shadow: none !important;
 }
 body.ui-v7 .house-ad-creative img {
-  object-fit: contain !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
   object-position: center !important;
+  backface-visibility: hidden;
+}
+body.ui-v7 .house-ad-card.is-png-rasterizing:not(.is-png-ready) .house-ad-creative img {
+  opacity: 0;
+}
+body.ui-v7 .house-ad-card.is-png-rasterizing:not(.is-png-ready) .house-ad-creative {
+  background: #FAFAFC !important;
+}
+body.ui-v7 .house-ad-card.is-png-ready .house-ad-creative img {
+  opacity: 1;
 }
 body.ui-v7 .ad-slot-search-inline .house-ad-card { --ad-shell-radius: 18px; }
 body.ui-v7 .ad-slot-search-primary .house-ad-card { --ad-shell-radius: 18px; }
@@ -30,8 +42,9 @@ body.ui-v7 .ad-slot-timetable-header .house-ad-card,
 body.ui-v7 .ad-slot-timetable-inline .house-ad-card,
 body.ui-v7 .ad-slot-home-feed .house-ad-card { --ad-shell-radius: 12px; }
 
-/* The creative is full-bleed; only the shell owns the outer border/corners. */
+/* The PNG owns the anti-aliased corner pixels; the shell only provides one physical crop/border. */
 body.ui-v7 .ad-slot-search-inline .house-ad-creative,
+body.ui-v7 .ad-slot-search-primary .house-ad-creative,
 body.ui-v7 .ad-slot-timetable-header .house-ad-creative,
 body.ui-v7 .ad-slot-timetable-inline .house-ad-creative,
 body.ui-v7 .ad-slot-home-feed .house-ad-creative {
