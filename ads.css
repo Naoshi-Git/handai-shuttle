@@ -5,6 +5,7 @@
 }
 
 .ad-slot {
+  box-sizing: border-box;
   width: 100%;
   margin: 11px 0 14px;
   display: flex;
@@ -13,11 +14,13 @@
 }
 .ad-card {
   position: relative;
-  width: 100%;
   box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
 }
 .house-ad-card {
-  max-width: 360px;
+  width: 100%;
+  max-width: none;
   background: transparent;
   border: 0;
 }
@@ -31,7 +34,7 @@
   min-height: 18px;
   padding: 0 6px;
   border-radius: 999px;
-  background: rgba(255,255,255,.88);
+  background: rgba(255,255,255,.92);
   color: #757587;
   font-size: 8px;
   line-height: 1;
@@ -42,14 +45,15 @@
 }
 .house-ad-creative {
   display: block;
+  box-sizing: border-box;
   width: 100%;
   aspect-ratio: var(--house-ad-ratio, 640 / 89);
-  margin: 0 auto;
+  margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 13px;
+  border-radius: 0;
   background: transparent;
-  overflow: hidden;
+  overflow: visible;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -60,6 +64,7 @@
   height: 100%;
   margin: 0;
   padding: 0;
+  border-radius: 0;
   object-fit: contain;
   object-position: center;
 }
@@ -69,33 +74,53 @@
   outline-offset: 3px;
 }
 
-.ad-slot-search-primary { margin: 12px 0 14px; }
-.ad-slot-search-primary .house-ad-card { max-width: 360px; }
-.ad-slot-search-primary .house-ad-creative { border-radius: 16px; }
-.ad-slot-search-inline { margin: 8px 0 10px; }
-.ad-slot-search-inline .house-ad-card { max-width: 320px; }
-.ad-slot-search-inline .house-ad-creative { border-radius: 11px; }
+/* Search primary intentionally uses a near-square 300x250-style creative. */
+.ad-slot-search-primary {
+  margin: 12px 0 18px;
+}
+.ad-slot-search-primary .house-ad-card,
+.ad-slot-search-primary .house-ad-creative {
+  width: 100%;
+  max-width: none;
+}
 
+/* Inline ads follow the exact width of the surrounding result/timetable cards. */
+.ad-slot-search-inline,
+.ad-slot-timetable-inline {
+  width: 100%;
+  margin: 8px 0 10px;
+}
+.ad-slot-search-inline .house-ad-card,
+.ad-slot-timetable-inline .house-ad-card {
+  width: 100%;
+  max-width: none;
+}
+
+/* Sticky timetable ad is an opaque layer. The creative stays full-width inside the view gutters. */
 .ad-slot-timetable-header {
   position: sticky;
   top: var(--app-topbar-height, 70px);
   z-index: 19;
+  box-sizing: border-box;
+  width: auto;
   margin: 0 -16px;
-  padding: 5px 16px 6px;
-  background: rgba(255,255,255,.96);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(225,225,234,.88);
+  padding: 6px 16px 8px;
+  contain: none;
+  isolation: isolate;
+  background: #fff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom: 1px solid rgba(225,225,234,.94);
   box-shadow: 0 5px 14px rgba(31,27,99,.04);
 }
-.ad-slot-timetable-header .house-ad-card { max-width: 360px; }
-.ad-slot-timetable-header .house-ad-creative { border-radius: 10px; }
-.ad-slot-timetable-inline { margin: 8px 0 10px; }
-.ad-slot-timetable-inline .house-ad-card { max-width: 320px; }
-.ad-slot-timetable-inline .house-ad-creative { border-radius: 11px; }
+.ad-slot-timetable-header .house-ad-card,
+.ad-slot-timetable-header .house-ad-creative {
+  width: 100%;
+  max-width: none;
+}
 
 .ad-slot-home-feed { margin: -12px 0 18px; }
-.ad-slot-home-feed .house-ad-card { max-width: 320px; }
+.ad-slot-home-feed .house-ad-card { width: 100%; max-width: none; }
 
 .adsense-ad-card {
   width: 100%;
@@ -121,5 +146,4 @@
     padding-left: 14px;
     padding-right: 14px;
   }
-  .house-ad-card { max-width: 100%; }
 }
