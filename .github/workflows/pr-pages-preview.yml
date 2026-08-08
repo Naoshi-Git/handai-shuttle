@@ -47,6 +47,7 @@ jobs:
           node --check source/src/ui-v4.mjs
           node --check source/src/ui-v4-polish.mjs
           node --check source/src/ui-v5.mjs
+          node --check source/src/pwa.mjs
           node --check source/src/crowding-prediction.mjs
           node --check source/src/share-card.mjs
           node --check source/src/ads.mjs
@@ -67,6 +68,33 @@ jobs:
           cp source/index.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ui-v5.css source/ads.css "pages/${PREVIEW_PATH}/"
           cp -R source/assets source/data source/src source/lp "pages/${PREVIEW_PATH}/"
           touch pages/.nojekyll
+      - name: Generate preview build manifest
+        env:
+          BUILD_SHA: ${{ github.event.pull_request.head.sha }}
+          TARGET_DIR: pages/${{ env.PREVIEW_PATH }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          root = os.environ["TARGET_DIR"]
+          allowed = {".html", ".css", ".js", ".mjs", ".json", ".webmanifest", ".svg", ".png", ".webp"}
+          assets = []
+          for base, _, files in os.walk(root):
+              for name in files:
+                  path = os.path.join(base, name)
+                  rel = os.path.relpath(path, root).replace(os.sep, "/")
+                  if rel == "version.json":
+                      continue
+                  if os.path.splitext(name)[1].lower() in allowed or name == "manifest.webmanifest":
+                      assets.append(rel)
+          payload = {
+              "build": os.environ["BUILD_SHA"],
+              "generatedAt": datetime.now(timezone.utc).isoformat(),
+              "assets": sorted(assets),
+          }
+          with open(os.path.join(root, "version.json"), "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, ensure_ascii=False, separators=(",", ":"))
+          PY
       - name: Publish preview
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
