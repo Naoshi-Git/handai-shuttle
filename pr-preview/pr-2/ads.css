@@ -119,6 +119,14 @@
   max-width: none;
 }
 
+/* The selector is the second layer in the sticky stack; keep it opaque too so rows never bleed through. */
+body.ui-v5 #timetable-route-controls {
+  background: #fff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom-color: rgba(225,225,234,.94);
+}
+
 .ad-slot-home-feed { margin: -12px 0 18px; }
 .ad-slot-home-feed .house-ad-card { width: 100%; max-width: none; }
 
