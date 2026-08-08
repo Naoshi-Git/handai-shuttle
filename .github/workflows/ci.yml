@@ -24,11 +24,13 @@ jobs:
           node --check src/brand-canvas.mjs
           node --check src/ui-v4.mjs
           node --check src/ui-v4-polish.mjs
+          node --check src/ui-v5.mjs
           node --check src/crowding-prediction.mjs
           node --check src/share-card.mjs
           node --check src/ads.mjs
           node --check data/location-points.mjs
           test -f ads.css
+          test -f ui-v5.css
           test -f assets/brand/app-icon.svg
           test -f assets/brand/brand-icon-rounded.svg
           test -f assets/ads/house-share-640x180.svg
