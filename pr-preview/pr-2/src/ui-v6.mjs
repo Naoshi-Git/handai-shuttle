@@ -7,7 +7,7 @@ const STORAGE = Object.freeze({
   favoriteTrips: "ou-bus:favorite-trips"
 });
 
-const CAMPUS_LABELS = Object.freeze({ suitа: "吹田", suita: "吹田", toyonaka: "豊中", minoh: "箕面" });
+const CAMPUS_LABELS = Object.freeze({ suita: "吹田", toyonaka: "豊中", minoh: "箕面" });
 const STOP_LABELS = Object.freeze({
   suita_engineering: "工学部前",
   suita_human_sciences: "人間科学部前",
@@ -175,7 +175,7 @@ function favoriteIdentity(item) {
   return [item.tripId, item.departure, item.arrival, item.originName, item.destinationName].join("|");
 }
 
-function favoriteFromJourneyCard(card, source = "search") {
+function favoriteFromJourneyCard(card) {
   const pair = timePair($(".journey-time strong", card)?.textContent || "");
   const names = routeNames(card);
   const tripId = $$(".journey-details .pill", card).map((node) => node.textContent.trim()).find((value) => /^[EW]\d+便$/.test(value)) || "";
@@ -183,7 +183,7 @@ function favoriteFromJourneyCard(card, source = "search") {
   const routeType = $$(".journey-details .pill", card).map((node) => node.textContent.trim()).find((value) => value === "直行" || value === "箕面経由") || "運行便";
   const context = currentSearchContext();
   return {
-    source,
+    source: "search",
     tripId,
     departure: pair[0],
     arrival: pair[1],
@@ -263,10 +263,9 @@ function syncFavoriteButton(button) {
 }
 
 function decorateJourneyFavorites() {
-  $$("#search-results .journey-card:not(.round-card), #upcoming-list .journey-card").forEach((card) => {
+  $$("#search-results .journey-card:not(.round-card)").forEach((card) => {
     if (card.querySelector(".journey-favorite-button")) return;
-    const source = card.closest("#upcoming-list") ? "home" : "search";
-    const item = favoriteFromJourneyCard(card, source);
+    const item = favoriteFromJourneyCard(card);
     if (!item) return;
     card.classList.add("has-favorite-control");
     const button = favoriteButton(item, "journey-favorite-button");
@@ -411,6 +410,7 @@ function setupSaveSemantics() {
       saveCurrentSearchCondition();
     }, true);
   }
+  $('[data-nav="settings"]')?.addEventListener("click", () => window.setTimeout(renderSettingsCollections, 0));
   renderSettingsCollections();
 }
 
@@ -457,11 +457,10 @@ function syncDynamicPolish() {
   decorateTimetableFavorites();
   syncFavoriteControls();
   installBottomNavIcons();
-  if ($("#view-settings")?.classList.contains("is-active")) renderSettingsCollections();
 }
 
 function observeDynamicPolish() {
-  const targets = [$("#search-results"), $("#upcoming-list"), $("#timetable-list"), $("#view-settings")].filter(Boolean);
+  const targets = [$("#search-results"), $("#timetable-list")].filter(Boolean);
   let queued = false;
   const observer = new MutationObserver(() => {
     if (queued) return;
