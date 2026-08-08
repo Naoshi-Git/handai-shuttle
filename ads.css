@@ -84,8 +84,11 @@
   max-width: none;
 }
 
-/* Inline ads follow the exact width of the surrounding result/timetable cards. */
-.ad-slot-search-inline,
+/* Search inline uses the taller 3:1 feature creative; timetable inline stays compact. */
+.ad-slot-search-inline {
+  width: 100%;
+  margin: 12px 0 14px;
+}
 .ad-slot-timetable-inline {
   width: 100%;
   margin: 8px 0 10px;
@@ -96,7 +99,7 @@
   max-width: none;
 }
 
-/* Sticky timetable ad is an opaque layer. The creative stays full-width inside the view gutters. */
+/* Sticky timetable ad is a fully opaque layer. */
 .ad-slot-timetable-header {
   position: sticky;
   top: var(--app-topbar-height, 70px);
@@ -104,14 +107,26 @@
   box-sizing: border-box;
   width: auto;
   margin: 0 -16px;
-  padding: 6px 16px 8px;
+  padding: 6px 16px 2px;
   contain: none;
   isolation: isolate;
   background: #fff;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  border-bottom: 1px solid rgba(225,225,234,.94);
-  box-shadow: 0 5px 14px rgba(31,27,99,.04);
+  border-bottom: 0;
+  box-shadow: none;
+}
+/* Paint a tiny overlap below the ad to eliminate Safari sub-pixel seams between sticky layers. */
+.ad-slot-timetable-header::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 4px;
+  background: #fff;
+  pointer-events: none;
 }
 .ad-slot-timetable-header .house-ad-card,
 .ad-slot-timetable-header .house-ad-creative {
@@ -119,12 +134,16 @@
   max-width: none;
 }
 
-/* The selector is the second layer in the sticky stack; keep it opaque too so rows never bleed through. */
+/* Selector overlaps the ad by 2px so scrolling rows can never flash through the join. */
 body.ui-v5 #timetable-route-controls {
+  top: calc(var(--app-topbar-height, 70px) + var(--tt-sticky-ad-height, 0px) - 2px) !important;
+  margin-top: -2px;
   background: #fff;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
+  border-top: 0;
   border-bottom-color: rgba(225,225,234,.94);
+  box-shadow: 0 8px 18px rgba(31,27,99,.045);
 }
 
 .ad-slot-home-feed { margin: -12px 0 18px; }
