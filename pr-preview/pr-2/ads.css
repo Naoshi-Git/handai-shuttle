@@ -34,7 +34,7 @@
   min-height: 18px;
   padding: 0 6px;
   border-radius: 999px;
-  background: rgba(255,255,255,.92);
+  background: rgba(255,255,255,.94);
   color: #757587;
   font-size: 8px;
   line-height: 1;
@@ -83,8 +83,13 @@
   width: 100%;
   max-width: none;
 }
+.ad-slot-search-primary .house-ad-creative {
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+}
 
-/* Search inline uses the taller 3:1 feature creative; timetable inline stays compact. */
+/* Search inline uses a purpose-built vector creative; timetable inline stays compact. */
 .ad-slot-search-inline {
   width: 100%;
   margin: 12px 0 14px;
@@ -97,6 +102,22 @@
 .ad-slot-timetable-inline .house-ad-card {
   width: 100%;
   max-width: none;
+}
+.ad-slot-search-inline .house-ad-creative,
+.ad-slot-search-inline .house-ad-creative img {
+  border-radius: 16px;
+}
+.ad-slot-search-inline .house-ad-creative {
+  overflow: hidden;
+  background: #fafafc;
+}
+.ad-slot-timetable-inline .house-ad-creative,
+.ad-slot-timetable-inline .house-ad-creative img {
+  border-radius: 12px;
+}
+.ad-slot-timetable-inline .house-ad-creative {
+  overflow: hidden;
+  background: #fff;
 }
 
 /* Sticky timetable ad is a fully opaque layer. */
@@ -132,6 +153,14 @@
 .ad-slot-timetable-header .house-ad-creative {
   width: 100%;
   max-width: none;
+}
+.ad-slot-timetable-header .house-ad-creative,
+.ad-slot-timetable-header .house-ad-creative img {
+  border-radius: 12px;
+}
+.ad-slot-timetable-header .house-ad-creative {
+  overflow: hidden;
+  background: #fff;
 }
 
 /* Selector overlaps the ad by 2px so scrolling rows can never flash through the join. */

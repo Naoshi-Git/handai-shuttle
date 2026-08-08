@@ -6,3 +6,4 @@ import "./ui-v4.mjs";
 import "./ads.mjs";
 import "./ui-v5.mjs";
 import "./pwa.mjs";
+import "./ui-v6.mjs";
