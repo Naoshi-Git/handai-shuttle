@@ -5,6 +5,7 @@ import { readFile, stat } from "node:fs/promises";
 const adsSource = await readFile(new URL("../src/ads.mjs", import.meta.url), "utf8");
 const adsCss = await readFile(new URL("../ads.css", import.meta.url), "utf8");
 const spec = await readFile(new URL("../docs/AD-MONETIZATION-SPEC.md", import.meta.url), "utf8");
+const inlineSvg = await readFile(new URL("../assets/ads/house/v2/house-inline-640x180.svg", import.meta.url), "utf8");
 
 await import("../src/ads.mjs");
 
@@ -21,10 +22,10 @@ test("current implementation defaults to house ads and keeps AdSense as a future
   assert.doesNotMatch(adsSource, /pagead2\.googlesyndication\.com/);
 });
 
-test("runtime house creatives are high-resolution standalone assets without runtime cropping", async () => {
+test("runtime house creatives are standalone assets without runtime cropping", async () => {
   const assets = [
     "../assets/ads/house/v2/house-banner-simple-640x89.webp",
-    "../assets/ads/house/v2/house-banner-feature-640x213.webp",
+    "../assets/ads/house/v2/house-inline-640x180.svg",
     "../assets/ads/house/v2/house-rectangle-600x500.svg"
   ];
   for (const relative of assets) {
@@ -33,17 +34,20 @@ test("runtime house creatives are high-resolution standalone assets without runt
     assert.ok(info.size <= 150 * 1024, `${relative} exceeds 150KB`);
   }
   assert.match(adsSource, /house-rectangle-600x500\.svg/);
-  assert.match(adsSource, /SEARCH_INLINE[\s\S]*house-banner-feature-640x213\.webp/);
+  assert.match(adsSource, /SEARCH_INLINE[\s\S]*house-inline-640x180\.svg/);
+  assert.match(inlineSvg, /rx="16"/);
+  assert.doesNotMatch(inlineSvg, /fill="#000(?:000)?"|fill="black"/i);
   assert.match(adsCss, /object-fit:\s*contain/);
   assert.doesNotMatch(adsCss, /object-fit:\s*cover/);
 });
 
-test("ad geometry follows content width and never double-clips intrinsic rounded creatives", () => {
+test("ad geometry follows content width and only clips placement-specific shared radii", () => {
   assert.match(adsCss, /\.house-ad-card\s*\{[\s\S]*max-width:\s*none/);
   assert.match(adsCss, /\.house-ad-creative\s*\{[\s\S]*border-radius:\s*0/);
   assert.match(adsCss, /\.house-ad-creative\s*\{[\s\S]*overflow:\s*visible/);
   assert.doesNotMatch(adsCss, /max-width:\s*(320|360)px/);
   assert.match(adsCss, /\.ad-slot-search-inline\s*\{[\s\S]*width:\s*100%/);
+  assert.match(adsCss, /\.ad-slot-search-inline \.house-ad-creative,[\s\S]*border-radius:\s*16px/);
   assert.match(adsCss, /\.ad-slot-timetable-inline\s*\{[\s\S]*width:\s*100%/);
 });
 
