@@ -24,6 +24,7 @@ test("current implementation defaults to house ads and keeps AdSense as a future
 test("runtime house creatives are high-resolution standalone assets without runtime cropping", async () => {
   const assets = [
     "../assets/ads/house/v2/house-banner-simple-640x89.webp",
+    "../assets/ads/house/v2/house-banner-feature-640x213.webp",
     "../assets/ads/house/v2/house-rectangle-600x500.svg"
   ];
   for (const relative of assets) {
@@ -32,6 +33,7 @@ test("runtime house creatives are high-resolution standalone assets without runt
     assert.ok(info.size <= 150 * 1024, `${relative} exceeds 150KB`);
   }
   assert.match(adsSource, /house-rectangle-600x500\.svg/);
+  assert.match(adsSource, /SEARCH_INLINE[\s\S]*house-banner-feature-640x213\.webp/);
   assert.match(adsCss, /object-fit:\s*contain/);
   assert.doesNotMatch(adsCss, /object-fit:\s*cover/);
 });
@@ -41,14 +43,16 @@ test("ad geometry follows content width and never double-clips intrinsic rounded
   assert.match(adsCss, /\.house-ad-creative\s*\{[\s\S]*border-radius:\s*0/);
   assert.match(adsCss, /\.house-ad-creative\s*\{[\s\S]*overflow:\s*visible/);
   assert.doesNotMatch(adsCss, /max-width:\s*(320|360)px/);
-  assert.match(adsCss, /\.ad-slot-search-inline,[\s\S]*\.ad-slot-timetable-inline\s*\{[\s\S]*width:\s*100%/);
+  assert.match(adsCss, /\.ad-slot-search-inline\s*\{[\s\S]*width:\s*100%/);
+  assert.match(adsCss, /\.ad-slot-timetable-inline\s*\{[\s\S]*width:\s*100%/);
 });
 
-test("Yahoo-style placement keeps a primary ad outside the search form and an opaque sticky timetable stack", () => {
+test("Yahoo-style placement keeps a primary ad outside the search form and an opaque seamless timetable stack", () => {
   assert.match(adsSource, /form\.insertAdjacentElement\("afterend", createSlot\(AD_PLACEMENTS\.SEARCH_PRIMARY\)\)/);
   assert.match(adsSource, /controls\.insertAdjacentElement\("beforebegin", createSlot\(AD_PLACEMENTS\.TIMETABLE_HEADER\)\)/);
   assert.match(adsCss, /\.ad-slot-timetable-header\s*\{[\s\S]*position:\s*sticky[\s\S]*background:\s*#fff/);
-  assert.match(adsCss, /body\.ui-v5 #timetable-route-controls\s*\{[\s\S]*background:\s*#fff/);
+  assert.match(adsCss, /\.ad-slot-timetable-header::after[\s\S]*bottom:\s*-3px[\s\S]*background:\s*#fff/);
+  assert.match(adsCss, /body\.ui-v5 #timetable-route-controls\s*\{[\s\S]*- 2px\)[\s\S]*background:\s*#fff/);
 });
 
 test("long result feeds get occasional, bounded inline ads", () => {
