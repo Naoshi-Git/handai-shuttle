@@ -21,24 +21,34 @@ test("current implementation defaults to house ads and keeps AdSense as a future
   assert.doesNotMatch(adsSource, /pagead2\.googlesyndication\.com/);
 });
 
-test("v2 house creatives use standalone high-resolution WebP assets without runtime cropping", async () => {
+test("runtime house creatives are high-resolution standalone assets without runtime cropping", async () => {
   const assets = [
     "../assets/ads/house/v2/house-banner-simple-640x89.webp",
-    "../assets/ads/house/v2/house-banner-feature-640x213.webp"
+    "../assets/ads/house/v2/house-rectangle-600x500.svg"
   ];
   for (const relative of assets) {
     const info = await stat(new URL(relative, import.meta.url));
     assert.ok(info.size > 0, `${relative} is empty`);
     assert.ok(info.size <= 150 * 1024, `${relative} exceeds 150KB`);
   }
+  assert.match(adsSource, /house-rectangle-600x500\.svg/);
   assert.match(adsCss, /object-fit:\s*contain/);
   assert.doesNotMatch(adsCss, /object-fit:\s*cover/);
 });
 
-test("Yahoo-style placement keeps a primary ad outside the search form and a sticky timetable header ad", () => {
+test("ad geometry follows content width and never double-clips intrinsic rounded creatives", () => {
+  assert.match(adsCss, /\.house-ad-card\s*\{[\s\S]*max-width:\s*none/);
+  assert.match(adsCss, /\.house-ad-creative\s*\{[\s\S]*border-radius:\s*0/);
+  assert.match(adsCss, /\.house-ad-creative\s*\{[\s\S]*overflow:\s*visible/);
+  assert.doesNotMatch(adsCss, /max-width:\s*(320|360)px/);
+  assert.match(adsCss, /\.ad-slot-search-inline,[\s\S]*\.ad-slot-timetable-inline\s*\{[\s\S]*width:\s*100%/);
+});
+
+test("Yahoo-style placement keeps a primary ad outside the search form and an opaque sticky timetable stack", () => {
   assert.match(adsSource, /form\.insertAdjacentElement\("afterend", createSlot\(AD_PLACEMENTS\.SEARCH_PRIMARY\)\)/);
   assert.match(adsSource, /controls\.insertAdjacentElement\("beforebegin", createSlot\(AD_PLACEMENTS\.TIMETABLE_HEADER\)\)/);
-  assert.match(adsCss, /\.ad-slot-timetable-header\s*\{[\s\S]*position:\s*sticky/);
+  assert.match(adsCss, /\.ad-slot-timetable-header\s*\{[\s\S]*position:\s*sticky[\s\S]*background:\s*#fff/);
+  assert.match(adsCss, /body\.ui-v5 #timetable-route-controls\s*\{[\s\S]*background:\s*#fff/);
 });
 
 test("long result feeds get occasional, bounded inline ads", () => {
