@@ -9,6 +9,10 @@ export function isPreviewBuild() {
   return /\/pr-preview\/pr-\d+\//.test(window.location.pathname);
 }
 
+function previewNumber() {
+  return window.location.pathname.match(/\/pr-preview\/pr-(\d+)\//)?.[1] || "";
+}
+
 async function fetchVersion() {
   const url = new URL("./version.json", window.location.href);
   url.searchParams.set("_", String(Date.now()));
@@ -100,11 +104,15 @@ function installSettingsCard() {
   card.dataset.pwaSettings = "true";
   const standalone = isStandalone();
   const preview = isPreviewBuild();
+  const pr = previewNumber();
+  const previewNote = preview
+    ? `<p class="pwa-preview-note">現在はPR Preview${pr ? ` #${pr}` : ""}です。ここから追加するとこのテスト版として登録されます。正式利用は本番URL公開後に本番ページから追加してください。</p>`
+    : "";
   card.innerHTML = `
     <h3>ホーム画面に追加</h3>
     <div class="pwa-settings-state" data-installed="${standalone ? "true" : "false"}">${standalone ? "ホーム画面からアプリとして起動中" : "ブラウザで利用中"}</div>
     <p>ホーム画面に追加すると、阪大シャトルをアプリのようにすぐ開けます。</p>
-    ${preview ? '<p class="pwa-preview-note">現在はPR Previewです。ここから追加するとPR #2のテスト版として登録されます。正式利用は本番URL公開後に本番ページから追加してください。</p>' : ""}
+    ${previewNote}
     <div class="pwa-actions">
       <button type="button" class="pwa-guide-button">追加方法を見る</button>
       <button type="button" class="pwa-refresh-button">最新版を確認</button>
