@@ -25,6 +25,7 @@ jobs:
           node --check src/ui-v4.mjs
           node --check src/ui-v4-polish.mjs
           node --check src/ui-v5.mjs
+          node --check src/pwa.mjs
           node --check src/crowding-prediction.mjs
           node --check src/share-card.mjs
           node --check src/ads.mjs
