@@ -5,3 +5,4 @@ import "./brand-integration.mjs";
 import "./ui-v4.mjs";
 import "./ads.mjs";
 import "./ui-v5.mjs";
+import "./pwa.mjs";
