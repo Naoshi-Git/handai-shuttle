@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 180" role="img" aria-labelledby="title desc">
+  <title id="title">阪大シャトルを友達におすすめ</title>
+  <desc id="desc">友達にも次の便を。阪大シャトルを共有する自社広告。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F7F7FF"/>
+      <stop offset="1" stop-color="#F1EEFF"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2D287F"/>
+      <stop offset="0.48" stop-color="#393DCD"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="1" width="638" height="178" rx="24" fill="url(#bg)" stroke="#DFDCF4" stroke-width="2"/>
+  <circle cx="580" cy="34" r="74" fill="#7C3AED" opacity=".06"/>
+  <circle cx="606" cy="150" r="96" fill="#393DCD" opacity=".05"/>
+
+  <rect x="24" y="28" width="88" height="88" rx="22" fill="url(#brand)"/>
+  <g fill="none" stroke="#FFF" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M44 72V59c0-13 10-23 23-23s23 10 23 23v13" stroke-width="7"/>
+    <path d="M90 72v14c0 13-10 23-23 23S44 99 44 86V72" stroke-width="7"/>
+    <path d="M91 72V48" stroke-width="7"/>
+    <path d="M40 72h56" stroke-width="5"/>
+  </g>
+  <g fill="#FFF">
+    <circle cx="44" cy="72" r="7"/>
+    <circle cx="67" cy="72" r="7"/>
+    <circle cx="91" cy="72" r="7"/>
+  </g>
+
+  <text x="136" y="43" fill="#2D287F" font-family="system-ui,-apple-system,'Noto Sans JP',sans-serif" font-size="13" font-weight="800" letter-spacing="1.4">HANDAI SHUTTLE</text>
+  <text x="136" y="76" fill="#171627" font-family="system-ui,-apple-system,'Noto Sans JP',sans-serif" font-size="24" font-weight="800">友達にも、次の便を。</text>
+  <text x="136" y="103" fill="#686978" font-family="system-ui,-apple-system,'Noto Sans JP',sans-serif" font-size="14" font-weight="500">豊中・箕面・吹田の移動を、もっと迷わず。</text>
+
+  <rect x="136" y="122" width="120" height="36" rx="18" fill="#2D287F"/>
+  <text x="196" y="145" text-anchor="middle" fill="#FFF" font-family="system-ui,-apple-system,'Noto Sans JP',sans-serif" font-size="14" font-weight="800">共有する →</text>
+  <text x="610" y="158" text-anchor="end" fill="#848396" font-family="system-ui,-apple-system,'Noto Sans JP',sans-serif" font-size="10" font-weight="600">阪大シャトルからのお知らせ</text>
+</svg>
