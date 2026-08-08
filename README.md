@@ -14,7 +14,20 @@
 - 往復検索と滞在時間指定
 - キャンパス・行先別の時刻表
 - 最終便・残り本数の表示
+- 1〜5限の時間割を利用した5段階の混雑予想
+- 選択した便を「阪大シャトル」のブランド付き画像として共有
 - iPhone向けのモバイルUI
+
+## LP
+
+サービス紹介用LPを `lp/` に実装しています。
+
+PR Preview:
+
+- App: https://naoshi-git.github.io/handai-shuttle/pr-preview/pr-1/
+- LP: https://naoshi-git.github.io/handai-shuttle/pr-preview/pr-1/lp/
+
+詳細な広報・ローンチ運用計画はPrivate workspaceで管理し、本Public repositoryにはアプリ本体・ブランド・公開LP・利用者向け情報を置きます。
 
 ## データ
 
@@ -22,6 +35,26 @@
 
 - 公式案内: https://www.osaka-u.ac.jp/ja/access/bus
 - 道路・気象状況による遅延、臨時運休、車両位置、満席状況は反映しません。
+
+## 混雑予想
+
+混雑表示は乗車人数の実測値ではありません。1〜5限の授業開始・終了時刻と各便の発着時刻から算出するヒューリスティックです。
+
+- 授業開始に間に合う便は、到着が開始時刻に近いほど高混雑と推定
+- 1〜4限の授業終了直後に出る便も混雑方向へ補正
+- 5限終了後は、その日の最後の大きな移動ラッシュとして通常より強く補正
+- 6限開始時刻は混雑予想の根拠として使用しません
+- リアルタイム混雑、満席、サークル活動などによる突発的な需要は反映しません
+
+通常画面では5人の人型アイコンを表示し、着色人数が多いほど混雑予想が高いことを表します。通常の便一覧では文字タグを付けず、説明文は設定画面の凡例と詳細画面で確認できます。
+
+## 便の共有
+
+トップの「次の便」、このあとの便、検索結果、時刻表の詳細画面から共有できます。
+
+共有時はブラウザ上で **1080×1350 px（4:5）** のPNGカードを生成します。便の区間・発着時刻・直行/経由・混雑目安に加え、受け取った画像だけでもサービスを発見できるよう、`阪大シャトル` の名称、主要価値、WebアプリURLをカード内に残します。
+
+iPhoneなどWeb Share APIのファイル共有に対応するブラウザでは、生成画像とアプリURLをOSの共有シートへ渡します。対応していない場合もリンク共有へフォールバックします。
 
 ## 位置情報
 
@@ -42,5 +75,9 @@ node --check src/search-engine.mjs
 node --check src/app.mjs
 node --check src/enhancements.mjs
 node --check src/features-v3.mjs
+node --check src/features-v3-core.mjs
+node --check src/ui-v4.mjs
+node --check src/crowding-prediction.mjs
+node --check src/share-card.mjs
 node --test tests/*.test.mjs
 ```

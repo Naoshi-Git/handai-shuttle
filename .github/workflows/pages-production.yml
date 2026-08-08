@@ -1,0 +1,70 @@
+name: Publish production Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: production-pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: source
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: pages
+          fetch-depth: 0
+      - name: Validate app
+        run: |
+          test -f source/index.html
+          node --check source/src/search-engine.mjs
+          node --check source/src/app.mjs
+          node --check source/src/enhancements.mjs
+          node --check source/src/features-v3.mjs
+          node --check source/src/features-v3-core.mjs
+          node --check source/src/brand-integration.mjs
+          node --check source/src/brand-canvas.mjs
+          node --check source/src/ui-v4.mjs
+          node --check source/src/ui-v4-polish.mjs
+          node --check source/src/crowding-prediction.mjs
+          node --check source/src/share-card.mjs
+          node --check source/src/ads.mjs
+          node --check source/data/location-points.mjs
+          test -f source/ads.css
+          test -f source/assets/brand/app-icon.svg
+          test -f source/assets/brand/brand-icon-rounded.svg
+          test -f source/assets/ads/house-share-640x180.svg
+          test -f source/assets/ads/house-share-640x128.svg
+          test -f source/lp/index.html
+          test -f source/lp/lp.css
+          node --test source/tests/*.test.mjs
+      - name: Sync production while preserving PR previews
+        run: |
+          rm -rf pages/assets pages/data pages/src pages/lp
+          rm -f pages/index.html pages/manifest.webmanifest pages/style.css pages/ui-v2.css pages/ui-v3.css pages/ui-v4.css pages/ads.css
+          cp source/index.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ads.css pages/
+          cp -R source/assets source/data source/src source/lp pages/
+          touch pages/.nojekyll
+      - name: Publish
+        run: |
+          cd pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Publish production site"
+          for attempt in 1 2 3; do
+            git pull --rebase origin gh-pages
+            if git push origin HEAD:gh-pages; then exit 0; fi
+            sleep $((attempt * 3))
+          done
+          exit 1

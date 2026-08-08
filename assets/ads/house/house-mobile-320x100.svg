@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="200" viewBox="0 0 640 200">
+  <rect width="640" height="200" rx="28" fill="#F7F7FB"/>
+  <rect x="2" y="2" width="636" height="196" rx="26" fill="#FFFFFF" stroke="#D8D8EC" stroke-width="4"/>
+  <g transform="translate(24,24)">
+    <defs><linearGradient id="gIcon" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4235C5"/><stop offset="100%" stop-color="#6A57F5"/></linearGradient></defs>
+    <rect width="88" height="88" rx="21" fill="url(#gIcon)"/>
+    <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="7.48">
+      <path d="M20.24 45.76 A19.36 19.36 0 1 1 49.28 45.76"/>
+      <path d="M52.8 26.4 V63.36 A14.96 14.96 0 1 1 32.56 49.28"/>
+      <line x1="20.24" y1="45.76" x2="67.76" y2="45.76"/>
+    </g>
+    <g fill="#fff"><circle cx="20.24" cy="45.76" r="5.28"/><circle cx="44" cy="45.76" r="5.28"/><circle cx="67.76" cy="45.76" r="5.28"/></g>
+  </g>
+  <text x="140" y="58" fill="#2D287F" font-size="25" font-weight="700" font-family="Arial, Helvetica, sans-serif" letter-spacing="1.6">HANDAI SHUTTLE</text>
+  <text x="140" y="100" fill="#17172F" font-size="42" font-weight="800" font-family="'Noto Sans CJK JP','Noto Sans JP',Arial,Helvetica,sans-serif">友達にも、次の便を。</text>
+  <text x="140" y="138" fill="#76788A" font-size="28" font-weight="600" font-family="'Noto Sans CJK JP','Noto Sans JP',Arial,Helvetica,sans-serif">阪大シャトルを共有</text>
+  <g transform="translate(560,74)"><circle cx="34" cy="26" r="26" fill="#F1F0FF"/><path d="M22 26h24M38 14l12 12-12 12" fill="none" stroke="#2D287F" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>

@@ -1,0 +1,36 @@
+name: Validate app
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate JavaScript and tests
+        run: |
+          node --check src/search-engine.mjs
+          node --check src/app.mjs
+          node --check src/enhancements.mjs
+          node --check src/features-v3.mjs
+          node --check src/features-v3-core.mjs
+          node --check src/brand-integration.mjs
+          node --check src/brand-canvas.mjs
+          node --check src/ui-v4.mjs
+          node --check src/ui-v4-polish.mjs
+          node --check src/crowding-prediction.mjs
+          node --check src/share-card.mjs
+          node --check src/ads.mjs
+          node --check data/location-points.mjs
+          test -f ads.css
+          test -f assets/brand/app-icon.svg
+          test -f assets/brand/brand-icon-rounded.svg
+          test -f assets/ads/house-share-640x180.svg
+          test -f assets/ads/house-share-640x128.svg
+          node --test tests/*.test.mjs

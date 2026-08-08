@@ -1,0 +1,88 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
+
+test("v3互換entry pointからv4 UIが読み込まれる", async () => {
+  const wrapper = await read("src/features-v3.mjs");
+  assert.match(wrapper, /features-v3-core\.mjs/);
+  assert.match(wrapper, /ui-v4\.mjs/);
+});
+
+test("ホームの次便重複を除外するcontractを保持する", async () => {
+  const source = await read("src/ui-v4.mjs");
+  assert.match(source, /removeFeaturedDuplicate/);
+  assert.match(source, /#next-card-content \.next-times/);
+  assert.match(source, /#upcoming-list/);
+});
+
+test("トップのメタ情報は重複route tagを除き1行表示を維持する", async () => {
+  const source = await read("src/ui-v4.mjs");
+  const css = await read("ui-v4.css");
+  assert.match(source, /compactNextMeta/);
+  assert.match(source, /node\.textContent\.trim\(\) === topType/);
+  assert.match(css, /next-meta\.next-meta-v4/);
+  assert.match(css, /flex-wrap:nowrap/);
+});
+
+test("時刻表はcompact rowとdetail sheetを備える", async () => {
+  const source = await read("src/ui-v4.mjs");
+  const css = await read("ui-v4.css");
+  assert.match(source, /dataset\.v4Compact/);
+  assert.match(source, /tt-detail-sheet/);
+  assert.match(source, /showModal/);
+  assert.match(css, /data-v4-compact/);
+  assert.match(css, /tt-compact-row/);
+  assert.match(css, /touch-action:manipulation/);
+});
+
+test("トップ・検索結果・時刻表では文字タグではなく人型混雑アイコンを使う", async () => {
+  const source = await read("src/ui-v4.mjs");
+  const css = await read("ui-v4.css");
+  assert.match(source, /function crowdingIcon/);
+  assert.match(source, /crowding-person/);
+  assert.match(source, /decorateNextCardCrowding/);
+  assert.match(source, /#search-results \.journey-card/);
+  assert.match(source, /tt-sheet-crowding/);
+  assert.match(css, /\.crowding-icon/);
+  assert.match(css, /\.crowding-person/);
+  assert.match(css, /crowding-lv5/);
+  assert.match(css, /\.next-meta \.crowding-person/);
+});
+
+test("混雑凡例の5人目だけlegacy last-child色になる回帰を補正する", async () => {
+  const polish = await read("src/ui-v4-polish.mjs");
+  assert.match(polish, /crowding-legend-item \.crowding-person/);
+  assert.match(polish, /crowding-person\.is-active/);
+  assert.match(polish, /var\(--crowd-color\)/);
+});
+
+test("Bottom Sheetの経路線は全停留所共通の1本軸で描画する", async () => {
+  const source = await read("src/ui-v4.mjs");
+  const css = await read("ui-v4.css");
+  assert.doesNotMatch(source, /tt-sheet-line/);
+  assert.match(css, /\.tt-sheet-stops::before/);
+  assert.match(css, /--tt-axis-x/);
+  assert.match(css, /justify-self:center/);
+});
+
+test("選択便をブランド付きPNG共有カードとして共有できる", async () => {
+  const source = await read("src/ui-v4.mjs");
+  const share = await read("src/share-card.mjs");
+  const css = await read("ui-v4.css");
+  assert.match(source, /openSharePreview/);
+  assert.match(source, /next-share-button/);
+  assert.match(source, /journey-share-button/);
+  assert.match(source, /tt-sheet-share/);
+  assert.match(share, /CARD_WIDTH = 1080/);
+  assert.match(share, /CARD_HEIGHT = 1350/);
+  assert.match(share, /阪大シャトル/);
+  assert.match(share, /navigator\.share/);
+  assert.match(share, /new File/);
+  assert.match(share, /naoshi-git\.github\.io\/handai-shuttle/);
+  assert.match(share, /shareTargetUrl/);
+  assert.match(share, /pr-preview/);
+  assert.match(share, /window\.location\.origin/);
+  assert.match(css, /share-card-dialog/);
+});
