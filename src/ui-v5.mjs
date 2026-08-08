@@ -102,11 +102,7 @@ function formatCompactDate(dateValue) {
 function isNearNow(dateValue, timeValue) {
   if (!dateValue || !timeValue) return false;
   const now = new Date();
-  const today = [
-    now.getFullYear(),
-    String(now.getMonth() + 1).padStart(2, "0"),
-    String(now.getDate()).padStart(2, "0")
-  ].join("-");
+  const today = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
   if (dateValue !== today) return false;
   const [hours, minutes] = timeValue.split(":").map(Number);
   const delta = Math.abs((hours * 60 + minutes) - (now.getHours() * 60 + now.getMinutes()));
@@ -172,11 +168,7 @@ function sheetShell(id, kicker, title) {
 
 function setNow() {
   const now = new Date();
-  const date = [
-    now.getFullYear(),
-    String(now.getMonth() + 1).padStart(2, "0"),
-    String(now.getDate()).padStart(2, "0")
-  ].join("-");
+  const date = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
   const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
   const dateInput = $("#search-date");
   const timeInput = $("#search-time");
@@ -194,12 +186,14 @@ function setNow() {
 
 function setupCompactSearchForm() {
   const form = $("#search-form");
+  if (!form || form.dataset.v5Compact === "true") return;
+
   const routeEditor = $(".route-editor", form);
   const mode = $(".search-mode", form);
   const dateTime = $(".date-time-row", form);
   const options = $("#search-options");
   const submit = $(".search-submit", form);
-  if (!form || !routeEditor || !mode || !dateTime || !options || !submit || form.dataset.v5Compact === "true") return;
+  if (!routeEditor || !mode || !dateTime || !options || !submit) return;
 
   form.dataset.v5Compact = "true";
 
@@ -250,7 +244,6 @@ function setupCompactSearchForm() {
     $(selector)?.addEventListener("change", () => requestAnimationFrame(syncSearchSummaries));
   });
   $$("[data-mode]", timingSheet).forEach((button) => button.addEventListener("click", () => requestAnimationFrame(syncSearchSummaries)));
-
   syncSearchSummaries();
 }
 
@@ -266,9 +259,7 @@ function markSearchCardMetadata() {
 }
 
 function normalizeTimetableCardOrder() {
-  $$("#timetable-list .tt-compact-badges").forEach((badges) => {
-    badges.classList.add("tt-compact-badges-v5");
-  });
+  $$("#timetable-list .tt-compact-badges").forEach((badges) => badges.classList.add("tt-compact-badges-v5"));
 }
 
 function syncDynamicUi() {
@@ -300,9 +291,7 @@ function observeUi() {
 }
 
 function bindNavigation() {
-  $$(".bottom-nav [data-nav]").forEach((button) => {
-    button.addEventListener("click", () => requestAnimationFrame(syncDynamicUi));
-  });
+  $$(".bottom-nav [data-nav]").forEach((button) => button.addEventListener("click", () => requestAnimationFrame(syncDynamicUi)));
   window.addEventListener("resize", syncStickyMetrics, { passive: true });
 }
 
