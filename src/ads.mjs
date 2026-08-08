@@ -8,21 +8,26 @@ export const AD_PLACEMENTS = Object.freeze({
 });
 
 const HOUSE_CREATIVES = Object.freeze({
-  standard: {
-    svgSrc: "./assets/ads/house/house-mobile-320x100.svg",
-    pngSrc: "./assets/ads/house/house-mobile-320x100.png",
-    width: 320,
-    height: 100,
-    ratio: "16 / 5",
-    alt: "友達にも、次の便を。阪大シャトルを共有"
+  [AD_PLACEMENTS.HOME_FEED]: {
+    src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
+    width: 640,
+    height: 89,
+    ratio: "640 / 89",
+    alt: "阪大シャトル。次の便、すぐわかる。共有"
   },
-  compact: {
-    svgSrc: "./assets/ads/house/house-mobile-320x50.svg",
-    pngSrc: "./assets/ads/house/house-mobile-320x50.png",
-    width: 320,
-    height: 50,
-    ratio: "32 / 5",
-    alt: "友達にも、次の便を。阪大シャトルを共有"
+  [AD_PLACEMENTS.SEARCH_RESULTS]: {
+    src: "./assets/ads/house/v2/house-banner-feature-640x213.webp",
+    width: 640,
+    height: 213,
+    ratio: "640 / 213",
+    alt: "阪大シャトル。次の便、最終便、混雑目安。友達に送る"
+  },
+  [AD_PLACEMENTS.TIMETABLE_FEED]: {
+    src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
+    width: 640,
+    height: 89,
+    ratio: "640 / 89",
+    alt: "阪大シャトル。次の便、すぐわかる。共有"
   }
 });
 
@@ -70,18 +75,12 @@ async function shareHandaiShuttle(button) {
 }
 
 function houseAdMarkup(placement) {
-  const creative = placement === AD_PLACEMENTS.TIMETABLE_FEED
-    ? HOUSE_CREATIVES.compact
-    : HOUSE_CREATIVES.standard;
-
+  const creative = HOUSE_CREATIVES[placement] || HOUSE_CREATIVES[AD_PLACEMENTS.HOME_FEED];
   return `
     <aside class="ad-card house-ad-card" data-ad-provider="house" aria-label="阪大シャトルの自社広告">
       <div class="ad-card-label"><span>自社広告</span></div>
       <button class="house-ad-creative" type="button" data-house-share aria-label="阪大シャトルを友達に共有する" style="--house-ad-ratio:${creative.ratio}">
-        <picture>
-          <source srcset="${creative.svgSrc}" type="image/svg+xml">
-          <img src="${creative.pngSrc}" width="${creative.width}" height="${creative.height}" alt="${creative.alt}" decoding="async">
-        </picture>
+        <img src="${creative.src}" width="${creative.width}" height="${creative.height}" alt="${creative.alt}" decoding="async">
       </button>
     </aside>`;
 }
@@ -111,25 +110,25 @@ function createSlot(placement) {
 
 function insertHomeSlot() {
   if (document.querySelector(`[data-ad-slot="${AD_PLACEMENTS.HOME_FEED}"]`)) return;
-  const upcomingSection = document.querySelector("#view-home .content-section.compact-section");
-  if (!upcomingSection) return;
-  upcomingSection.insertAdjacentElement("afterend", createSlot(AD_PLACEMENTS.HOME_FEED));
+  const actions = document.querySelector("#view-home .quick-actions");
+  if (!actions) return;
+  actions.insertAdjacentElement("afterend", createSlot(AD_PLACEMENTS.HOME_FEED));
 }
 
 function insertSearchSlot() {
   const container = document.querySelector("#search-results");
   if (!container || container.querySelector(`[data-ad-slot="${AD_PLACEMENTS.SEARCH_RESULTS}"]`)) return;
-  const cards = [...container.children].filter((node) => node.matches?.(".journey-card, .round-result, .round-trip-card"));
-  if (cards.length < 2) return;
-  cards[1].insertAdjacentElement("afterend", createSlot(AD_PLACEMENTS.SEARCH_RESULTS));
+  const firstCard = [...container.children].find((node) => node.matches?.(".journey-card, .round-result, .round-trip-card"));
+  if (!firstCard) return;
+  container.insertBefore(createSlot(AD_PLACEMENTS.SEARCH_RESULTS), firstCard);
 }
 
 function insertTimetableSlot() {
   const container = document.querySelector("#timetable-list");
   if (!container || container.querySelector(`[data-ad-slot="${AD_PLACEMENTS.TIMETABLE_FEED}"]`)) return;
-  const rows = [...container.children].filter((node) => node.matches?.("[data-tt-trip], .timetable-card"));
-  if (rows.length < 5) return;
-  rows[4].insertAdjacentElement("afterend", createSlot(AD_PLACEMENTS.TIMETABLE_FEED));
+  const firstRow = [...container.children].find((node) => node.matches?.("[data-tt-trip], .timetable-card"));
+  if (!firstRow) return;
+  container.insertBefore(createSlot(AD_PLACEMENTS.TIMETABLE_FEED), firstRow);
 }
 
 export function refreshAdSlots() {

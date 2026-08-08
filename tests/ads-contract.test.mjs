@@ -5,7 +5,8 @@ import { readFile, stat } from "node:fs/promises";
 const adsSource = await readFile(new URL("../src/ads.mjs", import.meta.url), "utf8");
 const adsCss = await readFile(new URL("../ads.css", import.meta.url), "utf8");
 const spec = await readFile(new URL("../docs/AD-MONETIZATION-SPEC.md", import.meta.url), "utf8");
-const manifest = JSON.parse(await readFile(new URL("../assets/ads/house/creative-manifest.json", import.meta.url), "utf8"));
+const placementSpec = await readFile(new URL("../docs/AD-PLACEMENT-V2.md", import.meta.url), "utf8");
+const manifest = JSON.parse(await readFile(new URL("../assets/ads/house/creative-manifest-v2.json", import.meta.url), "utf8"));
 
 await import("../src/ads.mjs");
 
@@ -22,16 +23,23 @@ test("current implementation defaults to house ads and keeps AdSense as a future
   assert.doesNotMatch(adsSource, /pagead2\.googlesyndication\.com/);
 });
 
-test("house ads use standalone creative assets instead of expanding the brand icon in app UI", () => {
-  assert.match(adsSource, /house-mobile-320x100\.png/);
-  assert.match(adsSource, /house-mobile-320x50\.png/);
-  assert.match(adsSource, /data-house-share/);
-  assert.doesNotMatch(adsSource, /ad-card-icon/);
-  assert.match(adsCss, /width: min\(100%, 320px\)/);
+test("runtime uses user-provided v2 creatives with no crop", () => {
+  assert.match(adsSource, /house-banner-simple-640x89\.webp/);
+  assert.match(adsSource, /house-banner-feature-640x213\.webp/);
+  assert.match(adsCss, /object-fit: contain/);
+  assert.match(placementSpec, /トリミングを禁止/);
 });
 
-test("Google-compatible uploaded image creatives stay under 150KB", async () => {
-  for (const asset of manifest.assets) {
+test("Yahoo-reference placement keeps ads outside route controls", () => {
+  assert.match(adsSource, /quick-actions/);
+  assert.match(adsSource, /container\.insertBefore\(createSlot\(AD_PLACEMENTS\.SEARCH_RESULTS\), firstCard\)/);
+  assert.match(adsSource, /container\.insertBefore\(createSlot\(AD_PLACEMENTS\.TIMETABLE_FEED\), firstRow\)/);
+  assert.match(placementSpec, /検索UIの直後/);
+  assert.match(placementSpec, /時刻表リストの直前/);
+});
+
+test("v2 runtime assets exist and stay lightweight", async () => {
+  for (const asset of manifest.runtimeAssets) {
     const file = new URL(`../assets/ads/house/${asset.file}`, import.meta.url);
     const info = await stat(file);
     assert.ok(info.size > 0, `${asset.file} is empty`);
