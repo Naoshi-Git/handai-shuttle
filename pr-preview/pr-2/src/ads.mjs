@@ -18,11 +18,11 @@ const HOUSE_CREATIVES = Object.freeze({
     alt: "阪大シャトル。次の便、すぐわかる。共有"
   },
   [AD_PLACEMENTS.SEARCH_PRIMARY]: {
-    src: "./assets/ads/house/v2/house-banner-feature-640x213.webp",
-    width: 640,
-    height: 213,
-    ratio: "640 / 213",
-    alt: "阪大シャトル。次の便、最終便、混雑目安。友達に送る"
+    src: "./assets/ads/house/v2/house-rectangle-600x500.svg",
+    width: 600,
+    height: 500,
+    ratio: "6 / 5",
+    alt: "阪大シャトル。次の便、すぐわかる。次の便、最終便、混雑目安を確認して友達に送る"
   },
   [AD_PLACEMENTS.SEARCH_INLINE]: {
     src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
