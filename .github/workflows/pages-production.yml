@@ -35,11 +35,13 @@ jobs:
           node --check source/src/brand-canvas.mjs
           node --check source/src/ui-v4.mjs
           node --check source/src/ui-v4-polish.mjs
+          node --check source/src/ui-v5.mjs
           node --check source/src/crowding-prediction.mjs
           node --check source/src/share-card.mjs
           node --check source/src/ads.mjs
           node --check source/data/location-points.mjs
           test -f source/ads.css
+          test -f source/ui-v5.css
           test -f source/assets/brand/app-icon.svg
           test -f source/assets/brand/brand-icon-rounded.svg
           test -f source/assets/ads/house-share-640x180.svg
@@ -50,8 +52,8 @@ jobs:
       - name: Sync production while preserving PR previews
         run: |
           rm -rf pages/assets pages/data pages/src pages/lp
-          rm -f pages/index.html pages/manifest.webmanifest pages/style.css pages/ui-v2.css pages/ui-v3.css pages/ui-v4.css pages/ads.css
-          cp source/index.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ads.css pages/
+          rm -f pages/index.html pages/manifest.webmanifest pages/style.css pages/ui-v2.css pages/ui-v3.css pages/ui-v4.css pages/ui-v5.css pages/ads.css
+          cp source/index.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ui-v5.css source/ads.css pages/
           cp -R source/assets source/data source/src source/lp pages/
           touch pages/.nojekyll
       - name: Publish
