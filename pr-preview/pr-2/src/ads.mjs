@@ -3,8 +3,10 @@ const DEFAULT_MODE = "house";
 
 export const AD_PLACEMENTS = Object.freeze({
   HOME_FEED: "home-feed",
-  SEARCH_RESULTS: "search-results",
-  TIMETABLE_FEED: "timetable-feed"
+  SEARCH_PRIMARY: "search-primary",
+  SEARCH_INLINE: "search-inline",
+  TIMETABLE_HEADER: "timetable-header",
+  TIMETABLE_INLINE: "timetable-inline"
 });
 
 const HOUSE_CREATIVES = Object.freeze({
@@ -15,14 +17,28 @@ const HOUSE_CREATIVES = Object.freeze({
     ratio: "640 / 89",
     alt: "阪大シャトル。次の便、すぐわかる。共有"
   },
-  [AD_PLACEMENTS.SEARCH_RESULTS]: {
+  [AD_PLACEMENTS.SEARCH_PRIMARY]: {
     src: "./assets/ads/house/v2/house-banner-feature-640x213.webp",
     width: 640,
     height: 213,
     ratio: "640 / 213",
     alt: "阪大シャトル。次の便、最終便、混雑目安。友達に送る"
   },
-  [AD_PLACEMENTS.TIMETABLE_FEED]: {
+  [AD_PLACEMENTS.SEARCH_INLINE]: {
+    src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
+    width: 640,
+    height: 89,
+    ratio: "640 / 89",
+    alt: "阪大シャトル。次の便、すぐわかる。共有"
+  },
+  [AD_PLACEMENTS.TIMETABLE_HEADER]: {
+    src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
+    width: 640,
+    height: 89,
+    ratio: "640 / 89",
+    alt: "阪大シャトル。次の便、すぐわかる。共有"
+  },
+  [AD_PLACEMENTS.TIMETABLE_INLINE]: {
     src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
     width: 640,
     height: 89,
@@ -93,10 +109,11 @@ function adsensePlaceholderMarkup() {
     </aside>`;
 }
 
-function createSlot(placement) {
+function createSlot(placement, key = placement) {
   const slot = document.createElement("div");
   slot.className = `ad-slot ad-slot-${placement}`;
   slot.dataset.adSlot = placement;
+  slot.dataset.adSlotKey = key;
   const mode = getAdsMode();
   slot.dataset.adMode = mode;
   slot.innerHTML = mode === "adsense" ? adsensePlaceholderMarkup() : houseAdMarkup(placement);
@@ -108,27 +125,59 @@ function createSlot(placement) {
   return slot;
 }
 
+function slotExists(key) {
+  return Boolean(document.querySelector(`[data-ad-slot-key="${key}"]`));
+}
+
 function insertHomeSlot() {
-  if (document.querySelector(`[data-ad-slot="${AD_PLACEMENTS.HOME_FEED}"]`)) return;
+  if (slotExists(AD_PLACEMENTS.HOME_FEED)) return;
   const actions = document.querySelector("#view-home .quick-actions");
   if (!actions) return;
   actions.insertAdjacentElement("afterend", createSlot(AD_PLACEMENTS.HOME_FEED));
 }
 
-function insertSearchSlot() {
-  const container = document.querySelector("#search-results");
-  if (!container || container.querySelector(`[data-ad-slot="${AD_PLACEMENTS.SEARCH_RESULTS}"]`)) return;
-  const firstCard = [...container.children].find((node) => node.matches?.(".journey-card, .round-result, .round-trip-card"));
-  if (!firstCard) return;
-  container.insertBefore(createSlot(AD_PLACEMENTS.SEARCH_RESULTS), firstCard);
+function insertSearchPrimarySlot() {
+  if (slotExists(AD_PLACEMENTS.SEARCH_PRIMARY)) return;
+  const form = document.querySelector("#search-form");
+  if (!form) return;
+  form.insertAdjacentElement("afterend", createSlot(AD_PLACEMENTS.SEARCH_PRIMARY));
 }
 
-function insertTimetableSlot() {
-  const container = document.querySelector("#timetable-list");
-  if (!container || container.querySelector(`[data-ad-slot="${AD_PLACEMENTS.TIMETABLE_FEED}"]`)) return;
-  const firstRow = [...container.children].find((node) => node.matches?.("[data-tt-trip], .timetable-card"));
-  if (!firstRow) return;
-  container.insertBefore(createSlot(AD_PLACEMENTS.TIMETABLE_FEED), firstRow);
+function insertTimetableHeaderSlot() {
+  if (slotExists(AD_PLACEMENTS.TIMETABLE_HEADER)) return;
+  const controls = document.querySelector("#timetable-route-controls");
+  if (!controls) return;
+  controls.insertAdjacentElement("beforebegin", createSlot(AD_PLACEMENTS.TIMETABLE_HEADER));
+}
+
+function insertInlineSlots({ container, cardSelector, placement, every, max }) {
+  if (!container) return;
+  const cards = [...container.children].filter((node) => node.matches?.(cardSelector));
+  for (let index = every - 1, count = 1; index < cards.length && count <= max; index += every, count += 1) {
+    const key = `${placement}-${count}`;
+    if (slotExists(key)) continue;
+    cards[index].insertAdjacentElement("afterend", createSlot(placement, key));
+  }
+}
+
+function insertSearchInlineSlots() {
+  insertInlineSlots({
+    container: document.querySelector("#search-results"),
+    cardSelector: ".journey-card, .round-result, .round-trip-card",
+    placement: AD_PLACEMENTS.SEARCH_INLINE,
+    every: 4,
+    max: 2
+  });
+}
+
+function insertTimetableInlineSlots() {
+  insertInlineSlots({
+    container: document.querySelector("#timetable-list"),
+    cardSelector: "[data-tt-trip], .timetable-card",
+    placement: AD_PLACEMENTS.TIMETABLE_INLINE,
+    every: 8,
+    max: 2
+  });
 }
 
 export function refreshAdSlots() {
@@ -137,12 +186,18 @@ export function refreshAdSlots() {
     return;
   }
   insertHomeSlot();
-  insertSearchSlot();
-  insertTimetableSlot();
+  insertSearchPrimarySlot();
+  insertTimetableHeaderSlot();
+  insertSearchInlineSlots();
+  insertTimetableInlineSlots();
 }
 
 function observeDynamicFeeds() {
-  const targets = [document.querySelector("#search-results"), document.querySelector("#timetable-list")].filter(Boolean);
+  const targets = [
+    document.querySelector("#search-results"),
+    document.querySelector("#timetable-list"),
+    document.querySelector("#view-timetable")
+  ].filter(Boolean);
   let queued = false;
   const observer = new MutationObserver(() => {
     if (queued) return;
@@ -159,6 +214,7 @@ export function initAds() {
   installStyles();
   refreshAdSlots();
   observeDynamicFeeds();
+  window.setTimeout(refreshAdSlots, 300);
 }
 
 if (typeof document !== "undefined") {
