@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 89" role="img" aria-labelledby="title desc">
+  <title id="title">阪大シャトル 自社広告</title>
+  <desc id="desc">阪大シャトルなら次の便がすぐわかり、友達にも共有できます。</desc>
+  <rect width="640" height="89" fill="#FAFAFC"/>
+  <rect x="13" y="12" width="65" height="65" rx="13" fill="#2D287F"/>
+  <g fill="none" stroke="#FFF" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M27 45V36c0-9 7-16 16-16s16 7 16 16v9" stroke-width="5"/>
+    <path d="M59 45v9c0 9-7 16-16 16S27 63 27 54v-9" stroke-width="5"/>
+    <path d="M60 45V29" stroke-width="5"/>
+    <path d="M24 45h39" stroke-width="3.6"/>
+  </g>
+  <g fill="#FFF"><circle cx="27" cy="45" r="4.7"/><circle cx="43" cy="45" r="4.7"/><circle cx="60" cy="45" r="4.7"/></g>
+  <text x="94" y="31" fill="#2D287F" font-family="system-ui,-apple-system,'Noto Sans JP',sans-serif" font-size="13" font-weight="850">阪大シャトル</text>
+  <text x="94" y="57" fill="#171725" font-family="system-ui,-apple-system,'Noto Sans JP',sans-serif" font-size="22" font-weight="850">次の便、すぐわかる。</text>
+  <text x="94" y="74" fill="#777785" font-family="system-ui,-apple-system,'Noto Sans JP',sans-serif" font-size="10.5" font-weight="650">次の便・最終便・混雑目安</text>
+  <rect x="506" y="23" width="116" height="43" rx="11" fill="#2D287F"/>
+  <path d="M524 44h15m-5-5 5 5-5 5" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="550" y="50" fill="#FFF" font-family="system-ui,-apple-system,'Noto Sans JP',sans-serif" font-size="13" font-weight="800">共有</text>
+</svg>
