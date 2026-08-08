@@ -4,6 +4,51 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const FAVORITES_KEY = "ou-bus:favorite-trips";
 const CAMPUS_LABELS = Object.freeze({ suita: "吹田", toyonaka: "豊中", minoh: "箕面" });
 
+const AD_PNG_SPECS = Object.freeze({
+  "home-feed": {
+    src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
+    width: 640,
+    height: 89,
+    radius: 12,
+    scale: 2,
+    background: "#FAFAFC"
+  },
+  "timetable-header": {
+    src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
+    width: 640,
+    height: 89,
+    radius: 12,
+    scale: 2,
+    background: "#FAFAFC"
+  },
+  "timetable-inline": {
+    src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
+    width: 640,
+    height: 89,
+    radius: 12,
+    scale: 2,
+    background: "#FAFAFC"
+  },
+  "search-inline": {
+    src: "./assets/ads/house/v2/house-banner-feature-640x213.webp",
+    width: 640,
+    height: 213,
+    radius: 18,
+    scale: 2,
+    background: "#FAFAFC"
+  },
+  "search-primary": {
+    src: "./assets/ads/house/v2/house-rectangle-600x500.svg",
+    width: 600,
+    height: 500,
+    radius: 18,
+    scale: 2,
+    background: "#F8F7FF"
+  }
+});
+
+const pngRasterCache = new Map();
+
 function installStyles() {
   if ($('link[data-ui-v7]')) return;
   const link = document.createElement("link");
@@ -102,21 +147,95 @@ function syncFavoriteButtons() {
   });
 }
 
-function patchAdCreatives() {
-  const compact = "./assets/ads/house/v3/house-compact-fullbleed-640x89.svg";
-  const inline = "./assets/ads/house/v3/house-inline-fullbleed-640x180.svg";
-  $$("[data-ad-slot]").forEach((slot) => {
-    const placement = slot.dataset.adSlot;
-    const img = $(".house-ad-creative img", slot);
-    if (!img) return;
-    const wanted = placement === "search-inline"
-      ? inline
-      : ["home-feed", "timetable-header", "timetable-inline"].includes(placement)
-        ? compact
-        : null;
-    if (!wanted) return;
-    if (!img.getAttribute("src")?.includes(wanted.split("/").at(-1))) img.setAttribute("src", wanted);
+function roundedRectPath(ctx, width, height, radius) {
+  const r = Math.max(0, Math.min(radius, width / 2, height / 2));
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(width - r, 0);
+  ctx.quadraticCurveTo(width, 0, width, r);
+  ctx.lineTo(width, height - r);
+  ctx.quadraticCurveTo(width, height, width - r, height);
+  ctx.lineTo(r, height);
+  ctx.quadraticCurveTo(0, height, 0, height - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.closePath();
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.decoding = "async";
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+    if (image.complete && image.naturalWidth) resolve(image);
   });
+}
+
+async function rasterizeSpecToPng(spec) {
+  const key = [spec.src, spec.width, spec.height, spec.radius, spec.scale].join("|");
+  if (pngRasterCache.has(key)) return pngRasterCache.get(key);
+
+  const promise = (async () => {
+    const image = await loadImage(spec.src);
+    const scale = Math.max(1, Number(spec.scale) || 1);
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(spec.width * scale);
+    canvas.height = Math.round(spec.height * scale);
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) throw new Error("2D canvas is unavailable");
+
+    const radius = spec.radius * scale;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    roundedRectPath(ctx, canvas.width, canvas.height, radius);
+    ctx.clip();
+    ctx.fillStyle = spec.background || "#FFFFFF";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    ctx.restore();
+
+    return canvas.toDataURL("image/png");
+  })();
+
+  pngRasterCache.set(key, promise);
+  return promise;
+}
+
+async function rasterizeAdSlot(slot) {
+  if (!slot || slot.dataset.pngRasterized === "true" || slot.dataset.pngRasterizing === "true") return;
+  const spec = AD_PNG_SPECS[slot.dataset.adSlot];
+  const card = $(".house-ad-card", slot);
+  const creative = $(".house-ad-creative", slot);
+  const image = $(".house-ad-creative img", slot);
+  if (!spec || !card || !creative || !image) return;
+
+  slot.dataset.pngRasterizing = "true";
+  card.classList.add("is-png-rasterizing");
+  creative.style.setProperty("--house-ad-ratio", `${spec.width} / ${spec.height}`);
+  image.setAttribute("width", String(spec.width));
+  image.setAttribute("height", String(spec.height));
+
+  try {
+    const pngDataUrl = await rasterizeSpecToPng(spec);
+    image.src = pngDataUrl;
+    image.dataset.rasterFormat = "png";
+    slot.dataset.pngRasterized = "true";
+    card.classList.add("is-png-ready");
+  } catch (error) {
+    console.warn("House ad PNG rasterization failed", error);
+    card.classList.add("is-png-fallback");
+  } finally {
+    delete slot.dataset.pngRasterizing;
+    card.classList.remove("is-png-rasterizing");
+  }
+}
+
+function patchAdCreatives() {
+  $$("[data-ad-slot]").forEach((slot) => { void rasterizeAdSlot(slot); });
 }
 
 function settingsHeading() {
@@ -158,16 +277,56 @@ function renderFavoriteSection() {
   orderSettingsSections();
 }
 
+function timetableStickyInset() {
+  const topbar = $(".topbar")?.offsetHeight || 0;
+  const headerAd = $(".ad-slot-timetable-header")?.offsetHeight || 0;
+  const controls = $("#timetable-route-controls")?.offsetHeight || 0;
+  return topbar + headerAd + controls + 10;
+}
+
+function preciseFavoriteScroll(card, behavior = "auto") {
+  if (!card || !document.documentElement.contains(card)) return Infinity;
+  const currentTop = card.getBoundingClientRect().top;
+  const desiredTop = timetableStickyInset();
+  const delta = currentTop - desiredTop;
+  if (Math.abs(delta) > 2) {
+    window.scrollTo({
+      top: Math.max(0, window.scrollY + delta),
+      behavior
+    });
+  }
+  return Math.abs(delta);
+}
+
+function flashFavoriteCard(card) {
+  card.classList.remove("favorite-flash");
+  requestAnimationFrame(() => card.classList.add("favorite-flash"));
+  window.setTimeout(() => card.classList.remove("favorite-flash"), 1500);
+}
+
+function settleFavoritePosition(card) {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    preciseFavoriteScroll(card, "smooth");
+    [280, 520, 900].forEach((delay) => {
+      window.setTimeout(() => {
+        if (!$("#view-timetable")?.classList.contains("is-active")) return;
+        preciseFavoriteScroll(card, "auto");
+      }, delay);
+    });
+    flashFavoriteCard(card);
+  }));
+}
+
 function focusFavoriteCard(item, attempt = 0) {
   const tripId = normalizeTripId(item.tripId);
   const card = $(`[data-tt-trip="${tripId}"]`);
   if (card) {
-    card.scrollIntoView({ behavior: "smooth", block: "center" });
-    card.classList.add("favorite-flash");
-    window.setTimeout(() => card.classList.remove("favorite-flash"), 1400);
+    settleFavoritePosition(card);
     return;
   }
-  if (attempt < 5) window.setTimeout(() => focusFavoriteCard(item, attempt + 1), 120 + attempt * 80);
+  if (attempt < 10) {
+    window.setTimeout(() => focusFavoriteCard(item, attempt + 1), 90 + attempt * 70);
+  }
 }
 
 function openFavoriteInTimetable(rawItem) {
@@ -183,9 +342,9 @@ function openFavoriteInTimetable(rawItem) {
           $("#tt-suita-stop").dispatchEvent(new Event("change", { bubbles: true }));
         }
         focusFavoriteCard(item);
-      }, 90);
-    }, 70);
-  }, 40);
+      }, 110);
+    }, 80);
+  }, 50);
 }
 
 function bindCaptureHandlers() {
