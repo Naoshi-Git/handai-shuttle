@@ -34,7 +34,9 @@ function ensureServiceBannerAnchor() {
 function restoreServiceBanner() {
   const banner = $("#service-banner");
   if (!banner || !serviceBannerAnchor?.parentNode) return;
-  if (serviceBannerAnchor.nextSibling !== banner) serviceBannerAnchor.parentNode.insertBefore(banner, serviceBannerAnchor.nextSibling);
+  if (serviceBannerAnchor.nextSibling !== banner) {
+    serviceBannerAnchor.parentNode.insertBefore(banner, serviceBannerAnchor.nextSibling);
+  }
   banner.classList.remove("is-search-context");
 }
 
@@ -81,7 +83,9 @@ function syncHeader() {
 
 function syncStickyMetrics() {
   const topbar = $(".topbar");
-  if (topbar) document.documentElement.style.setProperty("--app-topbar-height", `${Math.ceil(topbar.getBoundingClientRect().height)}px`);
+  if (topbar) {
+    document.documentElement.style.setProperty("--app-topbar-height", `${Math.ceil(topbar.getBoundingClientRect().height)}px`);
+  }
   const stickyAd = $('[data-ad-slot="timetable-header"]');
   const adHeight = stickyAd ? Math.ceil(stickyAd.getBoundingClientRect().height) : 0;
   document.documentElement.style.setProperty("--tt-sticky-ad-height", `${adHeight}px`);
@@ -131,7 +135,9 @@ function openDialog(dialog) {
   if (!dialog) return;
   if (typeof dialog.showModal === "function") {
     if (!dialog.open) dialog.showModal();
-  } else dialog.setAttribute("open", "");
+  } else {
+    dialog.setAttribute("open", "");
+  }
 }
 
 function sheetShell(id, kicker, title) {
@@ -181,6 +187,7 @@ function setNow() {
 function setupCompactSearchForm() {
   const form = $("#search-form");
   if (!form || form.dataset.v5Compact === "true") return;
+
   const routeEditor = $(".route-editor", form);
   const mode = $(".search-mode", form);
   const dateTime = $(".date-time-row", form);
@@ -189,6 +196,7 @@ function setupCompactSearchForm() {
   if (!routeEditor || !mode || !dateTime || !options || !submit) return;
 
   form.dataset.v5Compact = "true";
+
   const timingButton = document.createElement("button");
   timingButton.type = "button";
   timingButton.className = "search-summary-button search-timing-button";
@@ -262,7 +270,8 @@ function syncDynamicUi() {
 }
 
 function observeUi() {
-  if (uiObserver) return;
+  const root = $(".app-shell");
+  if (!root || uiObserver) return;
   let queued = false;
   uiObserver = new MutationObserver(() => {
     if (queued) return;
@@ -272,15 +281,13 @@ function observeUi() {
       syncDynamicUi();
     });
   });
-
-  // v5 only needs to decorate newly rendered search/timetable content and normalize
-  // service text. Navigation itself is event-driven, so app-wide class observation is unnecessary.
-  const searchResults = $("#search-results");
-  const timetableList = $("#timetable-list");
-  const serviceBanner = $("#service-banner");
-  if (searchResults) uiObserver.observe(searchResults, { childList: true, subtree: true });
-  if (timetableList) uiObserver.observe(timetableList, { childList: true, subtree: true });
-  if (serviceBanner) uiObserver.observe(serviceBanner, { childList: true, characterData: true, subtree: true });
+  uiObserver.observe(root, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+    attributes: true,
+    attributeFilter: ["class"]
+  });
 }
 
 function bindNavigation() {
@@ -297,6 +304,7 @@ function init() {
   observeUi();
   requestAnimationFrame(syncDynamicUi);
   window.setTimeout(syncDynamicUi, 180);
+  window.setTimeout(syncDynamicUi, 700);
 }
 
 if (typeof document !== "undefined") {

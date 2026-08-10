@@ -25,8 +25,8 @@ function normalizeHouseAd(slot) {
   const image = $(".house-ad-creative img", slot);
   if (!creative || !image) return;
 
-  // With legacy v7/v9 raster owners retired, this layer only needs to normalize a slot
-  // when it is inserted. It never watches unrelated class/style changes in the app.
+  // Keep the rendering path identical to the previously stable top banner.
+  // Mark the slot as handled so older raster/corner repair layers do not reprocess it.
   slot.dataset.pngRasterized = "true";
   slot.dataset.v9EdgeFixed = "true";
   slot.dataset.v10Compact = "true";
@@ -45,7 +45,7 @@ function normalizeHouseAds() {
 function queueAdNormalization() {
   if (adNormalizationQueued) return;
   adNormalizationQueued = true;
-  queueMicrotask(() => {
+  requestAnimationFrame(() => {
     adNormalizationQueued = false;
     normalizeHouseAds();
   });
@@ -53,11 +53,18 @@ function queueAdNormalization() {
 
 function observeAds() {
   const roots = [$("#view-home"), $("#view-search"), $("#view-timetable")].filter(Boolean);
-  const observer = new MutationObserver((records) => {
-    if (records.some((record) => record.type === "childList" && record.addedNodes.length)) queueAdNormalization();
-  });
-  roots.forEach((root) => observer.observe(root, { childList: true, subtree: true }));
+  const observer = new MutationObserver(queueAdNormalization);
+  roots.forEach((root) => observer.observe(root, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["src", "style", "class"]
+  }));
+
   queueAdNormalization();
+  window.setTimeout(queueAdNormalization, 100);
+  window.setTimeout(queueAdNormalization, 350);
+  window.setTimeout(queueAdNormalization, 900);
 }
 
 function init() {

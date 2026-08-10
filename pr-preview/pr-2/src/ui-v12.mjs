@@ -254,7 +254,7 @@ function installGuideCarousel() {
 function normalizeUi() {
   if (normalizeQueued) return;
   normalizeQueued = true;
-  queueMicrotask(() => {
+  requestAnimationFrame(() => {
     normalizeQueued = false;
     normalizeNextBusCue();
     ensureDetailAd();
@@ -264,15 +264,8 @@ function normalizeUi() {
 }
 
 function observeDynamicUi() {
-  // v12 owns settings IA and timetable detail decoration only. Do not observe body-wide
-  // class/open mutations; those were a major source of repeated work on every tap.
-  const observer = new MutationObserver((records) => {
-    if (records.some((record) => record.type === "childList" && (record.addedNodes.length || record.removedNodes.length))) normalizeUi();
-  });
-  const settings = $("#view-settings");
-  const timetable = $("#timetable-list");
-  if (settings) observer.observe(settings, { childList: true, subtree: true });
-  if (timetable) observer.observe(timetable, { childList: true, subtree: true });
+  const observer = new MutationObserver(normalizeUi);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "open"] });
 }
 
 function init() {

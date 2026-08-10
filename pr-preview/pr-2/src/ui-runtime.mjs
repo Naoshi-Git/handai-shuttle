@@ -16,18 +16,32 @@ const ICONS = Object.freeze({
   chevronRight: '<path d="m9 6 6 6-6 6"/>'
 });
 
+const CHOICE_SURFACE_SELECTOR = [
+  "#home-destination-chips",
+  ".search-mode",
+  ".tt-campus-tabs",
+  ".tt-destination-buttons"
+].join(",");
+
 const INTERACTION_SELECTOR = [
   ".bottom-nav [data-nav]",
   "#search-now-button",
   "#arrival-search-button",
   "#open-search-button",
+  "#home-destination-chips [data-home-destination]",
+  ".tt-campus-tabs [data-tt-origin]",
+  ".tt-destination-buttons [data-tt-destination]",
+  ".search-mode [data-mode]",
   ".search-submit",
   "[data-result-step]",
   ".route-shortcut"
 ].join(",");
 
+const choiceGeometry = new Map();
+const observedChoiceTracks = new WeakSet();
 let normalizeQueued = false;
 let navResizeObserver = null;
+let choiceResizeObserver = null;
 let nativeDialogClose = null;
 let nativeScrollIntoView = null;
 
@@ -45,7 +59,9 @@ function installStyles() {
 }
 
 function preserveLegacyStyleScopes() {
-  // Visual CSS from v11/v14/v15 remains as a compatibility layer, but their JS is retired.
+  // v11/v14/v15 CSS remains intentionally loaded while their observer-heavy JS is retired.
+  // Keeping the scope classes lets us refactor runtime behavior without changing the visual
+  // system in the same commit.
   document.body.classList.add("ui-v11", "ui-v14", "ui-v15", "ui-runtime");
 }
 
@@ -125,6 +141,80 @@ function updateNavGlider(nav = $(".bottom-nav")) {
   nav.style.setProperty("--v15-nav-glider-x", `${Math.max(0, activeRect.left - navRect.left + inset)}px`);
   nav.style.setProperty("--v15-nav-glider-width", `${Math.max(0, activeRect.width - inset * 2)}px`);
   nav.classList.add("nav-glider-ready-v15");
+}
+
+function choiceKey(track) {
+  if (track.matches("#home-destination-chips")) return "home-destination";
+  if (track.matches(".search-mode")) return "search-mode";
+  if (track.matches(".tt-campus-tabs")) return "timetable-origin";
+  if (track.matches(".tt-destination-buttons")) return "timetable-destination";
+  return track.dataset.runtimeChoiceKey || "choice";
+}
+
+function writeChoiceGeometry(track, geometry) {
+  track.style.setProperty("--runtime-choice-x", `${geometry.x}px`);
+  track.style.setProperty("--runtime-choice-y", `${geometry.y}px`);
+  track.style.setProperty("--runtime-choice-width", `${geometry.width}px`);
+  track.style.setProperty("--runtime-choice-height", `${geometry.height}px`);
+}
+
+function ensureChoiceGlider(track) {
+  if (!track) return;
+  track.classList.add("runtime-choice-track");
+  const key = choiceKey(track);
+  let glider = $(".runtime-choice-glider", track);
+  const created = !glider;
+  if (!glider) {
+    glider = document.createElement("span");
+    glider.className = "runtime-choice-glider";
+    glider.setAttribute("aria-hidden", "true");
+    track.prepend(glider);
+  }
+
+  const active = $("button.is-active", track);
+  if (!active) {
+    track.classList.remove("runtime-choice-ready");
+    return;
+  }
+
+  const trackRect = track.getBoundingClientRect();
+  const activeRect = active.getBoundingClientRect();
+  if (!trackRect.width || !activeRect.width) return;
+  const next = {
+    x: activeRect.left - trackRect.left,
+    y: activeRect.top - trackRect.top,
+    width: activeRect.width,
+    height: activeRect.height
+  };
+  const previous = choiceGeometry.get(key);
+
+  // Home chips and timetable controls are rebuilt by legacy renderers. Cache the previous
+  // geometry so a newly-created glider begins exactly where the old one was instead of
+  // replaying an entrance animation. This specifically prevents destination changes from
+  // re-animating the timetable origin selector.
+  if (created && previous) {
+    writeChoiceGeometry(track, previous);
+    track.classList.add("runtime-choice-ready");
+    void glider.offsetWidth;
+  }
+
+  writeChoiceGeometry(track, next);
+  choiceGeometry.set(key, next);
+  if (!track.classList.contains("runtime-choice-ready")) {
+    requestAnimationFrame(() => track.classList.add("runtime-choice-ready"));
+  }
+
+  if (typeof ResizeObserver !== "undefined" && !observedChoiceTracks.has(track)) {
+    observedChoiceTracks.add(track);
+    choiceResizeObserver ||= new ResizeObserver((entries) => {
+      entries.forEach((entry) => ensureChoiceGlider(entry.target));
+    });
+    choiceResizeObserver.observe(track);
+  }
+}
+
+function normalizeChoiceTracks() {
+  $$(CHOICE_SURFACE_SELECTOR).forEach(ensureChoiceGlider);
 }
 
 function normalizeResultStepper() {
@@ -225,6 +315,7 @@ function normalizeUi() {
     normalizeNextBusCue();
     normalizeNavigationA11y();
     ensureNavGlider();
+    normalizeChoiceTracks();
     normalizeResultStepper();
     stabilizeInstallGuide();
     document.documentElement.dataset.uiReady = "runtime";
@@ -247,7 +338,16 @@ function bindInteractionNormalization() {
 }
 
 function observeDynamicUi() {
-  // Only content that actually introduces runtime-owned icons/copy is observed here.
+  // Two stable containers are allowed to rebuild their direct children in legacy renderers.
+  // Observe only those child-list changes so gliders are restored before the next paint.
+  const structuralObserver = new MutationObserver(() => normalizeUi());
+  const homeChoices = $("#home-destination-chips");
+  const timetableControls = $("#timetable-route-controls");
+  if (homeChoices) structuralObserver.observe(homeChoices, { childList: true });
+  if (timetableControls) structuralObserver.observe(timetableControls, { childList: true });
+
+  // Dynamically-rendered content may introduce icons/copy, but class mutations are handled
+  // by interaction events instead of an app-wide attributes observer.
   const contentObserver = new MutationObserver(() => normalizeUi());
   [$("#search-results"), $("#timetable-list"), $("#view-settings")].filter(Boolean).forEach((root) => {
     contentObserver.observe(root, { childList: true, subtree: true });
