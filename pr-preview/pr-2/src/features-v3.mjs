@@ -8,3 +8,4 @@ import "./ui-v5.mjs";
 import "./pwa.mjs";
 import "./ui-v6.mjs";
 import "./ui-v7-fixes.mjs";
+import "./ui-v9.mjs";
