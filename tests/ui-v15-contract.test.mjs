@@ -3,15 +3,17 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const entry = await readFile(new URL("../src/features-v3.mjs", import.meta.url), "utf8");
-const source = await readFile(new URL("../src/ui-v15.mjs", import.meta.url), "utf8");
+const runtime = await readFile(new URL("../src/ui-runtime.mjs", import.meta.url), "utf8");
 const css = await readFile(new URL("../src/ui-v15.css", import.meta.url), "utf8");
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const whiteSymbol = await readFile(new URL("../assets/brand/brand-symbol-white.svg", import.meta.url), "utf8");
 
-await import("../src/ui-v15.mjs");
+await import("../src/ui-runtime.mjs");
 
-test("v15 loads after v14 and final CSS is linked in head", () => {
-  assert.match(entry, /import "\.\/ui-v14\.mjs";[\s\S]*import "\.\/ui-v15\.mjs";/);
+test("v15 visual CSS remains linked while runtime owns behavior", () => {
+  assert.doesNotMatch(entry, /import "\.\/ui-v15\.mjs";/);
+  assert.match(entry, /import "\.\/ui-v13\.mjs";[\s\S]*import "\.\/ui-runtime\.mjs";/);
+  assert.match(runtime, /"ui-v15"/);
   assert.match(html, /ui-v14\.css" data-ui-v14[\s\S]*ui-v15\.css" data-ui-v15/);
 });
 
@@ -28,9 +30,9 @@ test("bottom navigation uses regular material and one moving selection glider", 
   assert.match(css, /\.bottom-nav[\s\S]*blur\(28px\) saturate\(165%\)/);
   assert.match(css, /\.bottom-nav::before,[\s\S]*\.bottom-nav::after[\s\S]*display:\s*none/);
   assert.match(css, /\.nav-glider-v15[\s\S]*--v15-nav-glider-x/);
-  assert.match(source, /nav-glider-v15/);
-  assert.match(source, /getBoundingClientRect/);
-  assert.match(source, /--v15-nav-glider-x/);
+  assert.match(runtime, /nav-glider-v15/);
+  assert.match(runtime, /getBoundingClientRect/);
+  assert.match(runtime, /--v15-nav-glider-x/);
 });
 
 test("route editor is one composed two-row control with a dedicated swap gutter", () => {
@@ -41,14 +43,15 @@ test("route editor is one composed two-row control with a dedicated swap gutter"
 });
 
 test("low resolution install screenshots are detected and no longer over-enlarged", () => {
-  assert.match(source, /naturalWidth < 360/);
-  assert.match(source, /is-low-res-source-v15/);
+  assert.match(runtime, /naturalWidth < 360/);
+  assert.match(runtime, /is-low-res-source-v15/);
   assert.match(css, /\.install-guide-media\.is-low-res-source-v15 img[\s\S]*180px/);
 });
 
-test("premium motion is restrained and respects accessibility preferences", () => {
+test("legacy v15 motion remains accessible while runtime provides final timing", () => {
   assert.match(css, /--v15-motion:\s*cubic-bezier/);
   assert.match(css, /@keyframes v15-view-enter/);
   assert.match(css, /prefers-reduced-transparency/);
   assert.match(css, /prefers-reduced-motion/);
+  assert.match(runtime, /ui-runtime/);
 });
