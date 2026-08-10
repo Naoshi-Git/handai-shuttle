@@ -169,7 +169,7 @@ body.ui-v16 .settings-subpage-v13.is-open { opacity:1; }
 body.ui-v16 .settings-subpage-back,
 body.ui-v16 .settings-nav-row-v13 { transition:background var(--v16-motion-fast) ease, transform var(--v16-motion-fast) ease !important; }
 
-/* Retina guide captures from the chat are now large enough to be shown at normal card width. */
+/* Install-guide layout is ready for higher-resolution captures; preserve small current sources without magnifying them. */
 body.ui-v16 .install-guide-media { padding:10px !important; border-radius:20px !important; background:#F0F0F3 !important; }
 body.ui-v16 .install-guide-media img {
   width:100% !important;
@@ -180,7 +180,7 @@ body.ui-v16 .install-guide-media img {
   border-radius:16px !important;
   box-shadow:0 6px 20px rgba(20,20,28,.075) !important;
 }
-body.ui-v16 .install-guide-media.is-low-res-source-v15 img { width:100% !important; max-width:420px !important; }
+body.ui-v16 .install-guide-media.is-low-res-source-v15 img { width:min(100%,180px) !important; max-width:180px !important; }
 
 /* Desktop / landscape containment: sheets and settings never grow wider than the app surface. */
 @media (min-width:760px) {
