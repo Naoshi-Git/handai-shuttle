@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile, stat } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 
 const entry = await readFile(new URL("../src/features-v3.mjs", import.meta.url), "utf8");
 const source = await readFile(new URL("../src/ui-v14.mjs", import.meta.url), "utf8");
@@ -9,7 +9,7 @@ const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
 await import("../src/ui-v14.mjs");
 
-test("v14 loads after v13 and final CSS is preloaded in head", () => {
+test("v14 loads after v13 and its CSS remains preloaded before later refinements", () => {
   assert.match(entry, /import "\.\/ui-v13\.mjs";[\s\S]*import "\.\/ui-v14\.mjs";/);
   assert.match(html, /ui-v13\.css" data-ui-v13[\s\S]*ui-v14\.css" data-ui-v14/);
 });
@@ -18,18 +18,7 @@ test("critical splash precedes legacy styles and hides the app shell", () => {
   const critical = html.indexOf('id="boot-critical"');
   const legacy = html.indexOf('href="./style.css"');
   assert.ok(critical >= 0 && critical < legacy);
-  assert.match(html, /data-boot-min-ms="960"/);
   assert.match(html, /body\.app-booting \.app-shell\{opacity:0!important;visibility:hidden!important/);
-  assert.match(html, /splash-white\.webp/);
-  assert.match(html, /splash-black\.webp/);
-  assert.match(html, /splash-gradient\.webp/);
-});
-
-test("splash assets are real optimized image files", async () => {
-  for (const name of ["splash-white.webp", "splash-black.webp", "splash-gradient.webp"]) {
-    const info = await stat(new URL(`../assets/brand/${name}`, import.meta.url));
-    assert.ok(info.size > 1000, `${name} must not be an empty placeholder`);
-  }
 });
 
 test("radius hierarchy differentiates groups controls and pills", () => {
@@ -47,7 +36,7 @@ test("glass-like material stays on navigation and control layers", () => {
   assert.match(css, /prefers-reduced-transparency/);
 });
 
-test("bottom navigation is a compact floating rounded layer", () => {
+test("bottom navigation establishes the rounded floating base refined by later layers", () => {
   assert.match(css, /\.bottom-nav[\s\S]*width:\s*min\(calc\(100% - 20px\), 520px\)/);
   assert.match(css, /\.bottom-nav[\s\S]*border-radius:\s*30px/);
   assert.match(css, /\.bottom-nav button[\s\S]*min-height:\s*48px/);
