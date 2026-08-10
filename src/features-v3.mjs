@@ -11,3 +11,4 @@ import "./ui-v7-fixes.mjs";
 import "./ui-v9.mjs";
 import "./ui-v10.mjs";
 import "./ui-v11.mjs";
+import "./ui-v12.mjs";
