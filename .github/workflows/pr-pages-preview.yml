@@ -53,6 +53,7 @@ jobs:
           node --check source/src/ui-v12.mjs
           node --check source/src/ui-v13.mjs
           node --check source/src/ui-v14.mjs
+          node --check source/src/ui-v15.mjs
           node --check source/src/pwa.mjs
           node --check source/src/crowding-prediction.mjs
           node --check source/src/share-card.mjs
@@ -67,8 +68,10 @@ jobs:
           test -f source/src/ui-v12.css
           test -f source/src/ui-v13.css
           test -f source/src/ui-v14.css
+          test -f source/src/ui-v15.css
           test -f source/assets/brand/app-icon.svg
           test -f source/assets/brand/brand-icon-rounded.svg
+          test -f source/assets/brand/brand-symbol-white.svg
           test -f source/assets/brand/splash-white.webp
           test -f source/assets/brand/splash-black.webp
           test -f source/assets/brand/splash-gradient.webp
