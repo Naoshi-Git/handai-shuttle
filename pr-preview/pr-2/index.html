@@ -7,18 +7,36 @@
   <meta name="description" content="大阪大学の豊中・箕面・吹田キャンパス間を走る学内連絡バスの時刻検索Webアプリ">
   <title>阪大シャトル検索</title>
   <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./assets/brand/app-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./assets/brand/app-icon.svg">
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./ui-v2.css">
+  <link rel="stylesheet" href="./ui-v4.css" data-ui-v4>
+  <link rel="stylesheet" href="./ads.css" data-ads-ui>
+  <link rel="stylesheet" href="./ui-v5.css" data-ui-v5>
+  <link rel="stylesheet" href="./ui-v7.css" data-ui-v7>
+  <link rel="stylesheet" href="./ui-v9.css" data-ui-v9>
+  <link rel="stylesheet" href="./src/ui-v10.css" data-ui-v10>
+  <link rel="stylesheet" href="./src/ui-v11.css" data-ui-v11>
+  <link rel="stylesheet" href="./src/ui-v12.css" data-ui-v12>
 </head>
-<body>
+<body class="app-booting">
+  <div class="app-boot" id="app-boot" role="status" aria-live="polite">
+    <div class="app-boot-inner">
+      <img class="app-boot-mark" src="./assets/brand/app-icon.svg" alt="">
+      <p class="app-boot-title">阪大シャトル</p>
+      <p class="app-boot-status">時刻表を準備しています</p>
+    </div>
+  </div>
+
   <div class="app-shell">
     <header class="topbar">
-      <div class="brand-mark" aria-hidden="true">OU</div>
+      <div class="brand-mark" aria-hidden="true"><img src="./assets/brand/brand-icon-rounded.svg" alt="" width="42" height="42"></div>
       <div class="brand-copy">
-        <p class="eyebrow">THE UNIVERSITY OF OSAKA</p>
+        <p class="eyebrow">HANDAI SHUTTLE</p>
         <h1>阪大シャトル</h1>
       </div>
-      <button class="icon-button" id="refresh-button" type="button" aria-label="現在時刻で更新" title="現在時刻で更新">↻</button>
+      <button class="icon-button" id="refresh-button" type="button" aria-label="現在時刻で更新" title="現在時刻で更新" hidden>↻</button>
     </header>
     <div class="service-banner" id="service-banner" role="status"></div>
     <main>
@@ -79,7 +97,7 @@
           <button class="primary-button search-submit" type="submit">検索</button>
         </form>
         <section class="content-section results-section" id="results-section">
-          <div class="section-title-row"><div><p class="section-kicker">RESULT</p><h2 id="results-title">検索結果</h2></div><button class="text-button" id="favorite-current-button" type="button">☆ 保存</button></div>
+          <div class="section-title-row"><div><p class="section-kicker">RESULT</p><h2 id="results-title">検索結果</h2></div><button class="text-button" id="favorite-current-button" type="button">条件を保存</button></div>
           <div id="search-message"></div><div class="stack-list" id="search-results"></div>
         </section>
       </section>
