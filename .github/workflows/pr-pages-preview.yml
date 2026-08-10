@@ -48,6 +48,10 @@ jobs:
           node --check source/src/ui-v4-polish.mjs
           node --check source/src/ui-v5.mjs
           node --check source/src/ui-v9.mjs
+          node --check source/src/ui-v10.mjs
+          node --check source/src/ui-v11.mjs
+          node --check source/src/ui-v12.mjs
+          node --check source/src/ui-v13.mjs
           node --check source/src/pwa.mjs
           node --check source/src/crowding-prediction.mjs
           node --check source/src/share-card.mjs
@@ -57,10 +61,17 @@ jobs:
           test -f source/ui-v5.css
           test -f source/ui-v7.css
           test -f source/ui-v9.css
+          test -f source/src/ui-v10.css
+          test -f source/src/ui-v11.css
+          test -f source/src/ui-v12.css
+          test -f source/src/ui-v13.css
           test -f source/assets/brand/app-icon.svg
           test -f source/assets/brand/brand-icon-rounded.svg
           test -f source/assets/ads/house-share-640x180.svg
           test -f source/assets/ads/house-share-640x128.svg
+          test -f source/assets/help/install/ios-01-share.webp
+          test -f source/assets/help/install/ios-02-add-home.webp
+          test -f source/assets/help/install/ios-03-confirm.webp
           test -f source/lp/index.html
           test -f source/lp/lp.css
           node --test source/tests/*.test.mjs
