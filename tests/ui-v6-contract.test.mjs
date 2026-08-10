@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 const source = await readFile(new URL("../src/ui-v6.mjs", import.meta.url), "utf8");
 const css = await readFile(new URL("../ui-v5.css", import.meta.url), "utf8");
 const adsSource = await readFile(new URL("../src/ads.mjs", import.meta.url), "utf8");
-const adsCss = await readFile(new URL("../ads.css", import.meta.url), "utf8");
+const v10Css = await readFile(new URL("../src/ui-v10.css", import.meta.url), "utf8");
 await import("../src/ui-v6.mjs");
 
 test("saved search conditions and favorite trips use separate storage concepts", () => {
@@ -39,11 +39,12 @@ test("visual system restricts semantic warning and route-via styling to restrain
   assert.match(css, /--ui-control-radius:\s*12px/);
 });
 
-test("search inline ad uses vector creative and shared card radius without black raster corners", () => {
-  assert.match(adsSource, /house-inline-640x180\.svg/);
-  assert.match(adsSource, /ratio:\s*"640 \/ 180"/);
-  assert.match(adsCss, /\.ad-slot-search-inline \.house-ad-creative[\s\S]*border-radius:\s*16px/);
-  assert.match(adsCss, /\.ad-slot-search-inline \.house-ad-creative[\s\S]*overflow:\s*hidden/);
+test("final ad layer uses the compact horizontal creative with one shared radius", () => {
+  assert.match(adsSource, /house-banner-simple-640x89\.webp/);
+  assert.match(adsSource, /ratio:\s*"640 \/ 89"/);
+  assert.doesNotMatch(adsSource, /house-inline-640x180\.svg|house-rectangle-600x500\.svg/);
+  assert.match(v10Css, /\.house-ad-card[\s\S]*border-radius:\s*12px !important/);
+  assert.match(v10Css, /\.house-ad-creative[\s\S]*aspect-ratio:\s*640 \/ 89 !important/);
 });
 
 test("view transitions are subtle and respect reduced motion", () => {
