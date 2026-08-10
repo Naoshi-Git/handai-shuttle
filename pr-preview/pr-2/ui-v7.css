@@ -1,0 +1,75 @@
+/* v7/v8: PNG-rasterized ad presentation and normalized favorite navigation. */
+
+body.ui-v7 .house-ad-card {
+  --ad-shell-radius: 14px;
+  position: relative;
+  overflow: hidden !important;
+  border: 1px solid #E1E1EA !important;
+  border-radius: var(--ad-shell-radius) !important;
+  background: #FFFFFF !important;
+  isolation: isolate;
+  contain: paint;
+}
+body.ui-v7 .house-ad-creative,
+body.ui-v7 .house-ad-creative img {
+  border-radius: 0 !important;
+}
+body.ui-v7 .house-ad-creative {
+  overflow: hidden !important;
+  background: #FFFFFF !important;
+  box-shadow: none !important;
+}
+body.ui-v7 .house-ad-creative img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  backface-visibility: hidden;
+}
+body.ui-v7 .house-ad-card.is-png-rasterizing:not(.is-png-ready) .house-ad-creative img {
+  opacity: 0;
+}
+body.ui-v7 .house-ad-card.is-png-rasterizing:not(.is-png-ready) .house-ad-creative {
+  background: #FAFAFC !important;
+}
+body.ui-v7 .house-ad-card.is-png-ready .house-ad-creative img {
+  opacity: 1;
+}
+body.ui-v7 .ad-slot-search-inline .house-ad-card { --ad-shell-radius: 18px; }
+body.ui-v7 .ad-slot-search-primary .house-ad-card { --ad-shell-radius: 18px; }
+body.ui-v7 .ad-slot-timetable-header .house-ad-card,
+body.ui-v7 .ad-slot-timetable-inline .house-ad-card,
+body.ui-v7 .ad-slot-home-feed .house-ad-card { --ad-shell-radius: 12px; }
+
+/* The PNG owns the anti-aliased corner pixels; the shell only provides one physical crop/border. */
+body.ui-v7 .ad-slot-search-inline .house-ad-creative,
+body.ui-v7 .ad-slot-search-primary .house-ad-creative,
+body.ui-v7 .ad-slot-timetable-header .house-ad-creative,
+body.ui-v7 .ad-slot-timetable-inline .house-ad-creative,
+body.ui-v7 .ad-slot-home-feed .house-ad-creative {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Favorite content is high-value, so keep it at the top of Settings. */
+body.ui-v7 #favorite-trips-v6 { margin-top: 0; }
+body.ui-v7 #favorite-trips-v6 .compact-settings-head p { max-width: 210px; }
+body.ui-v7 #favorite-trips-v6 .favorite-saved-row { min-height: 50px; }
+body.ui-v7 #favorite-trips-v6 .compact-saved-open strong em {
+  color: var(--ou-900);
+  font-size: 9px;
+  white-space: nowrap;
+}
+body.ui-v7 #favorite-trips-v6 .compact-saved-open small { color: #737382; }
+body.ui-v7 .route-timetable-card.favorite-flash {
+  animation: v7-favorite-flash 1.35s ease;
+}
+@keyframes v7-favorite-flash {
+  0%, 100% { box-shadow: 0 5px 16px rgba(28,28,46,.035); }
+  32% { box-shadow: 0 0 0 4px rgba(169,121,22,.20), 0 7px 20px rgba(28,28,46,.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.ui-v7 .route-timetable-card.favorite-flash { animation: none; }
+}
