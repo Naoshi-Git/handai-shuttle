@@ -1,0 +1,111 @@
+/* v9: location-aware defaults, stop-specific home search, calm semantic colors and opaque ad edges. */
+
+:root {
+  --v9-operating-bg: #F2F7F6;
+  --v9-operating-border: #D6E5E2;
+  --v9-operating-ink: #315F59;
+  --v9-operating-dot: #5F9189;
+  --v9-via-bg: #F6F3ED;
+  --v9-via-border: #E5DED1;
+  --v9-via-ink: #695C48;
+  --v9-closed-bg: #F8F3F1;
+  --v9-closed-border: #E7D8D3;
+  --v9-closed-ink: #79574E;
+  --v9-closed-dot: #A27468;
+  --v9-subtle-indigo: #F3F2F8;
+}
+
+/* Location action stays compact even when the inferred place name is long. */
+body.ui-v9 #locate-button {
+  flex: 0 0 auto;
+  min-width: 68px;
+  max-width: 78px;
+  height: 36px;
+  padding-inline: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+  border-color: #DDDCE8;
+  background: #FFF;
+  color: var(--ou-900);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .01em;
+}
+body.ui-v9 #locate-button[data-location-state="matched"],
+body.ui-v9 #locate-button[data-location-state="manual"] { background: var(--v9-subtle-indigo); border-color: #D9D6EA; }
+body.ui-v9 #locate-button[data-location-state="loading"] { color: #6F6D7B; background: #F7F7FA; }
+body.ui-v9 #locate-button[data-location-state="failed"] { color: var(--v9-closed-ink); background: var(--v9-closed-bg); border-color: var(--v9-closed-border); }
+body.ui-v9 .location-copy { min-width: 0; }
+body.ui-v9 #home-origin-button { max-width: 100%; }
+body.ui-v9 #home-origin-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Home destination may include a Suita stop name; keep the chip on one line without dominating the row. */
+body.ui-v9 #home-destination-chips .chip { white-space: nowrap; }
+body.ui-v9 #home-destination-chips [data-home-destination="suita"] { font-size: 10px; padding-inline: 11px; }
+body.ui-v9 .next-route > span { min-width: 0; }
+body.ui-v9 .next-route > span:first-child,
+body.ui-v9 .next-route > span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Suita preference settings are independent from the fallback campus. */
+body.ui-v9 .suitastop-settings-v9 { display: grid; gap: 12px; }
+body.ui-v9 .suitastop-settings-v9 #default-suita-stop-wrap { display: grid !important; }
+body.ui-v9 .v9-settings-copy h3 { margin-bottom: 4px; }
+body.ui-v9 .v9-settings-copy p,
+body.ui-v9 .v9-settings-note { margin: 0; color: #72717E; font-size: 10px; line-height: 1.55; }
+body.ui-v9 .v9-settings-note { padding: 9px 10px; border-radius: 11px; background: #F7F7FA; }
+
+/* Calm semantic system: indigo remains brand, supporting colors are desaturated and purpose-specific. */
+body.ui-v9 .service-banner:not(.is-closed) {
+  background: var(--v9-operating-bg) !important;
+  border-color: var(--v9-operating-border) !important;
+  color: var(--v9-operating-ink) !important;
+}
+body.ui-v9 .service-banner:not(.is-closed)::before { background: var(--v9-operating-dot) !important; }
+body.ui-v9 .service-banner.is-closed,
+body.ui-v9 .message.warning {
+  background: var(--v9-closed-bg) !important;
+  border-color: var(--v9-closed-border) !important;
+  color: var(--v9-closed-ink) !important;
+}
+body.ui-v9 .service-banner.is-closed::before { background: var(--v9-closed-dot) !important; }
+body.ui-v9 .pill-warning {
+  background: var(--v9-via-bg) !important;
+  border-color: var(--v9-via-border) !important;
+  color: var(--v9-via-ink) !important;
+}
+body.ui-v9 .pill-soft { background: #F2F1F7 !important; color: var(--ou-900) !important; }
+
+/* Ad PNGs are opaque rectangles; exactly one outer shell owns the corner treatment. */
+body.ui-v9 .house-ad-card {
+  overflow: hidden !important;
+  border: 0 !important;
+  background: #FAFAFC !important;
+  box-shadow: inset 0 0 0 1px rgba(45,40,127,.12) !important;
+  isolation: isolate;
+  clip-path: none !important;
+  -webkit-mask-image: none !important;
+  transform: none !important;
+}
+body.ui-v9 .ad-slot-timetable-header .house-ad-card,
+body.ui-v9 .ad-slot-timetable-inline .house-ad-card,
+body.ui-v9 .ad-slot-home-feed .house-ad-card { border-radius: 12px !important; }
+body.ui-v9 .ad-slot-search-inline .house-ad-card,
+body.ui-v9 .ad-slot-search-primary .house-ad-card { border-radius: 18px !important; }
+body.ui-v9 .house-ad-creative,
+body.ui-v9 .house-ad-creative img {
+  width: 100%;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #FAFAFC !important;
+  box-shadow: none !important;
+}
+body.ui-v9 .house-ad-creative img { display: block; object-fit: cover !important; }
+
+/* Keep the sticky ad/control stack fully opaque. */
+body.ui-v9 .ad-slot-timetable-header,
+body.ui-v9 #timetable-route-controls {
+  background: #FFF !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
