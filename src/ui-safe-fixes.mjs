@@ -2,6 +2,7 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 const FAVORITE_SUBTITLE = "タップすると保存した便を開きます";
+const LAST_DESTINATION_KEY = "ou-bus:last-destination-campus";
 let maskedHomeButton = null;
 let maskedHomeDestination = "";
 
@@ -256,6 +257,7 @@ function maskLegacyHomeDelay(event) {
   // and enhancements handlers still receive the click normally.
   maskedHomeButton = homeButton;
   maskedHomeDestination = homeButton.dataset.homeDestination || "";
+  if (maskedHomeDestination) localStorage.setItem(LAST_DESTINATION_KEY, maskedHomeDestination);
   homeButton.removeAttribute("data-home-destination");
   document.body.classList.add("runtime-dom-swap");
 }
