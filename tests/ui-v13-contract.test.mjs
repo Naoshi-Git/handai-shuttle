@@ -8,8 +8,8 @@ const css = await readFile(new URL("../src/ui-v13.css", import.meta.url), "utf8"
 
 await import("../src/ui-v13.mjs");
 
-test("v13 is loaded after v12", () => {
-  assert.match(entry, /import "\.\/ui-v12\.mjs";[\s\S]*import "\.\/ui-v13\.mjs";/);
+test("v13 is loaded after v12 and before ui-current", () => {
+  assert.match(entry, /import "\.\/ui-v12\.mjs";[\s\S]*import "\.\/ui-v13\.mjs";[\s\S]*import "\.\/ui-current\.mjs";/);
 });
 
 test("boot is richer without replacing the product icon", () => {

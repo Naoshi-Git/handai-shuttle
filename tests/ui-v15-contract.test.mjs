@@ -3,17 +3,18 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const entry = await readFile(new URL("../src/features-v3.mjs", import.meta.url), "utf8");
-const runtime = await readFile(new URL("../src/ui-runtime.mjs", import.meta.url), "utf8");
+const current = await readFile(new URL("../src/ui-current.mjs", import.meta.url), "utf8");
+const currentCss = await readFile(new URL("../src/ui-current.css", import.meta.url), "utf8");
 const css = await readFile(new URL("../src/ui-v15.css", import.meta.url), "utf8");
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const whiteSymbol = await readFile(new URL("../assets/brand/brand-symbol-white.svg", import.meta.url), "utf8");
 
-await import("../src/ui-runtime.mjs");
+await import("../src/ui-current.mjs");
 
-test("v15 visual CSS remains linked while runtime owns behavior", () => {
+test("v15 visual CSS remains linked while ui-current owns interaction", () => {
   assert.doesNotMatch(entry, /import "\.\/ui-v15\.mjs";/);
-  assert.match(entry, /import "\.\/ui-v13\.mjs";[\s\S]*import "\.\/ui-runtime\.mjs";/);
-  assert.match(runtime, /"ui-v15"/);
+  assert.match(entry, /import "\.\/ui-v13\.mjs";[\s\S]*import "\.\/ui-current\.mjs";/);
+  assert.match(current, /"ui-v15"/);
   assert.match(html, /ui-v14\.css" data-ui-v14[\s\S]*ui-v15\.css" data-ui-v15/);
 });
 
@@ -30,9 +31,8 @@ test("bottom navigation uses regular material and one moving selection glider", 
   assert.match(css, /\.bottom-nav[\s\S]*blur\(28px\) saturate\(165%\)/);
   assert.match(css, /\.bottom-nav::before,[\s\S]*\.bottom-nav::after[\s\S]*display:\s*none/);
   assert.match(css, /\.nav-glider-v15[\s\S]*--v15-nav-glider-x/);
-  assert.match(runtime, /nav-glider-v15/);
-  assert.match(runtime, /getBoundingClientRect/);
-  assert.match(runtime, /--v15-nav-glider-x/);
+  assert.match(current, /nav-glider-v15/);
+  assert.match(current, /--v15-nav-glider-x/);
 });
 
 test("route editor is one composed two-row control with a dedicated swap gutter", () => {
@@ -43,15 +43,15 @@ test("route editor is one composed two-row control with a dedicated swap gutter"
 });
 
 test("low resolution install screenshots are detected and no longer over-enlarged", () => {
-  assert.match(runtime, /naturalWidth < 360/);
-  assert.match(runtime, /is-low-res-source-v15/);
+  assert.match(current, /naturalWidth < 360/);
+  assert.match(current, /is-low-res-source-v15/);
   assert.match(css, /\.install-guide-media\.is-low-res-source-v15 img[\s\S]*180px/);
 });
 
-test("legacy v15 motion remains accessible while runtime provides final timing", () => {
+test("current motion overrides legacy timing with one final grammar", () => {
   assert.match(css, /--v15-motion:\s*cubic-bezier/);
-  assert.match(css, /@keyframes v15-view-enter/);
-  assert.match(css, /prefers-reduced-transparency/);
-  assert.match(css, /prefers-reduced-motion/);
-  assert.match(runtime, /ui-runtime/);
+  assert.match(currentCss, /--current-motion-view:\s*300ms/);
+  assert.match(currentCss, /--current-motion-choice:\s*280ms/);
+  assert.match(currentCss, /--current-motion-sheet:\s*360ms/);
+  assert.match(currentCss, /prefers-reduced-motion/);
 });

@@ -9,8 +9,9 @@ const ads = await readFile(new URL("../src/ads.mjs", import.meta.url), "utf8");
 
 await import("../src/ui-v10.mjs");
 
-test("v10 is the final presentation layer", () => {
-  assert.match(entry, /import "\.\/ui-v9\.mjs";[\s\S]*import "\.\/ui-v10\.mjs";/);
+test("v10 owns ad normalization between route preferences and current UI", () => {
+  assert.match(entry, /import "\.\/route-preferences\.mjs";[\s\S]*import "\.\/ui-v10\.mjs";[\s\S]*import "\.\/ui-current\.mjs";/);
+  assert.doesNotMatch(entry, /import "\.\/ui-v9\.mjs";/);
 });
 
 test("all house placements start from the stable compact top banner creative", () => {

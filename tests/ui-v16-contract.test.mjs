@@ -3,62 +3,50 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const entry = await readFile(new URL("../src/features-v3.mjs", import.meta.url), "utf8");
-const source = await readFile(new URL("../src/ui-runtime.mjs", import.meta.url), "utf8");
-const css = await readFile(new URL("../src/ui-runtime.css", import.meta.url), "utf8");
+const current = await readFile(new URL("../src/ui-current.mjs", import.meta.url), "utf8");
+const currentCss = await readFile(new URL("../src/ui-current.css", import.meta.url), "utf8");
 
-await import("../src/ui-runtime.mjs");
+await import("../src/ui-current.mjs");
 
-test("presentation and motion ownership is consolidated after functional layers", () => {
-  assert.match(entry, /import "\.\/ui-v13\.mjs";[\s\S]*import "\.\/ui-runtime\.mjs";/);
-  assert.doesNotMatch(entry, /import "\.\/ui-v11\.mjs";/);
-  assert.doesNotMatch(entry, /import "\.\/ui-v14\.mjs";/);
-  assert.doesNotMatch(entry, /import "\.\/ui-v15\.mjs";/);
-  assert.doesNotMatch(entry, /import "\.\/ui-v16\.mjs";/);
-  assert.match(source, /classList\.add\("ui-v11", "ui-v14", "ui-v15", "ui-runtime"\)/);
+test("legacy behavior version modules are inactive and ui-current is final", () => {
+  assert.doesNotMatch(entry, /ui-v7-fixes|ui-v9\.mjs|ui-runtime|ui-safe-fixes|ui-v11\.mjs|ui-v14\.mjs|ui-v15\.mjs|ui-v16\.mjs/);
+  assert.match(entry, /import "\.\/ui-current\.mjs";\s*$/);
 });
 
-test("mobile interaction motion avoids full-document snapshots", () => {
-  assert.doesNotMatch(source, /startViewTransition/);
-  assert.doesNotMatch(css, /::view-transition/);
-  assert.match(css, /--runtime-motion-view:\s*240ms/);
-  assert.match(css, /--runtime-motion-select:\s*280ms/);
-  assert.match(css, /--runtime-motion-sheet:\s*230ms/);
-  assert.match(css, /--runtime-motion-close:\s*170ms/);
+test("current motion avoids full-document snapshots and recreated child gliders", () => {
+  assert.doesNotMatch(current, /startViewTransition/);
+  assert.doesNotMatch(currentCss, /::view-transition/);
+  assert.doesNotMatch(current, /runtime-choice-glider/);
+  assert.match(currentCss, /#home-destination-chips::before/);
+  assert.match(currentCss, /#timetable-route-controls::before/);
+  assert.match(currentCss, /#timetable-route-controls::after/);
 });
 
-test("home and timetable selectors share one cached moving selection material", () => {
-  assert.match(source, /#home-destination-chips/);
-  assert.match(source, /\.tt-campus-tabs/);
-  assert.match(source, /\.tt-destination-buttons/);
-  assert.match(source, /const choiceGeometry = new Map\(\)/);
-  assert.match(source, /"timetable-origin"/);
-  assert.match(source, /"timetable-destination"/);
-  assert.match(source, /created && previous/);
-  assert.match(css, /\.runtime-choice-glider[\s\S]*transition:transform var\(--runtime-motion-select\)/);
+test("current owner keeps material visual scopes without importing their behavior modules", () => {
+  assert.match(current, /classList\.add\("ui-v11", "ui-v14", "ui-v15", "ui-current"\)/);
 });
 
-test("runtime observes only targeted structural and content surfaces", () => {
-  assert.doesNotMatch(source, /observe\(document\.body/);
-  assert.doesNotMatch(source, /observe\([^\n]*\.app-shell/);
-  assert.doesNotMatch(source, /attributes:\s*true/);
-  assert.match(source, /structuralObserver\.observe\(homeChoices, \{ childList: true \}\)/);
-  assert.match(source, /structuralObserver\.observe\(timetableControls, \{ childList: true \}\)/);
-  assert.match(source, /contentObserver\.observe\(root, \{ childList: true, subtree: true \}\)/);
+test("current observers are targeted to stable UI surfaces", () => {
+  assert.doesNotMatch(current, /observe\(document\.body/);
+  assert.doesNotMatch(current, /observe\([^\n]*\.app-shell/);
+  assert.match(current, /observe\(home, \{ childList: true \}\)/);
+  assert.match(current, /observe\(timetable, \{ childList: true \}\)/);
+  assert.match(current, /favoriteObserver\.observe\(section/);
 });
 
-test("navigation, sheets and timetable jumps use the consolidated motion grammar", () => {
-  assert.match(source, /nav-glider-v15/);
-  assert.match(source, /HTMLDialogElement\.prototype\.close/);
-  assert.match(source, /smoothTimetableJump/);
-  assert.match(css, /runtime-view-enter/);
-  assert.match(css, /runtime-sheet-in/);
-  assert.match(css, /runtime-backdrop-in/);
-  assert.match(css, /runtime-jump-target/);
+test("navigation sheets and choice motion share the final current grammar", () => {
+  assert.match(current, /nav-glider-v15/);
+  assert.match(current, /HTMLDialogElement\.prototype\.close/);
+  assert.match(currentCss, /current-view-enter/);
+  assert.match(currentCss, /current-sheet-in/);
+  assert.match(currentCss, /current-backdrop-in/);
+  assert.match(currentCss, /--current-motion-view:\s*300ms/);
+  assert.match(currentCss, /--current-motion-choice:\s*280ms/);
+  assert.match(currentCss, /--current-motion-sheet:\s*360ms/);
 });
 
 test("desktop containment and reduced-motion fallbacks remain available", () => {
-  assert.match(css, /@media \(min-width:760px\)/);
-  assert.match(css, /width:min\(520px,calc\(100vw - 48px\)\)/);
-  assert.match(css, /prefers-reduced-motion:reduce/);
-  assert.match(css, /prefers-reduced-transparency:reduce/);
+  assert.match(currentCss, /@media \(min-width: 760px\)/);
+  assert.match(currentCss, /width:\s*min\(520px,calc\(100vw - 48px\)\)/);
+  assert.match(currentCss, /prefers-reduced-motion:\s*reduce/);
 });

@@ -1,0 +1,299 @@
+:root {
+  --current-page-gutter: 18px;
+  --current-motion-view: 300ms;
+  --current-motion-choice: 280ms;
+  --current-motion-sheet: 360ms;
+  --current-motion-close: 220ms;
+  --current-ease-view: cubic-bezier(.2,.7,.2,1);
+  --current-ease-choice: cubic-bezier(.2,.8,.2,1);
+  --current-ease-sheet: cubic-bezier(.16,1,.3,1);
+  --current-track: #EDEDF0;
+  --current-selection: rgba(255,255,255,.94);
+  --current-selection-shadow: 0 1px 5px rgba(20,20,28,.065);
+}
+
+/* Current layer owns only interaction geometry/motion. Legacy version scopes remain visual foundations. */
+body.ui-current .topbar {
+  padding-left: var(--current-page-gutter) !important;
+  padding-right: var(--current-page-gutter) !important;
+}
+body.ui-current .view {
+  padding-left: var(--current-page-gutter) !important;
+  padding-right: var(--current-page-gutter) !important;
+}
+body.ui-current #service-banner {
+  margin-left: var(--current-page-gutter) !important;
+  margin-right: var(--current-page-gutter) !important;
+}
+body.ui-current #view-search .results-section > .section-title-row {
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+}
+
+/* A changed tab gets one restrained fade. Same-tab clicks are stopped before legacy handlers. */
+body.ui-current .view.is-active {
+  animation: current-view-enter var(--current-motion-view) var(--current-ease-view) both !important;
+}
+@keyframes current-view-enter {
+  from { opacity: .72; transform: translate3d(0,1px,0); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Bottom navigation uses one persistent glider. */
+body.ui-current .bottom-nav .nav-glider-v15 {
+  transition:
+    transform var(--current-motion-choice) var(--current-ease-choice),
+    width var(--current-motion-choice) var(--current-ease-choice),
+    opacity 180ms ease !important;
+}
+body.ui-current .bottom-nav button:active { transform: none !important; }
+
+/* Home destination and search mode keep their parent nodes; pseudo-selection survives child rerenders. */
+body.ui-current #home-destination-chips,
+body.ui-current .search-mode {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  display: grid !important;
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  gap: 3px !important;
+  padding: 3px !important;
+  border: 0 !important;
+  border-radius: 16px !important;
+  background: var(--current-track) !important;
+}
+body.ui-current #home-destination-chips::before,
+body.ui-current .search-mode::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  top: 0;
+  width: var(--current-choice-w,0px);
+  height: var(--current-choice-h,0px);
+  border-radius: 12px;
+  background: var(--current-selection);
+  box-shadow: var(--current-selection-shadow);
+  transform: translate3d(var(--current-choice-x,0px),var(--current-choice-y,0px),0);
+  transition: transform var(--current-motion-choice) var(--current-ease-choice);
+  opacity: 0;
+  pointer-events: none;
+}
+body.ui-current #home-destination-chips.current-choice-ready::before,
+body.ui-current .search-mode.current-choice-ready::before { opacity: 1; }
+body.ui-current #home-destination-chips > button,
+body.ui-current .search-mode > button {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 36px !important;
+  margin: 0 !important;
+  padding: 0 10px !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #66666F !important;
+  transition: color 180ms ease !important;
+  white-space: nowrap !important;
+}
+body.ui-current #home-destination-chips > button.is-active,
+body.ui-current .search-mode > button.is-active {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--ou-900) !important;
+}
+body.ui-current #home-destination-chips > button:active,
+body.ui-current .search-mode > button:active { transform: none !important; }
+
+/* Timetable controls are recreated by the legacy data layer, but both moving materials live on the stable parent. */
+body.ui-current #timetable-route-controls {
+  position: sticky !important;
+  isolation: isolate !important;
+}
+body.ui-current #timetable-route-controls::before,
+body.ui-current #timetable-route-controls::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  border-radius: 12px;
+  background: var(--current-selection);
+  box-shadow: var(--current-selection-shadow);
+  pointer-events: none;
+  opacity: 0;
+  transition: transform var(--current-motion-choice) var(--current-ease-choice);
+}
+body.ui-current #timetable-route-controls::before {
+  width: var(--current-tt-origin-w,0px);
+  height: var(--current-tt-origin-h,0px);
+  transform: translate3d(var(--current-tt-origin-x,0px),var(--current-tt-origin-y,0px),0);
+}
+body.ui-current #timetable-route-controls::after {
+  width: var(--current-tt-destination-w,0px);
+  height: var(--current-tt-destination-h,0px);
+  transform: translate3d(var(--current-tt-destination-x,0px),var(--current-tt-destination-y,0px),0);
+}
+body.ui-current #timetable-route-controls.current-tt-origin-ready::before,
+body.ui-current #timetable-route-controls.current-tt-destination-ready::after { opacity: 1; }
+
+body.ui-current .tt-campus-tabs,
+body.ui-current .tt-destination-buttons {
+  position: relative !important;
+  z-index: 0 !important;
+  overflow: hidden !important;
+  display: grid !important;
+  gap: 3px !important;
+  padding: 3px !important;
+  border: 0 !important;
+  border-radius: 16px !important;
+  background: var(--current-track) !important;
+  box-shadow: inset 0 0 0 1px rgba(36,36,41,.025) !important;
+}
+body.ui-current .tt-campus-tabs { grid-template-columns: repeat(3,minmax(0,1fr)) !important; }
+body.ui-current .tt-destination-buttons { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
+body.ui-current .tt-campus-tabs > button,
+body.ui-current .tt-destination-buttons > button {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 36px !important;
+  margin: 0 !important;
+  padding: 0 10px !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #66666F !important;
+  transition: color 180ms ease !important;
+  white-space: nowrap !important;
+}
+body.ui-current .tt-campus-tabs > button.is-active,
+body.ui-current .tt-destination-buttons > button.is-active {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--ou-900) !important;
+}
+body.ui-current .tt-campus-tabs > button:active,
+body.ui-current .tt-destination-buttons > button:active { transform: none !important; }
+body.ui-current .tt-destination-row { align-items: center !important; }
+
+/* Route label width is stable; Suita stop detail belongs in route content/origin label, not the selector. */
+body.ui-current #home-destination-chips [data-home-destination="suita"] {
+  font-size: inherit !important;
+  padding-inline: 10px !important;
+}
+body.ui-current #home-origin-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Search route role and global spacing use one horizontal rhythm. */
+body.ui-current .route-role.is-origin,
+body.ui-current .route-role.is-destination {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+/* Sheets have more visual mass than tabs, so they use a slower, larger vertical settle. */
+body.ui-current .search-sheet[open],
+body.ui-current .tt-detail-sheet[open],
+body.ui-current .share-card-dialog[open] {
+  animation: current-sheet-in var(--current-motion-sheet) var(--current-ease-sheet) both !important;
+}
+body.ui-current .campus-dialog[open] {
+  animation: current-dialog-in 320ms var(--current-ease-sheet) both !important;
+}
+body.ui-current dialog[open]::backdrop {
+  animation: current-backdrop-in 280ms ease both !important;
+}
+body.ui-current dialog.current-closing {
+  animation: current-sheet-out var(--current-motion-close) ease-in both !important;
+}
+body.ui-current dialog.current-closing::backdrop {
+  animation: current-backdrop-out var(--current-motion-close) ease-in both !important;
+}
+@keyframes current-sheet-in {
+  from { opacity: 0; transform: translate3d(0,16px,0); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes current-sheet-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translate3d(0,10px,0); }
+}
+@keyframes current-dialog-in {
+  from { opacity: 0; transform: translate3d(0,3px,0); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes current-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes current-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+
+/* Current Suita preference/location presentation; no ui-v9 behavior layer is required. */
+body.ui-current #locate-button {
+  flex: 0 0 auto;
+  min-width: 68px;
+  max-width: 78px;
+  height: 36px;
+  padding-inline: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+  border-color: #DDDCE8;
+  background: #FFF;
+  color: var(--ou-900);
+  font-size: 10px;
+  font-weight: 850;
+}
+body.ui-current .suitastop-settings-current { display: grid; gap: 12px; }
+body.ui-current .suitastop-settings-current #default-suita-stop-wrap { display: grid !important; }
+body.ui-current .current-settings-copy h3 { margin-bottom: 4px; }
+body.ui-current .current-settings-copy p,
+body.ui-current .current-settings-note { margin: 0; color: #72717E; font-size: 10px; line-height: 1.55; }
+body.ui-current .current-settings-note { padding: 9px 10px; border-radius: 11px; background: #F7F7FA; }
+
+/* Existing old runtime gliders are never part of the current ownership model. */
+body.ui-current .runtime-choice-glider { display: none !important; }
+
+@media (max-width: 390px) {
+  :root { --current-page-gutter: 16px; }
+  body.ui-current #view-search .results-section > .section-title-row { padding-left: 2px !important; padding-right: 2px !important; }
+  body.ui-current .search-sheet-shell,
+  body.ui-current .tt-sheet-shell { padding-left: 16px !important; padding-right: 16px !important; }
+}
+
+@media (min-width: 760px) {
+  body.ui-current .search-sheet,
+  body.ui-current .tt-detail-sheet,
+  body.ui-current .share-card-dialog {
+    width: min(520px,calc(100vw - 48px)) !important;
+    max-width: 520px !important;
+    margin: auto auto 20px !important;
+    border-radius: 24px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.ui-current .view.is-active,
+  body.ui-current .search-sheet[open],
+  body.ui-current .tt-detail-sheet[open],
+  body.ui-current .share-card-dialog[open],
+  body.ui-current .campus-dialog[open],
+  body.ui-current dialog[open]::backdrop {
+    animation: none !important;
+  }
+  body.ui-current .bottom-nav .nav-glider-v15,
+  body.ui-current #home-destination-chips::before,
+  body.ui-current .search-mode::before,
+  body.ui-current #timetable-route-controls::before,
+  body.ui-current #timetable-route-controls::after {
+    transition: none !important;
+  }
+}
