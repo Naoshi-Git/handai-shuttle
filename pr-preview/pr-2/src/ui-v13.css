@@ -1,0 +1,178 @@
+/* v13: richer boot, grouped timetable rows, rounded settings root + native-feeling slide subpages. */
+:root {
+  --v13-canvas: #F7F7F9;
+  --v13-surface: #FFFFFF;
+  --v13-line: rgba(36, 36, 41, .085);
+  --v13-shadow: 0 1px 2px rgba(20,20,25,.025), 0 8px 24px rgba(20,20,25,.035);
+}
+
+body.ui-v13 .app-boot-inner {
+  gap: 9px;
+  padding: 22px 24px 18px;
+  min-width: 168px;
+  border-radius: 24px;
+  background: rgba(255,255,255,.78);
+  border: 1px solid rgba(36,36,41,.055);
+  box-shadow: 0 16px 44px rgba(25,25,35,.075);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+body.ui-v13 .app-boot-mark {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(45,40,127,.12);
+}
+body.ui-v13 .app-boot-title { font-size: 17px; font-weight: 650; letter-spacing: -.025em; }
+body.ui-v13 .app-boot-status { font-size: 9.5px; color: #7C7C84; }
+body.ui-v13 .app-boot-inner::after {
+  content: "";
+  width: 46px;
+  height: 2px;
+  margin-top: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(45,40,127,.16) 0 28%, rgba(45,40,127,.72) 48% 62%, rgba(45,40,127,.16) 82% 100%);
+  background-size: 180% 100%;
+  animation: v13-boot-progress 1.05s ease-in-out infinite;
+}
+@keyframes v13-boot-progress { 0% { background-position: 100% 0; } 100% { background-position: -80% 0; } }
+@media (prefers-reduced-motion: reduce) { body.ui-v13 .app-boot-inner::after { animation: none; background: rgba(45,40,127,.35); } }
+
+body.ui-v13 #view-timetable .timetable-list.timetable-group-v13 {
+  display: block !important;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--v13-surface);
+  box-shadow: var(--v13-shadow);
+  border: 1px solid rgba(36,36,41,.045);
+}
+body.ui-v13 #view-timetable .timetable-list.timetable-group-v13 > .route-timetable-card,
+body.ui-v13 #view-timetable .timetable-list.timetable-group-v13 > .ad-slot-timetable-inline {
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+body.ui-v13 #view-timetable .timetable-list.timetable-group-v13 > :last-child { border-bottom: 0 !important; }
+body.ui-v13 #view-timetable .route-timetable-card[data-v4-compact="true"] { padding-inline: 12px !important; }
+body.ui-v13 #view-timetable .ad-slot-timetable-inline { padding-inline: 12px !important; }
+
+body.ui-v13 #view-settings { padding-bottom: 34px; }
+body.ui-v13 #view-settings > .page-heading { margin-bottom: 12px; }
+body.ui-v13 #view-settings > .settings-disclosure[hidden] { display: none !important; }
+body.ui-v13 .settings-menu-v13 {
+  margin: 12px 0 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--v13-surface);
+  border: 1px solid rgba(36,36,41,.045);
+  box-shadow: var(--v13-shadow);
+}
+body.ui-v13 .settings-nav-row-v13 {
+  width: 100%;
+  min-height: 58px;
+  padding: 10px 13px;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 20px;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid var(--v13-line);
+  background: #fff;
+  color: #242429;
+}
+body.ui-v13 .settings-nav-row-v13:last-child { border-bottom: 0; }
+body.ui-v13 .settings-nav-row-v13 > span:first-child { display: grid; gap: 3px; min-width: 0; }
+body.ui-v13 .settings-nav-row-v13 strong { font-size: 13px; font-weight: 620; letter-spacing: -.01em; }
+body.ui-v13 .settings-nav-row-v13 small { color: #777780; font-size: 9.5px; font-weight: 400; line-height: 1.35; }
+body.ui-v13 .settings-nav-chevron-v13 { display: grid; place-items: center; color: #A0A0A8; }
+body.ui-v13 .settings-nav-chevron-v13 svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+body.ui-v13 #favorite-trips-v6,
+body.ui-v13 #saved-searches-v6 {
+  margin: 10px 0 0 !important;
+  padding: 12px 12px 6px !important;
+  border-radius: 18px !important;
+  overflow: hidden;
+  background: #fff !important;
+  border: 1px solid rgba(36,36,41,.045) !important;
+  box-shadow: var(--v13-shadow) !important;
+}
+body.ui-v13 #favorite-trips-v6 .compact-saved-row,
+body.ui-v13 #saved-searches-v6 .compact-saved-row { border-top-color: var(--v13-line) !important; }
+
+body.ui-v13 .settings-subpage-v13 {
+  position: fixed;
+  z-index: 950;
+  top: var(--app-topbar-height, 60px);
+  bottom: calc(var(--v12-nav-height, 58px) + env(safe-area-inset-bottom));
+  left: 50%;
+  width: min(100%, 540px);
+  transform: translateX(calc(-50% + 100%));
+  background: var(--v13-canvas);
+  transition: transform .22s cubic-bezier(.22,.72,.24,1);
+  overflow: hidden;
+  pointer-events: none;
+  border-top: 1px solid rgba(36,36,41,.05);
+}
+body.ui-v13 .settings-subpage-v13.is-open { transform: translateX(-50%); pointer-events: auto; }
+body.ui-v13 .settings-subpage-header {
+  height: 48px;
+  padding: 0 10px;
+  display: grid;
+  grid-template-columns: 42px 1fr 42px;
+  align-items: center;
+  background: rgba(247,247,249,.94);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--v13-line);
+}
+body.ui-v13 .settings-subpage-header h2 { margin: 0; text-align: center; font-size: 15px; font-weight: 650; letter-spacing: -.02em; }
+body.ui-v13 .settings-subpage-back {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #2D287F;
+}
+body.ui-v13 .settings-subpage-back svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+body.ui-v13 .settings-subpage-body {
+  height: calc(100% - 48px);
+  padding: 14px 16px 28px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+body.ui-v13 .settings-subpage-body > .settings-card {
+  margin: 0 !important;
+  padding: 16px !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+  border: 1px solid rgba(36,36,41,.045) !important;
+  box-shadow: var(--v13-shadow) !important;
+}
+body.settings-subpage-open .bottom-nav { z-index: 1000 !important; }
+
+body.ui-v13 .install-guide-carousel { margin-top: 12px; }
+body.ui-v13 .install-guide-track { grid-auto-columns: minmax(86%, 1fr) !important; gap: 12px !important; scroll-padding-inline: 2px; }
+body.ui-v13 .install-guide-slide { gap: 8px !important; }
+body.ui-v13 .install-guide-media {
+  aspect-ratio: 706 / 1536 !important;
+  overflow: hidden;
+  border-radius: 16px !important;
+  background: #F0F0F3 !important;
+  border: 1px solid rgba(36,36,41,.06) !important;
+}
+body.ui-v13 .install-guide-media img { width: 100%; height: 100%; object-fit: cover !important; display: block; }
+body.ui-v13 .install-guide-slide > strong { font-size: 12px; font-weight: 620; }
+body.ui-v13 .install-guide-slide > p { font-size: 10px !important; line-height: 1.55 !important; }
+body.ui-v13 .install-guide-dot { width: 5px !important; height: 5px !important; background: #C6C6CC !important; }
+body.ui-v13 .install-guide-dot.is-active { width: 14px !important; background: #4B468E !important; }
+
+@media (min-width: 760px) and (min-height: 600px) {
+  body.ui-v13 .settings-subpage-v13 { bottom: calc(28px + var(--v12-nav-height, 58px)); }
+}
