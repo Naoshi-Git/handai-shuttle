@@ -25,6 +25,7 @@ jobs:
           node --check src/ui-v4.mjs
           node --check src/ui-v4-polish.mjs
           node --check src/ui-v5.mjs
+          node --check src/ui-v9.mjs
           node --check src/pwa.mjs
           node --check src/crowding-prediction.mjs
           node --check src/share-card.mjs
@@ -32,6 +33,8 @@ jobs:
           node --check data/location-points.mjs
           test -f ads.css
           test -f ui-v5.css
+          test -f ui-v7.css
+          test -f ui-v9.css
           test -f assets/brand/app-icon.svg
           test -f assets/brand/brand-icon-rounded.svg
           test -f assets/ads/house-share-640x180.svg
