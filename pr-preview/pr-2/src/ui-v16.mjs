@@ -7,7 +7,7 @@ const INSTALL_GUIDE_SOURCES = Object.freeze([
   "./assets/help/install/ios-03-confirm.webp"
 ]);
 const NAV_ORDER = Object.freeze(["home", "search", "timetable", "settings"]);
-const TRANSITION_SELECTOR = [
+const CONTROL_MOTION_SELECTOR = [
   ".bottom-nav [data-nav]",
   "#search-now-button",
   "#arrival-search-button",
@@ -20,6 +20,7 @@ const TRANSITION_SELECTOR = [
   "[data-result-step]",
   ".route-shortcut"
 ].join(",");
+const NATIVE_TRANSITION_SELECTOR = ".bottom-nav [data-nav]";
 
 let normalizeQueued = false;
 let transitionGuard = false;
@@ -40,14 +41,14 @@ function reducedMotion() {
   return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
 }
 
-function nextFrame(count = 2) {
-  return new Promise((resolve) => {
-    const tick = (remaining) => requestAnimationFrame(() => remaining > 1 ? tick(remaining - 1) : resolve());
-    tick(Math.max(1, count));
-  });
+function useNativeViewTransitions() {
+  if (typeof document.startViewTransition !== "function" || reducedMotion()) return false;
+  // iPhone/iPad are the primary surface for this app. Full-document snapshots combined
+  // with sticky/backdrop-filter UI can block WebKit's main thread long enough to make a
+  // tap look lost. Keep native View Transitions as a desktop enhancement and let touch
+  // devices use the lightweight CSS/control motion below.
+  return window.matchMedia?.("(hover: hover) and (pointer: fine)")?.matches === true;
 }
-
-function delay(ms) { return new Promise((resolve) => window.setTimeout(resolve, ms)); }
 
 function transitionMeta(target) {
   const navButton = target.closest?.(".bottom-nav [data-nav]");
@@ -56,11 +57,9 @@ function transitionMeta(target) {
     const next = navButton.dataset.nav;
     const from = NAV_ORDER.indexOf(current);
     const to = NAV_ORDER.indexOf(next);
-    return { kind: "tab", direction: from >= 0 && to >= 0 && to < from ? "back" : "forward", settle: 24 };
+    return { kind: "tab", direction: from >= 0 && to >= 0 && to < from ? "back" : "forward" };
   }
-  if (target.closest?.(".tt-campus-tabs, .tt-destination-buttons")) return { kind: "timetable-filter", direction: "none", settle: 112 };
-  if (target.matches?.("[data-result-step]")) return { kind: "journey-step", direction: Number(target.dataset.resultStep) < 0 ? "back" : "forward", settle: 64 };
-  return { kind: "control", direction: "none", settle: 42 };
+  return { kind: "control", direction: "none" };
 }
 
 function runExistingClick(target, event) {
@@ -74,17 +73,16 @@ function runExistingClick(target, event) {
 }
 
 function bindViewTransitions() {
-  const supported = typeof document.startViewTransition === "function";
+  const supported = useNativeViewTransitions();
   document.body.classList.toggle("has-view-transitions-v16", supported);
   if (!supported || document.documentElement.dataset.v16TransitionBound === "true") return;
   document.documentElement.dataset.v16TransitionBound = "true";
 
   document.addEventListener("click", (event) => {
-    if (transitionGuard || transitionRunning || reducedMotion() || event.defaultPrevented || event.button > 0 || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
-    const target = event.target instanceof Element ? event.target.closest(TRANSITION_SELECTOR) : null;
+    if (transitionGuard || transitionRunning || event.defaultPrevented || event.button > 0 || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+    const target = event.target instanceof Element ? event.target.closest(NATIVE_TRANSITION_SELECTOR) : null;
     if (!target || target.disabled || target.getAttribute("aria-disabled") === "true") return;
-    if (target.closest("dialog[open]")) return;
-    if (document.activeViewTransition) return;
+    if (target.closest("dialog[open]") || document.activeViewTransition) return;
 
     const meta = transitionMeta(target);
     event.preventDefault();
@@ -94,11 +92,9 @@ function bindViewTransitions() {
 
     transitionRunning = true;
     try {
-      const transition = document.startViewTransition(async () => {
-        runExistingClick(target, event);
-        await nextFrame(2);
-        if (meta.settle) await delay(meta.settle);
-      });
+      // The update callback must stay synchronous. Waiting for rAF/timers here keeps the
+      // old snapshot alive and turns normal rendering work into interaction latency.
+      const transition = document.startViewTransition(() => runExistingClick(target, event));
       transition.finished.finally(() => {
         transitionRunning = false;
         delete document.documentElement.dataset.v16TransitionKind;
@@ -129,6 +125,9 @@ function ensureChoiceGlider(track) {
     track.classList.remove("v16-choice-ready");
     return;
   }
+
+  // Read geometry once, then write CSS variables. This runs only after relevant
+  // interactions/child-list updates rather than after every class mutation in the app.
   const trackRect = track.getBoundingClientRect();
   const activeRect = active.getBoundingClientRect();
   if (!trackRect.width || !activeRect.width) return;
@@ -243,29 +242,43 @@ function normalizeUi() {
   });
 }
 
+function bindInteractionNormalization() {
+  document.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target.closest(CONTROL_MOTION_SELECTOR) : null;
+    if (!target) return;
+    // Let the app's existing click handlers update active state first.
+    requestAnimationFrame(normalizeUi);
+  }, true);
+}
+
 function observeDynamicUi() {
-  const root = $(".app-shell") || document.body;
+  // Previous revisions already observe active-class changes. v16 must not add another
+  // app-wide attributes observer: that multiplies work on every tap and can force layout
+  // repeatedly. Child-list observation is enough for newly rendered results/settings.
+  const roots = [$("#search-results"), $("#timetable-list"), $("#view-settings")].filter(Boolean);
+  if (!roots.length) return;
   const observer = new MutationObserver((records) => {
-    if (records.some((record) => record.type === "childList" || (record.type === "attributes" && ["class", "src"].includes(record.attributeName)))) normalizeUi();
+    if (records.some((record) => record.type === "childList")) normalizeUi();
   });
-  observer.observe(root, { childList:true, subtree:true, attributes:true, attributeFilter:["class","src"] });
+  roots.forEach((root) => observer.observe(root, { childList: true, subtree: true }));
 }
 
 function init() {
   document.body.classList.add("ui-v16");
   installStyles();
   bindViewTransitions();
+  bindInteractionNormalization();
   installDialogCloseMotion();
   installTimetableScrollSmoother();
   normalizeUi();
   observeDynamicUi();
-  window.addEventListener("resize", normalizeUi, { passive:true });
-  window.addEventListener("orientationchange", () => window.setTimeout(normalizeUi, 90), { passive:true });
+  window.addEventListener("resize", normalizeUi, { passive: true });
+  window.addEventListener("orientationchange", () => window.setTimeout(normalizeUi, 90), { passive: true });
   window.setTimeout(normalizeUi, 160);
   window.setTimeout(normalizeUi, 520);
 }
 
 if (typeof document !== "undefined") {
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once:true });
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
   else init();
 }
