@@ -41,7 +41,7 @@ test("selection materials live on persistent parents instead of recreated child 
   assert.match(currentCss, /#timetable-route-controls::before/);
   assert.match(currentCss, /#timetable-route-controls::after/);
   assert.doesNotMatch(current, /runtime-choice-glider/);
-  assert.doesNotMatch(current, /prepend\(glider\)/);
+  assert.match(current, /nav\.prepend\(glider\)/);
   assert.match(currentCss, /\.tt-campus-tabs \{ grid-template-columns: repeat\(3,minmax\(0,1fr\)\)/);
   assert.match(currentCss, /\.tt-destination-buttons \{ grid-template-columns: repeat\(2,minmax\(0,1fr\)\)/);
 });
