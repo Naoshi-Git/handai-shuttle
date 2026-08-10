@@ -199,7 +199,7 @@ function normalizeBootCopy() {
 function normalizeUi() {
   if (normalizeQueued) return;
   normalizeQueued = true;
-  requestAnimationFrame(() => {
+  queueMicrotask(() => {
     normalizeQueued = false;
     buildSettingsRoot();
     normalizeInstallGuide();
@@ -209,8 +209,14 @@ function normalizeUi() {
 }
 
 function observeDynamicUi() {
-  const observer = new MutationObserver(normalizeUi);
-  observer.observe(document.body, { childList: true, subtree: true });
+  // Only settings structure can introduce new disclosure cards after initialization.
+  // Timetable grouping is class-only and does not need to observe every body insertion.
+  const settings = document.getElementById("view-settings");
+  if (!settings) return;
+  const observer = new MutationObserver((records) => {
+    if (records.some((record) => record.type === "childList" && record.addedNodes.length)) normalizeUi();
+  });
+  observer.observe(settings, { childList: true });
 }
 
 function init() {
@@ -219,7 +225,6 @@ function init() {
   normalizeUi();
   observeDynamicUi();
   window.setTimeout(normalizeUi, 180);
-  window.setTimeout(normalizeUi, 560);
 }
 
 if (typeof document !== "undefined") {
