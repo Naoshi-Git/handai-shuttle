@@ -22,18 +22,24 @@ function installStyles() {
 }
 
 function finishBoot() {
+  let finished = false;
+  const root = document.documentElement;
+  const minimumMs = Number(root.dataset.bootMinMs || 960);
+  const maximumMs = Number(root.dataset.bootMaxMs || 1500);
   const finish = () => {
+    if (finished) return;
+    finished = true;
     document.body.classList.remove("app-booting");
     document.body.classList.add("app-ready");
     const boot = $("#app-boot");
-    window.setTimeout(() => boot?.remove(), 220);
+    window.setTimeout(() => boot?.remove(), 300);
   };
-  const elapsed = typeof performance !== "undefined" ? performance.now() : 320;
-  const minimum = Math.max(0, 320 - elapsed);
+  const elapsed = typeof performance !== "undefined" ? performance.now() : minimumMs;
+  const minimum = Math.max(0, minimumMs - elapsed);
   const fonts = document.fonts?.ready || Promise.resolve();
   Promise.allSettled([fonts, new Promise((resolve) => window.setTimeout(resolve, minimum))])
     .then(() => requestAnimationFrame(() => requestAnimationFrame(finish)));
-  window.setTimeout(finish, 850);
+  window.setTimeout(finish, maximumMs);
 }
 
 function hideLegacyRefresh() {
@@ -92,7 +98,7 @@ function bindLocationSource() {
 
 function normalizeNextBusCue() {
   $$(".tt-next-mini").forEach((node) => {
-    if (node.textContent.trim() !== "次に乗れる便") node.textContent = "次に乗れる便";
+    if (node.textContent.trim() !== "次の便") node.textContent = "次の便";
   });
 }
 
