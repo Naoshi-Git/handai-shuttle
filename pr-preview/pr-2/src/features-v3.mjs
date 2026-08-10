@@ -1,5 +1,7 @@
 // Compatibility entry point kept because enhancements.mjs imports this path.
-// Functional layers remain explicit; presentation/motion ownership is consolidated in the runtime modules.
+// Boot release is independent from all later compatibility layers so a runtime failure
+// cannot leave the user trapped on the launch screen.
+import "./boot-guard.mjs";
 import "./features-v3-core.mjs";
 import "./brand-integration.mjs";
 import "./ui-v4.mjs";
