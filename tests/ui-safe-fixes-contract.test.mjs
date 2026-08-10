@@ -33,10 +33,11 @@ test("redundant segmented clicks are stopped before legacy rerenders", () => {
   assert.match(source, /#home-destination-chips \[data-home-destination\]\.is-active/);
 });
 
-test("legacy delayed Home repaint is bypassed without replacing startup architecture", () => {
+test("legacy delayed Home repaint is bypassed while preserving destination preference", () => {
   assert.match(source, /homeButton\.removeAttribute\("data-home-destination"\)/);
   assert.match(source, /restoreHomeDestinationMarker/);
-  assert.match(source, /maskedHomeDestination/);
+  assert.match(source, /LAST_DESTINATION_KEY/);
+  assert.match(source, /localStorage\.setItem\(LAST_DESTINATION_KEY, maskedHomeDestination\)/);
   assert.doesNotMatch(source, /setTimeout\([^\n]*30/);
 });
 
