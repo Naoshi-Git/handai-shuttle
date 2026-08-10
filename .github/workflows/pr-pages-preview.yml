@@ -84,7 +84,7 @@ jobs:
         run: |
           rm -rf "pages/${PREVIEW_PATH}"
           mkdir -p "pages/${PREVIEW_PATH}"
-          cp source/index.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ui-v5.css source/ui-v7.css source/ui-v9.css source/ads.css "pages/${PREVIEW_PATH}/"
+          cp source/index.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ui-v5.css source/ads.css "pages/${PREVIEW_PATH}/"
           cp -R source/assets source/data source/src source/lp "pages/${PREVIEW_PATH}/"
           touch pages/.nojekyll
       - name: Generate preview build manifest
