@@ -9,8 +9,8 @@ const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
 await import("../src/ui-v12.mjs");
 
-test("v12 is loaded after v11", () => {
-  assert.match(entry, /import "\.\/ui-v11\.mjs";[\s\S]*import "\.\/ui-v12\.mjs";/);
+test("v12 remains a functional layer before v13 and the consolidated runtime", () => {
+  assert.match(entry, /import "\.\/ui-v10\.mjs";[\s\S]*import "\.\/ui-v12\.mjs";[\s\S]*import "\.\/ui-v13\.mjs";[\s\S]*import "\.\/ui-runtime\.mjs";/);
 });
 
 test("final presentation CSS is linked in head before modules run", () => {
