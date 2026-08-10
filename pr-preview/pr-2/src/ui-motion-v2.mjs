@@ -13,6 +13,9 @@ const geometryByKey = new Map();
 let structuralObserver = null;
 let favoriteObserver = null;
 let normalizeQueued = false;
+let activeChoiceKey = null;
+let navReplayGuard = false;
+let navTransitionRunning = false;
 
 function installStyles() {
   if ($('link[data-ui-motion-v2]')) return;
@@ -21,6 +24,10 @@ function installStyles() {
   link.href = "./src/ui-motion-v2.css";
   link.dataset.uiMotionV2 = "true";
   document.head.append(link);
+}
+
+function reducedMotion() {
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
 }
 
 function choiceKey(track) {
@@ -42,12 +49,7 @@ function interactionChoiceKey(target) {
 function measureChoice(track) {
   const active = $("button.is-active", track);
   if (!active) return null;
-  return {
-    x: active.offsetLeft,
-    y: active.offsetTop,
-    width: active.offsetWidth,
-    height: active.offsetHeight
-  };
+  return { x: active.offsetLeft, y: active.offsetTop, width: active.offsetWidth, height: active.offsetHeight };
 }
 
 function writeGeometry(track, geometry) {
@@ -113,9 +115,7 @@ function normalizeFavoriteSection() {
   const section = $("#favorite-trips-v6");
   if (!section) return;
   const subtitle = $(".compact-settings-head p", section);
-  if (subtitle && subtitle.textContent !== "タップすると保存した便を開きます") {
-    subtitle.textContent = "タップすると保存した便を開きます";
-  }
+  if (subtitle && subtitle.textContent !== "タップすると保存した便を開きます") subtitle.textContent = "タップすると保存した便を開きます";
   $$(".favorite-saved-row em", section).forEach((node) => {
     const value = node.textContent.trim().replace(/便+$/u, "");
     if (value) node.textContent = `${value}便`;
@@ -123,14 +123,51 @@ function normalizeFavoriteSection() {
   section.dataset.runtimeFavoriteOwner = "v6";
 }
 
-function setNavDirection(button) {
+function navMeta(button) {
   const current = $(".bottom-nav [data-nav].is-active")?.dataset.nav;
   const next = button?.dataset.nav;
-  if (!current || !next || current === next) return;
+  if (!current || !next || current === next) return null;
   const from = NAV_ORDER.indexOf(current);
   const to = NAV_ORDER.indexOf(next);
-  document.body.dataset.runtimeNavDirection = from >= 0 && to >= 0 && to < from ? "back" : "forward";
-  window.setTimeout(() => delete document.body.dataset.runtimeNavDirection, 380);
+  return { current, next, direction: from >= 0 && to >= 0 && to < from ? "back" : "forward" };
+}
+
+function replayNavClick(button) {
+  navReplayGuard = true;
+  try { button.click(); } finally { navReplayGuard = false; }
+}
+
+function transitionNavigation(button, event) {
+  if (navReplayGuard || navTransitionRunning) return false;
+  const meta = navMeta(button);
+  if (!meta) return false;
+
+  document.body.dataset.runtimeNavDirection = meta.direction;
+  if (reducedMotion() || typeof Element.prototype.animate !== "function") return false;
+
+  const activeView = $(".view.is-active");
+  if (!activeView) return false;
+
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  navTransitionRunning = true;
+  const dx = meta.direction === "back" ? 3 : -3;
+  const exit = activeView.animate(
+    [
+      { opacity: 1, transform: "translateX(0)" },
+      { opacity: 0.74, transform: `translateX(${dx}px)` }
+    ],
+    { duration: 105, easing: "cubic-bezier(.4,0,1,1)", fill: "both" }
+  );
+
+  const finish = () => {
+    exit.cancel();
+    replayNavClick(button);
+    navTransitionRunning = false;
+    window.setTimeout(() => delete document.body.dataset.runtimeNavDirection, 380);
+  };
+  exit.finished.then(finish, finish);
+  return true;
 }
 
 function markDomSwap() {
@@ -144,23 +181,27 @@ function bindInteractions() {
     if (!target) return;
 
     const nav = target.closest(".bottom-nav [data-nav]");
-    if (nav) setNavDirection(nav);
+    if (nav && transitionNavigation(nav, event)) return;
 
     const changedKey = interactionChoiceKey(target);
     if (!changedKey) return;
 
+    activeChoiceKey = changedKey;
     snapshotChoiceGeometry();
     markDomSwap();
     queueMicrotask(() => {
       normalizeChoices(changedKey);
       normalizeFavoriteSection();
+      requestAnimationFrame(() => { activeChoiceKey = null; });
     });
   }, true);
 }
 
 function observeStructuralRebuilds() {
   structuralObserver = new MutationObserver(() => {
-    if (normalizeQueued) return;
+    // A choice click already owns this rebuild and will animate only its own track.
+    // Do not let the structural observer immediately reset/cancel that animation.
+    if (activeChoiceKey || normalizeQueued) return;
     normalizeQueued = true;
     queueMicrotask(() => {
       normalizeQueued = false;
