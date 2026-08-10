@@ -102,9 +102,9 @@ function serviceBanner() {
 function setView(view) {
   $$(".view").forEach((section) => section.classList.toggle("is-active", section.dataset.view === view));
   $$(".bottom-nav button").forEach((button) => button.classList.toggle("is-active", button.dataset.nav === view));
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: "auto" });
 
-  if (view === "timetable") renderTimetable();
+  // Timetable content is owned by features-v3-core/current UI. Do not repaint the legacy table on tab entry.
   if (view === "settings") renderSettings();
 }
 
@@ -273,6 +273,11 @@ function renderRecentRoutes() {
 }
 
 function renderHome() {
+  if (typeof window.__handaiCurrentRenderHome === "function") {
+    window.__handaiCurrentRenderHome();
+    return;
+  }
+
   $("#home-origin-label").textContent = CAMPUSES[state.currentCampus].longName;
   renderDestinationChips();
   serviceBanner();
