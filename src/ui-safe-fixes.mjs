@@ -8,6 +8,15 @@ function installStyles() {
   const style = document.createElement("style");
   style.dataset.uiSafeFixes = "true";
   style.textContent = `
+    body.ui-safe-fixes .view.is-active {
+      animation: safe-view-enter 300ms cubic-bezier(.22,.72,.24,1) both !important;
+    }
+
+    @keyframes safe-view-enter {
+      from { opacity: .7; transform: translate3d(4px, 0, 0); }
+      to { opacity: 1; transform: none; }
+    }
+
     body.ui-safe-fixes .route-role.is-origin,
     body.ui-safe-fixes .route-role.is-destination {
       justify-content: center !important;
@@ -63,6 +72,12 @@ function installStyles() {
     body.ui-safe-fixes.runtime-dom-swap #upcoming-list,
     body.ui-safe-fixes.runtime-dom-swap #home-destination-chips > button {
       animation: none !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body.ui-safe-fixes .view.is-active {
+        animation: none !important;
+      }
     }
   `;
   document.head.append(style);
