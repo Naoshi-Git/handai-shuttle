@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const entry = await readFile(new URL("../src/features-v3.mjs", import.meta.url), "utf8");
+const app = await readFile(new URL("../src/app.mjs", import.meta.url), "utf8");
 const current = await readFile(new URL("../src/ui-current.mjs", import.meta.url), "utf8");
 const currentCss = await readFile(new URL("../src/ui-current.css", import.meta.url), "utf8");
 const preferences = await readFile(new URL("../src/route-preferences.mjs", import.meta.url), "utf8");
@@ -29,11 +30,28 @@ test("route preferences contain state/default behavior but never render Home", (
   assert.doesNotMatch(preferences, /#next-card-content/);
 });
 
+test("base Home delegates to the current owner after enhancement startup", () => {
+  assert.match(app, /typeof window\.__handaiCurrentRenderHome === "function"/);
+  assert.match(app, /window\.__handaiCurrentRenderHome\(\)/);
+  assert.match(current, /window\.__handaiCurrentRenderHome = \(\) => renderCurrentHome\(\)/);
+});
+
+test("base tab navigation never repaints the legacy timetable", () => {
+  assert.doesNotMatch(app, /if \(view === "timetable"\) renderTimetable\(\)/);
+  assert.match(app, /window\.scrollTo\(\{ top: 0, behavior: "auto" \}\)/);
+  assert.doesNotMatch(current, /activateTimetableView/);
+});
+
 test("Home selector labels stay campus-only while stop detail stays in content", () => {
   assert.match(current, /button\.textContent\.trim\(\) !== campus\.name/);
   assert.match(current, /endpointLabel\(originCampus, origin/);
   assert.match(current, /endpointLabel\(destinationCampus, destination/);
   assert.doesNotMatch(current, /data-home-destination="suita"[^\n]*工学部前/);
+});
+
+test("Home destination click is owned before the base target listener", () => {
+  assert.match(current, /#home-destination-chips \[data-home-destination\]/);
+  assert.match(current, /event\.stopPropagation\(\);[\s\S]*renderCurrentHome\(homeDestination\.dataset\.homeDestination/);
 });
 
 test("selection materials live on persistent parents instead of recreated child gliders", () => {
@@ -53,13 +71,6 @@ test("same nav and same segmented choice are true no-ops", () => {
   assert.match(current, /\.tt-campus-tabs \[data-tt-origin\]\.is-active/);
   assert.match(current, /\.tt-destination-buttons \[data-tt-destination\]\.is-active/);
   assert.match(current, /\.search-mode \[data-mode\]\.is-active/);
-});
-
-test("timetable tab does not invoke the legacy rerender path", () => {
-  assert.match(current, /activateTimetableView/);
-  assert.match(current, /data-nav="timetable"/);
-  assert.doesNotMatch(current, /renderTimetableControls/);
-  assert.doesNotMatch(current, /renderRouteTimetable/);
 });
 
 test("motion grammar separates tab, selection and sheets", () => {
