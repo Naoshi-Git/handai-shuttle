@@ -1,0 +1,250 @@
+/* v10: restrained, native-like visual system. Brand color is reserved for true emphasis. */
+
+:root {
+  --ink: #1F1F24;
+  --muted: #6D6D76;
+  --line: #E4E4E9;
+  --canvas: #F5F5F7;
+  --v10-surface: #FFFFFF;
+  --v10-surface-soft: #F7F7F8;
+  --v10-surface-selected: #F1F1F3;
+  --v10-border-selected: #D7D7DD;
+  --v10-operating-dot: #5B8179;
+  --v10-warning-bg: #FAF7F4;
+  --v10-warning-border: #ECE2DA;
+  --v10-warning-ink: #5E4B43;
+  --v10-warning-dot: #A87560;
+  --v10-via-bg: #F5F3EF;
+  --v10-via-border: #E4DFD6;
+  --v10-via-ink: #5E574D;
+}
+
+body.ui-v10 {
+  color: var(--ink);
+  background: var(--canvas);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body.ui-v10 .app-shell { background: #FFF; }
+body.ui-v10 button,
+body.ui-v10 input,
+body.ui-v10 select { font-family: inherit; }
+body.ui-v10 .brand-copy h1,
+body.ui-v10 .page-heading h2,
+body.ui-v10 .section-title-row h2,
+body.ui-v10 .section-title-row h3,
+body.ui-v10 .journey-time strong,
+body.ui-v10 .tt-compact-time strong { font-weight: 800; letter-spacing: -.02em; }
+body.ui-v10 .pill,
+body.ui-v10 .chip,
+body.ui-v10 .tt-campus-tabs button,
+body.ui-v10 .tt-destination-buttons button,
+body.ui-v10 .bottom-nav button { font-weight: 700; }
+
+/* Location status: use natural Japanese and keep the control visually quiet. */
+body.ui-v10 #locate-button {
+  min-width: 70px;
+  max-width: 84px;
+  border-color: var(--line) !important;
+  background: #FFF !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+  font-size: 0 !important;
+}
+body.ui-v10 #locate-button::after {
+  content: "現在地";
+  font-size: 10.5px;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--ink);
+}
+body.ui-v10 #locate-button[data-location-state="loading"]::after { content: "取得中…"; color: var(--muted); }
+body.ui-v10 #locate-button[data-location-state="matched"]::after { content: "取得済み"; }
+body.ui-v10 #locate-button[data-location-state="manual"]::after { content: "手動選択"; }
+body.ui-v10 #locate-button[data-location-state="failed"]::after { content: "再取得"; color: var(--v10-warning-ink); }
+body.ui-v10 #locate-button[data-location-state="matched"],
+body.ui-v10 #locate-button[data-location-state="manual"] { background: var(--v10-surface-soft) !important; }
+
+/* Use semantic color only as a small cue, not as a large tinted surface. */
+body.ui-v10 .service-banner:not(.is-closed) {
+  background: var(--v10-surface-soft) !important;
+  border-color: var(--line) !important;
+  color: #3A3A41 !important;
+}
+body.ui-v10 .service-banner:not(.is-closed)::before { background: var(--v10-operating-dot) !important; }
+body.ui-v10 .service-banner.is-closed,
+body.ui-v10 .message.warning {
+  background: var(--v10-warning-bg) !important;
+  border-color: var(--v10-warning-border) !important;
+  color: var(--v10-warning-ink) !important;
+}
+body.ui-v10 .service-banner.is-closed::before { background: var(--v10-warning-dot) !important; }
+body.ui-v10 .pill-warning {
+  background: var(--v10-via-bg) !important;
+  border-color: var(--v10-via-border) !important;
+  color: var(--v10-via-ink) !important;
+}
+body.ui-v10 .pill-soft {
+  background: #F3F3F5 !important;
+  color: #4A4A53 !important;
+  border-color: transparent !important;
+}
+
+/* Reserve indigo for the hero and primary actions. Flat controls are calmer than repeated gradients. */
+body.ui-v10 .primary-button,
+body.ui-v10 .search-submit,
+body.ui-v10 .search-sheet-done,
+body.ui-v10 .share-card-primary {
+  background: var(--ou-900) !important;
+  box-shadow: none !important;
+}
+body.ui-v10 .secondary-button { color: var(--ink); border-color: var(--line); }
+body.ui-v10 .route-role.is-origin,
+body.ui-v10 .route-role.is-destination {
+  background: #EFEFF2 !important;
+  color: #303036 !important;
+  border: 1px solid #E0E0E5;
+}
+body.ui-v10 .swap-button { color: #55555E; border-color: var(--line); box-shadow: none; }
+body.ui-v10 .search-summary-icon,
+body.ui-v10 .search-now-choice { background: #F3F3F5 !important; color: #45454E !important; }
+
+/* Selection states rely on contrast and weight rather than filled brand color. */
+body.ui-v10 .chip.is-active {
+  background: var(--v10-surface-selected) !important;
+  border-color: var(--v10-border-selected) !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+body.ui-v10 .tt-campus-tabs {
+  background: #F4F4F6 !important;
+  border-color: var(--line) !important;
+}
+body.ui-v10 .tt-campus-tabs button { color: #74747D !important; }
+body.ui-v10 .tt-campus-tabs button.is-active {
+  background: #FFF !important;
+  color: var(--ink) !important;
+  box-shadow: 0 1px 3px rgba(20,20,28,.08) !important;
+}
+body.ui-v10 .tt-destination-buttons button {
+  background: #FFF !important;
+  border-color: var(--line) !important;
+  color: #505059 !important;
+}
+body.ui-v10 .tt-destination-buttons button.is-active {
+  background: var(--v10-surface-selected) !important;
+  border-color: var(--v10-border-selected) !important;
+  color: var(--ink) !important;
+}
+body.ui-v10 .segmented { background: #F4F4F6 !important; border-color: var(--line) !important; }
+body.ui-v10 .segmented button { color: #73737C !important; }
+body.ui-v10 .segmented button.is-active {
+  background: #FFF !important;
+  color: var(--ink) !important;
+  box-shadow: 0 1px 3px rgba(20,20,28,.08) !important;
+}
+
+/* The next timetable row should not look selected with a blue frame. */
+body.ui-v10 .route-timetable-card[data-v4-compact="true"].is-next,
+body.ui-v10 .route-timetable-card.is-next {
+  border: 1px solid #DCDCE2 !important;
+  background: #FFF !important;
+  box-shadow: 0 4px 14px rgba(20,20,28,.045) !important;
+}
+body.ui-v10 .tt-next-mini,
+body.ui-v10 .tt-sheet-next {
+  background: #F0EFF5 !important;
+  color: var(--ou-900) !important;
+}
+body.ui-v10 .journey-card.is-highlighted {
+  border-color: #DCDCE2 !important;
+  background: #FFF !important;
+  box-shadow: 0 5px 16px rgba(20,20,28,.045) !important;
+}
+body.ui-v10 .campus-option.is-current {
+  border-color: var(--v10-border-selected) !important;
+  background: var(--v10-surface-soft) !important;
+}
+
+/* Remove pale-indigo surfaces where hierarchy can be carried by typography alone. */
+body.ui-v10 .location-assist,
+body.ui-v10 .dialog-stop-field,
+body.ui-v10 .feedback-link,
+body.ui-v10 .source-link,
+body.ui-v10 .v9-settings-note {
+  background: var(--v10-surface-soft) !important;
+  border-color: var(--line) !important;
+}
+body.ui-v10 .location-assist-actions button { border-color: var(--line); color: #4B4B54; }
+body.ui-v10 .bottom-nav button.is-active {
+  background: #F3F3F5 !important;
+  color: var(--ou-900) !important;
+}
+body.ui-v10 .bottom-nav { border-top-color: var(--line); }
+
+/* All house ads use the exact same compact horizontal treatment as the stable top banner. */
+body.ui-v10 .ad-slot {
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 14px;
+}
+body.ui-v10 .house-ad-card {
+  --ad-shell-radius: 12px;
+  width: 100% !important;
+  overflow: hidden !important;
+  border: 1px solid #E5E5EA !important;
+  border-radius: 12px !important;
+  background: #FFF !important;
+  box-shadow: none !important;
+  isolation: isolate;
+  contain: paint;
+  clip-path: none !important;
+  -webkit-mask-image: none !important;
+}
+body.ui-v10 .house-ad-creative {
+  display: block !important;
+  width: 100% !important;
+  aspect-ratio: 640 / 89 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #FFF !important;
+  box-shadow: none !important;
+}
+body.ui-v10 .house-ad-creative img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 1 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #FFF !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  transform: none !important;
+}
+body.ui-v10 .ad-slot-search-primary .house-ad-card,
+body.ui-v10 .ad-slot-search-inline .house-ad-card,
+body.ui-v10 .ad-slot-timetable-header .house-ad-card,
+body.ui-v10 .ad-slot-timetable-inline .house-ad-card,
+body.ui-v10 .ad-slot-home-feed .house-ad-card { border-radius: 12px !important; }
+body.ui-v10 .ad-slot-search-primary .house-ad-creative,
+body.ui-v10 .ad-slot-search-inline .house-ad-creative,
+body.ui-v10 .ad-slot-timetable-header .house-ad-creative,
+body.ui-v10 .ad-slot-timetable-inline .house-ad-creative,
+body.ui-v10 .ad-slot-home-feed .house-ad-creative { aspect-ratio: 640 / 89 !important; }
+
+/* Keep sticky layers opaque and neutral. */
+body.ui-v10 .ad-slot-timetable-header,
+body.ui-v10 #timetable-route-controls {
+  background: #FFF !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body.ui-v10 #timetable-route-controls { box-shadow: 0 5px 14px rgba(20,20,28,.035) !important; }
+
+@media (max-width: 380px) {
+  body.ui-v10 #locate-button { min-width: 66px; max-width: 80px; padding-inline: 8px; }
+  body.ui-v10 #locate-button::after { font-size: 10px; }
+}
