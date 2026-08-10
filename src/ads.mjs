@@ -9,42 +9,20 @@ export const AD_PLACEMENTS = Object.freeze({
   TIMETABLE_INLINE: "timetable-inline"
 });
 
+const COMPACT_HOUSE_CREATIVE = Object.freeze({
+  src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
+  width: 640,
+  height: 89,
+  ratio: "640 / 89",
+  alt: "阪大シャトル。次の便、すぐわかる。共有"
+});
+
 const HOUSE_CREATIVES = Object.freeze({
-  [AD_PLACEMENTS.HOME_FEED]: {
-    src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
-    width: 640,
-    height: 89,
-    ratio: "640 / 89",
-    alt: "阪大シャトル。次の便、すぐわかる。共有"
-  },
-  [AD_PLACEMENTS.SEARCH_PRIMARY]: {
-    src: "./assets/ads/house/v2/house-rectangle-600x500.svg",
-    width: 600,
-    height: 500,
-    ratio: "6 / 5",
-    alt: "阪大シャトル。次の便、すぐわかる。次の便、最終便、混雑目安を確認して友達に送る"
-  },
-  [AD_PLACEMENTS.SEARCH_INLINE]: {
-    src: "./assets/ads/house/v2/house-inline-640x180.svg",
-    width: 640,
-    height: 180,
-    ratio: "640 / 180",
-    alt: "阪大シャトル。次の便、最終便、混雑目安。友達に共有"
-  },
-  [AD_PLACEMENTS.TIMETABLE_HEADER]: {
-    src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
-    width: 640,
-    height: 89,
-    ratio: "640 / 89",
-    alt: "阪大シャトル。次の便、すぐわかる。共有"
-  },
-  [AD_PLACEMENTS.TIMETABLE_INLINE]: {
-    src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
-    width: 640,
-    height: 89,
-    ratio: "640 / 89",
-    alt: "阪大シャトル。次の便、すぐわかる。共有"
-  }
+  [AD_PLACEMENTS.HOME_FEED]: COMPACT_HOUSE_CREATIVE,
+  [AD_PLACEMENTS.SEARCH_PRIMARY]: COMPACT_HOUSE_CREATIVE,
+  [AD_PLACEMENTS.SEARCH_INLINE]: COMPACT_HOUSE_CREATIVE,
+  [AD_PLACEMENTS.TIMETABLE_HEADER]: COMPACT_HOUSE_CREATIVE,
+  [AD_PLACEMENTS.TIMETABLE_INLINE]: COMPACT_HOUSE_CREATIVE
 });
 
 export function getAdsMode() {
@@ -91,7 +69,7 @@ async function shareHandaiShuttle(button) {
 }
 
 function houseAdMarkup(placement) {
-  const creative = HOUSE_CREATIVES[placement] || HOUSE_CREATIVES[AD_PLACEMENTS.HOME_FEED];
+  const creative = HOUSE_CREATIVES[placement] || COMPACT_HOUSE_CREATIVE;
   return `
     <aside class="ad-card house-ad-card" data-ad-provider="house" aria-label="阪大シャトルの自社広告">
       <div class="ad-card-label"><span>自社広告</span></div>
