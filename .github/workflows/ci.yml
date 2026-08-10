@@ -32,6 +32,7 @@ jobs:
           node --check src/ui-v13.mjs
           node --check src/ui-v14.mjs
           node --check src/ui-v15.mjs
+          node --check src/ui-safe-fixes.mjs
           node --check src/pwa.mjs
           node --check src/crowding-prediction.mjs
           node --check src/share-card.mjs
