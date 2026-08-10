@@ -17,6 +17,35 @@ function installStyles() {
       to { opacity: 1; transform: none; }
     }
 
+    body.ui-safe-fixes .search-sheet[open],
+    body.ui-safe-fixes .tt-detail-sheet[open],
+    body.ui-safe-fixes .share-card-dialog[open] {
+      animation: safe-sheet-enter 260ms cubic-bezier(.16,1,.3,1) both !important;
+    }
+
+    body.ui-safe-fixes .campus-dialog[open] {
+      animation: safe-dialog-enter 250ms cubic-bezier(.16,1,.3,1) both !important;
+    }
+
+    body.ui-safe-fixes dialog[open]::backdrop {
+      animation: safe-backdrop-enter 210ms ease both !important;
+    }
+
+    @keyframes safe-sheet-enter {
+      from { opacity: 0; transform: translate3d(0, 7px, 0); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes safe-dialog-enter {
+      from { opacity: 0; transform: translate3d(0, 2px, 0); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes safe-backdrop-enter {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
     body.ui-safe-fixes .route-role.is-origin,
     body.ui-safe-fixes .route-role.is-destination {
       justify-content: center !important;
@@ -75,7 +104,12 @@ function installStyles() {
     }
 
     @media (prefers-reduced-motion: reduce) {
-      body.ui-safe-fixes .view.is-active {
+      body.ui-safe-fixes .view.is-active,
+      body.ui-safe-fixes .search-sheet[open],
+      body.ui-safe-fixes .tt-detail-sheet[open],
+      body.ui-safe-fixes .share-card-dialog[open],
+      body.ui-safe-fixes .campus-dialog[open],
+      body.ui-safe-fixes dialog[open]::backdrop {
         animation: none !important;
       }
     }
