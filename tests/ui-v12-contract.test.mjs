@@ -43,7 +43,7 @@ test("manual campus selection explicitly drives location status", () => {
 });
 
 test("timetable next-bus cue is stronger without a selected blue frame", () => {
-  assert.match(source, /次に乗れる便/);
+  assert.match(source, /次の便/);
   assert.match(css, /\.route-timetable-card:focus-visible[\s\S]*outline:\s*0/);
   assert.match(css, /\.is-next::before[\s\S]*width:\s*2px/);
 });
