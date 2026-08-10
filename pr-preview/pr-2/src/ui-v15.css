@@ -1,0 +1,210 @@
+/* v15: fix splash reliability, refine route editor geometry, and add restrained material motion. */
+:root {
+  --v15-material: rgba(247,247,249,.68);
+  --v15-material-strong: rgba(252,252,253,.82);
+  --v15-highlight: rgba(255,255,255,.72);
+  --v15-edge: rgba(255,255,255,.64);
+  --v15-route-surface: #F0F0F3;
+  --v15-route-divider: rgba(36,36,41,.065);
+  --v15-motion: cubic-bezier(.22,.72,.24,1);
+}
+
+/* Material should reveal context without showing hard rectangular content shapes through the nav. */
+body.ui-v15 .bottom-nav {
+  isolation: isolate !important;
+  overflow: hidden !important;
+  background: var(--v15-material) !important;
+  border: 1px solid var(--v15-edge) !important;
+  box-shadow: 0 12px 34px rgba(22,22,28,.105), inset 0 1px 0 rgba(255,255,255,.42) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(165%) !important;
+  backdrop-filter: blur(28px) saturate(165%) !important;
+}
+body.ui-v15 .bottom-nav::before,
+body.ui-v15 .bottom-nav::after { display: none !important; content: none !important; }
+body.ui-v15 .bottom-nav .nav-glider-v15 {
+  position: absolute;
+  z-index: 0;
+  top: 5px;
+  bottom: 5px;
+  left: 0;
+  width: var(--v15-nav-glider-width, 0px);
+  border-radius: 24px;
+  background: rgba(255,255,255,.58);
+  border: 1px solid rgba(255,255,255,.54);
+  box-shadow: 0 2px 9px rgba(22,22,28,.055), inset 0 1px 0 rgba(255,255,255,.5);
+  transform: translate3d(var(--v15-nav-glider-x, 0px),0,0);
+  transition: transform .26s var(--v15-motion), width .26s var(--v15-motion), opacity .16s ease;
+  pointer-events: none;
+}
+body.ui-v15 .bottom-nav:not(.nav-glider-ready-v15) .nav-glider-v15 { opacity: 0; }
+body.ui-v15 .bottom-nav button {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+  box-shadow: none !important;
+  transition: color .2s ease, transform .14s ease !important;
+}
+body.ui-v15 .bottom-nav button.is-active { background: transparent !important; box-shadow: none !important; }
+body.ui-v15 .bottom-nav button:active { transform: scale(.97) !important; }
+
+/* Top utility material: slightly more transparent, with a fine inner highlight rather than an opaque strip. */
+body.ui-v15 .topbar,
+body.ui-v15 .settings-subpage-header {
+  background: rgba(248,248,250,.74) !important;
+  border: 0 !important;
+  box-shadow: inset 0 -1px 0 rgba(36,36,41,.035), inset 0 1px 0 rgba(255,255,255,.48) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+}
+
+/* Search origin/destination becomes one composed control instead of two cards with an overlapping circle. */
+body.ui-v15 .search-panel-compact .route-editor {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) 44px !important;
+  grid-template-rows: auto auto !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+  border-radius: 20px !important;
+  background: var(--v15-route-surface) !important;
+  box-shadow: inset 0 0 0 1px rgba(36,36,41,.025) !important;
+}
+body.ui-v15 .search-panel-compact .route-line {
+  min-height: 52px !important;
+  margin: 0 !important;
+  padding: 5px 7px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+body.ui-v15 .search-panel-compact .route-line:first-child {
+  grid-column: 1;
+  grid-row: 1;
+  position: relative;
+}
+body.ui-v15 .search-panel-compact .route-line:first-child::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 6px;
+  bottom: 0;
+  height: 1px;
+  background: var(--v15-route-divider);
+}
+body.ui-v15 .search-panel-compact .route-line:last-child { grid-column: 1; grid-row: 2; }
+body.ui-v15 .search-panel-compact .swap-button {
+  position: relative !important;
+  grid-column: 2 !important;
+  grid-row: 1 / span 2 !important;
+  align-self: center !important;
+  justify-self: center !important;
+  inset: auto !important;
+  transform: none !important;
+  width: 34px !important;
+  height: 34px !important;
+  border: 1px solid rgba(255,255,255,.68) !important;
+  background: rgba(255,255,255,.72) !important;
+  box-shadow: 0 3px 11px rgba(24,24,30,.07), inset 0 1px 0 rgba(255,255,255,.7) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(145%) !important;
+  backdrop-filter: blur(14px) saturate(145%) !important;
+}
+body.ui-v15 #swap-button .v11-icon { transform: none !important; }
+body.ui-v15 .route-role.is-origin,
+body.ui-v15 .route-role.is-destination {
+  min-height: 38px !important;
+  height: 38px !important;
+  padding-inline: 10px !important;
+  border-radius: 12px !important;
+  background: rgba(226,226,230,.86) !important;
+  color: #34343A !important;
+  font-size: 12px !important;
+  font-weight: 630 !important;
+}
+body.ui-v15 .route-campus-select,
+body.ui-v15 .inline-stop select {
+  min-height: 38px !important;
+  line-height: 38px !important;
+  vertical-align: middle !important;
+}
+body.ui-v15 .route-campus-select { font-size: 15px !important; font-weight: 650 !important; }
+body.ui-v15 .inline-stop { border-left-color: rgba(36,36,41,.08) !important; }
+body.ui-v15 .inline-stop select { font-size: 12.5px !important; font-weight: 600 !important; }
+
+/* Search summary/control surfaces share the same material rhythm but remain content-layer standard material. */
+body.ui-v15 .search-summary-button {
+  background: #F2F2F5 !important;
+  transition: background .14s ease, transform .14s ease !important;
+}
+body.ui-v15 .search-summary-button:active { background: #EAEAEF !important; transform: scale(.994) !important; }
+body.ui-v15 .search-submit,
+body.ui-v15 .primary-button,
+body.ui-v15 .secondary-button { transition: transform .14s ease, opacity .14s ease !important; }
+body.ui-v15 .search-submit:active,
+body.ui-v15 .primary-button:active,
+body.ui-v15 .secondary-button:active { transform: scale(.992) !important; }
+
+/* Existing guide sources are only 180px wide. Do not magnify them into a blurry full-width screenshot. */
+body.ui-v15 .install-guide-media {
+  display: grid !important;
+  place-items: center !important;
+  padding: 16px 12px !important;
+  background: linear-gradient(180deg,#F2F2F5,#FAFAFB) !important;
+  border: 0 !important;
+  border-radius: 20px !important;
+}
+body.ui-v15 .install-guide-media img {
+  width: min(100%, 280px) !important;
+  height: auto !important;
+  max-height: 58dvh !important;
+  object-fit: contain !important;
+  border-radius: 18px !important;
+  box-shadow: 0 7px 24px rgba(20,20,28,.09) !important;
+}
+body.ui-v15 .install-guide-media.is-low-res-source-v15 img {
+  width: min(100%, 180px) !important;
+  box-shadow: 0 6px 22px rgba(20,20,28,.08) !important;
+}
+body.ui-v15 .install-guide-track { grid-auto-columns: minmax(88%,1fr) !important; gap: 10px !important; }
+body.ui-v15 .install-guide-slide > strong { font-size: 12.5px !important; font-weight: 650 !important; }
+body.ui-v15 .install-guide-slide > p { font-size: 10.5px !important; color: #71717A !important; }
+
+/* View changes should feel settled, not like separate web pages popping in. */
+body.ui-v15 .view.is-active {
+  animation: v15-view-enter .19s var(--v15-motion) both !important;
+}
+@keyframes v15-view-enter {
+  from { opacity: .72; transform: translateY(2px) scale(.998); }
+  to { opacity: 1; transform: none; }
+}
+body.ui-v15 .settings-subpage-v13 {
+  transition: transform .27s var(--v15-motion) !important;
+}
+body.ui-v15 .settings-subpage-back:active { transform: scale(.94); }
+
+@media (max-width: 390px) {
+  body.ui-v15 .search-panel-compact .route-editor { grid-template-columns: minmax(0,1fr) 40px !important; }
+  body.ui-v15 .search-panel-compact .route-line { padding-left: 5px !important; padding-right: 5px !important; }
+  body.ui-v15 .route-role.is-origin,
+  body.ui-v15 .route-role.is-destination { padding-inline: 8px !important; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  body.ui-v15 .bottom-nav,
+  body.ui-v15 .topbar,
+  body.ui-v15 .settings-subpage-header,
+  body.ui-v15 .search-panel-compact .swap-button {
+    background: #F8F8FA !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.ui-v15 .view.is-active { animation: none !important; }
+  body.ui-v15 .bottom-nav .nav-glider-v15,
+  body.ui-v15 .bottom-nav button,
+  body.ui-v15 .settings-subpage-v13,
+  body.ui-v15 .search-summary-button,
+  body.ui-v15 .search-submit,
+  body.ui-v15 .primary-button,
+  body.ui-v15 .secondary-button { transition: none !important; }
+}
