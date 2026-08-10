@@ -29,6 +29,7 @@ jobs:
           node --check src/ui-v10.mjs
           node --check src/ui-v11.mjs
           node --check src/ui-v12.mjs
+          node --check src/ui-v13.mjs
           node --check src/pwa.mjs
           node --check src/crowding-prediction.mjs
           node --check src/share-card.mjs
@@ -42,8 +43,12 @@ jobs:
           test -f src/ui-v10.css
           test -f src/ui-v11.css
           test -f src/ui-v12.css
+          test -f src/ui-v13.css
           test -f assets/brand/app-icon.svg
           test -f assets/brand/brand-icon-rounded.svg
           test -f assets/ads/house-share-640x180.svg
           test -f assets/ads/house-share-640x128.svg
+          test -f assets/help/install/ios-01-share.webp
+          test -f assets/help/install/ios-02-add-home.webp
+          test -f assets/help/install/ios-03-confirm.webp
           node --test tests/*.test.mjs
