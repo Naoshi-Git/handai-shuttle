@@ -28,17 +28,20 @@ jobs:
           node --check src/ui-v9.mjs
           node --check src/ui-v10.mjs
           node --check src/ui-v11.mjs
+          node --check src/ui-v12.mjs
           node --check src/pwa.mjs
           node --check src/crowding-prediction.mjs
           node --check src/share-card.mjs
           node --check src/ads.mjs
           node --check data/location-points.mjs
           test -f ads.css
+          test -f ui-v4.css
           test -f ui-v5.css
           test -f ui-v7.css
           test -f ui-v9.css
           test -f src/ui-v10.css
           test -f src/ui-v11.css
+          test -f src/ui-v12.css
           test -f assets/brand/app-icon.svg
           test -f assets/brand/brand-icon-rounded.svg
           test -f assets/ads/house-share-640x180.svg
