@@ -4,8 +4,8 @@ import { readFile, stat } from "node:fs/promises";
 
 const adsSource = await readFile(new URL("../src/ads.mjs", import.meta.url), "utf8");
 const adsCss = await readFile(new URL("../ads.css", import.meta.url), "utf8");
+const v10Css = await readFile(new URL("../src/ui-v10.css", import.meta.url), "utf8");
 const spec = await readFile(new URL("../docs/AD-MONETIZATION-SPEC.md", import.meta.url), "utf8");
-const inlineSvg = await readFile(new URL("../assets/ads/house/v2/house-inline-640x180.svg", import.meta.url), "utf8");
 
 await import("../src/ads.mjs");
 
@@ -22,33 +22,27 @@ test("current implementation defaults to house ads and keeps AdSense as a future
   assert.doesNotMatch(adsSource, /pagead2\.googlesyndication\.com/);
 });
 
-test("runtime house creatives are standalone assets without runtime cropping", async () => {
-  const assets = [
-    "../assets/ads/house/v2/house-banner-simple-640x89.webp",
-    "../assets/ads/house/v2/house-inline-640x180.svg",
-    "../assets/ads/house/v2/house-rectangle-600x500.svg"
-  ];
-  for (const relative of assets) {
-    const info = await stat(new URL(relative, import.meta.url));
-    assert.ok(info.size > 0, `${relative} is empty`);
-    assert.ok(info.size <= 150 * 1024, `${relative} exceeds 150KB`);
-  }
-  assert.match(adsSource, /house-rectangle-600x500\.svg/);
-  assert.match(adsSource, /SEARCH_INLINE[\s\S]*house-inline-640x180\.svg/);
-  assert.match(inlineSvg, /rx="16"/);
-  assert.doesNotMatch(inlineSvg, /fill="#000(?:000)?"|fill="black"/i);
-  assert.match(adsCss, /object-fit:\s*contain/);
-  assert.doesNotMatch(adsCss, /object-fit:\s*cover/);
+test("runtime house ads share the previously stable compact horizontal creative", async () => {
+  const relative = "../assets/ads/house/v2/house-banner-simple-640x89.webp";
+  const info = await stat(new URL(relative, import.meta.url));
+  assert.ok(info.size > 0, `${relative} is empty`);
+  assert.ok(info.size <= 150 * 1024, `${relative} exceeds 150KB`);
+  assert.match(adsSource, /COMPACT_HOUSE_CREATIVE/);
+  assert.match(adsSource, /house-banner-simple-640x89\.webp/);
+  assert.match(adsSource, /SEARCH_PRIMARY\]: COMPACT_HOUSE_CREATIVE/);
+  assert.match(adsSource, /SEARCH_INLINE\]: COMPACT_HOUSE_CREATIVE/);
+  assert.match(adsSource, /TIMETABLE_HEADER\]: COMPACT_HOUSE_CREATIVE/);
+  assert.match(adsSource, /TIMETABLE_INLINE\]: COMPACT_HOUSE_CREATIVE/);
+  assert.doesNotMatch(adsSource, /house-rectangle-600x500\.svg|house-inline-640x180\.svg/);
 });
 
-test("ad geometry follows content width and only clips placement-specific shared radii", () => {
+test("ad geometry follows content width and v10 normalizes all house slots to one shell", () => {
   assert.match(adsCss, /\.house-ad-card\s*\{[\s\S]*max-width:\s*none/);
-  assert.match(adsCss, /\.house-ad-creative\s*\{[\s\S]*border-radius:\s*0/);
-  assert.match(adsCss, /\.house-ad-creative\s*\{[\s\S]*overflow:\s*visible/);
   assert.doesNotMatch(adsCss, /max-width:\s*(320|360)px/);
-  assert.match(adsCss, /\.ad-slot-search-inline\s*\{[\s\S]*width:\s*100%/);
-  assert.match(adsCss, /\.ad-slot-search-inline \.house-ad-creative,[\s\S]*border-radius:\s*16px/);
-  assert.match(adsCss, /\.ad-slot-timetable-inline\s*\{[\s\S]*width:\s*100%/);
+  assert.match(v10Css, /\.house-ad-card[\s\S]*border-radius:\s*12px !important/);
+  assert.match(v10Css, /\.house-ad-creative[\s\S]*aspect-ratio:\s*640 \/ 89 !important/);
+  assert.match(v10Css, /\.house-ad-creative img[\s\S]*object-fit:\s*cover !important/);
+  assert.match(v10Css, /\.ad-slot-search-primary \.house-ad-card,[\s\S]*border-radius:\s*12px !important/);
 });
 
 test("Yahoo-style placement keeps a primary ad outside the search form and an opaque seamless timetable stack", () => {
