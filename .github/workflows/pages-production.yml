@@ -36,6 +36,7 @@ jobs:
           node --check source/src/ui-v4.mjs
           node --check source/src/ui-v4-polish.mjs
           node --check source/src/ui-v5.mjs
+          node --check source/src/ui-v9.mjs
           node --check source/src/pwa.mjs
           node --check source/src/crowding-prediction.mjs
           node --check source/src/share-card.mjs
@@ -43,6 +44,8 @@ jobs:
           node --check source/data/location-points.mjs
           test -f source/ads.css
           test -f source/ui-v5.css
+          test -f source/ui-v7.css
+          test -f source/ui-v9.css
           test -f source/assets/brand/app-icon.svg
           test -f source/assets/brand/brand-icon-rounded.svg
           test -f source/assets/ads/house-share-640x180.svg
@@ -53,8 +56,8 @@ jobs:
       - name: Sync production while preserving PR previews
         run: |
           rm -rf pages/assets pages/data pages/src pages/lp
-          rm -f pages/index.html pages/manifest.webmanifest pages/style.css pages/ui-v2.css pages/ui-v3.css pages/ui-v4.css pages/ui-v5.css pages/ads.css pages/version.json
-          cp source/index.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ui-v5.css source/ads.css pages/
+          rm -f pages/index.html pages/manifest.webmanifest pages/style.css pages/ui-v2.css pages/ui-v3.css pages/ui-v4.css pages/ui-v5.css pages/ui-v7.css pages/ui-v9.css pages/ads.css pages/version.json
+          cp source/index.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ui-v5.css source/ui-v7.css source/ui-v9.css source/ads.css pages/
           cp -R source/assets source/data source/src source/lp pages/
           touch pages/.nojekyll
       - name: Generate production build marker
@@ -62,8 +65,8 @@ jobs:
           python3 - <<'PY'
           import json, os
           assets = [
-              "index.html", "manifest.webmanifest", "style.css", "ui-v2.css", "ui-v3.css", "ui-v4.css", "ui-v5.css", "ads.css",
-              "src/app.mjs", "src/enhancements.mjs", "src/features-v3.mjs", "src/features-v3-core.mjs", "src/ui-v4.mjs", "src/ui-v5.mjs", "src/pwa.mjs", "src/ads.mjs",
+              "index.html", "manifest.webmanifest", "style.css", "ui-v2.css", "ui-v3.css", "ui-v4.css", "ui-v5.css", "ui-v7.css", "ui-v9.css", "ads.css",
+              "src/app.mjs", "src/enhancements.mjs", "src/features-v3.mjs", "src/features-v3-core.mjs", "src/ui-v4.mjs", "src/ui-v5.mjs", "src/ui-v7-fixes.mjs", "src/ui-v9.mjs", "src/pwa.mjs", "src/ads.mjs",
               "assets/brand/app-icon.svg", "assets/brand/brand-icon-rounded.svg"
           ]
           with open("pages/version.json", "w", encoding="utf-8") as handle:
