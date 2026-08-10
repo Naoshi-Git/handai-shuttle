@@ -32,7 +32,6 @@ const ICONS = Object.freeze({
 let navResizeObserver = null;
 let surfaceResizeObserver = null;
 let nativeDialogClose = null;
-let pendingHomeDestination = null;
 let pendingTimetableChange = false;
 let pendingSearchModeChange = false;
 let favoriteObserver = null;
@@ -343,15 +342,6 @@ function observeFavorites() {
   favoriteObserver.observe(section, { childList: true, subtree: true, characterData: true });
 }
 
-function activateTimetableView() {
-  $$(".view").forEach((view) => view.classList.toggle("is-active", view.dataset.view === "timetable"));
-  $$(".bottom-nav [data-nav]").forEach((button) => button.classList.toggle("is-active", button.dataset.nav === "timetable"));
-  window.scrollTo({ top: 0, behavior: "auto" });
-  updateNavGlider();
-  requestAnimationFrame(updateTimetableGliders);
-  window.dispatchEvent(new CustomEvent("handai:viewchange", { detail: { view: "timetable" } }));
-}
-
 function stopRedundantClick(event, selector) {
   if (!event.target.closest?.(selector)) return false;
   event.stopPropagation();
@@ -368,20 +358,18 @@ function captureInteractions(event) {
     return;
   }
 
-  const timetableNav = target.closest('.bottom-nav [data-nav="timetable"]');
-  if (timetableNav) {
-    event.stopPropagation();
-    activateTimetableView();
-    return;
-  }
-
   if (stopRedundantClick(event, "#home-destination-chips [data-home-destination].is-active")) return;
   if (stopRedundantClick(event, ".tt-campus-tabs [data-tt-origin].is-active")) return;
   if (stopRedundantClick(event, ".tt-destination-buttons [data-tt-destination].is-active")) return;
   if (stopRedundantClick(event, ".search-mode [data-mode].is-active")) return;
 
   const homeDestination = target.closest("#home-destination-chips [data-home-destination]");
-  if (homeDestination) pendingHomeDestination = homeDestination.dataset.homeDestination || null;
+  if (homeDestination) {
+    event.stopPropagation();
+    renderCurrentHome(homeDestination.dataset.homeDestination || null);
+    return;
+  }
+
   if (target.closest(".tt-campus-tabs [data-tt-origin], .tt-destination-buttons [data-tt-destination]")) pendingTimetableChange = true;
   if (target.closest(".search-mode [data-mode]")) pendingSearchModeChange = true;
 }
@@ -389,11 +377,6 @@ function captureInteractions(event) {
 function afterInteractions(event) {
   const target = event.target instanceof Element ? event.target : null;
 
-  if (pendingHomeDestination) {
-    const destination = pendingHomeDestination;
-    pendingHomeDestination = null;
-    renderCurrentHome(destination);
-  }
   if (pendingTimetableChange) {
     pendingTimetableChange = false;
     queueMicrotask(() => {
@@ -415,14 +398,6 @@ function afterInteractions(event) {
       const view = nav.dataset.nav;
       if (view) window.dispatchEvent(new CustomEvent("handai:viewchange", { detail: { view } }));
     });
-  }
-
-  if (target.closest("#refresh-button")) {
-    renderCurrentHome();
-    return;
-  }
-  if (target.closest("[data-campus-choice]")) {
-    queueMicrotask(() => renderCurrentHome());
   }
 }
 
@@ -498,6 +473,7 @@ function init() {
   normalizeUtilityUi();
   ensureNavGlider();
   observeSurfaces();
+  window.__handaiCurrentRenderHome = () => renderCurrentHome();
   window.addEventListener("click", captureInteractions, true);
   document.addEventListener("click", afterInteractions);
   bindStateChanges();
