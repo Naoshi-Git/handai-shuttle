@@ -58,3 +58,12 @@ test("desktop sheets and settings stay inside the application surface", () => {
   assert.match(css, /width:min\(520px, calc\(100vw - 48px\)\)/);
   assert.match(css, /\.settings-subpage-v13[\s\S]*border-radius:24px/);
 });
+
+test("v16 keeps touch interactions off full-document snapshots and avoids broad attribute observation", () => {
+  assert.match(source, /\(hover: hover\) and \(pointer: fine\)/);
+  assert.match(source, /const NATIVE_TRANSITION_SELECTOR = "\.bottom-nav \[data-nav\]"/);
+  assert.doesNotMatch(source, /startViewTransition\(async/);
+  assert.doesNotMatch(source, /await\s+(?:nextFrame|delay)/);
+  assert.doesNotMatch(source, /observer\.observe\(root,\s*\{[^}]*attributes:\s*true/s);
+  assert.match(source, /observer\.observe\(root, \{ childList: true, subtree: true \}\)/);
+});
