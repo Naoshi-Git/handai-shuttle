@@ -53,11 +53,11 @@ test("bottom navigation is a compact floating rounded layer", () => {
   assert.match(css, /\.bottom-nav button[\s\S]*min-height:\s*48px/);
 });
 
-test("timetable uses one rounded group and inset separators", () => {
+test("timetable uses one rounded group and a short visible next-bus label", () => {
   assert.match(css, /timetable-list\.timetable-group-v13[\s\S]*border-radius:\s*var\(--v14-radius-group\)/);
   assert.match(css, /left:\s*16px;[\s\S]*right:\s*16px;[\s\S]*background:\s*var\(--v14-line-soft\)/);
-  assert.match(source, /次の便/);
-  assert.doesNotMatch(source, /次に乗れる便/);
+  assert.match(source, /textContent\.trim\(\) !== "次の便"/);
+  assert.match(source, /node\.textContent = "次の便"/);
 });
 
 test("settings retain slide navigation while using rounded groups", () => {
