@@ -2,9 +2,9 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 const INSTALL_GUIDE_SOURCES = Object.freeze([
-  "./assets/help/install/ios-01-retina.svg",
-  "./assets/help/install/ios-02-retina.svg",
-  "./assets/help/install/ios-03-retina.svg"
+  "./assets/help/install/ios-01-share.webp",
+  "./assets/help/install/ios-02-add-home.webp",
+  "./assets/help/install/ios-03-confirm.webp"
 ]);
 const NAV_ORDER = Object.freeze(["home", "search", "timetable", "settings"]);
 const TRANSITION_SELECTOR = [
@@ -158,15 +158,11 @@ function normalizeResultStepper() {
   if (status && status.textContent.trim() === "前後の便") status.textContent = "便を移動";
 }
 
-function installRetinaGuideSources() {
+function keepInstallGuideSourcesStable() {
   $$(".install-guide-media img").forEach((img, index) => {
     const src = INSTALL_GUIDE_SOURCES[index];
-    if (!src || img.dataset.v16Retina === "true") return;
-    img.dataset.v16Retina = "true";
-    img.src = src;
-    img.removeAttribute("width");
-    img.removeAttribute("height");
-    img.closest(".install-guide-media")?.classList.remove("is-low-res-source-v15");
+    if (!src) return;
+    if (!img.getAttribute("src")?.includes(src.replace("./", ""))) img.src = src;
   });
 }
 
@@ -242,7 +238,7 @@ function normalizeUi() {
     normalizeQueued = false;
     normalizeChoiceTracks();
     normalizeResultStepper();
-    installRetinaGuideSources();
+    keepInstallGuideSourcesStable();
     document.documentElement.dataset.uiReady = "v16";
   });
 }
