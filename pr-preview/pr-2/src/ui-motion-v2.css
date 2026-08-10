@@ -1,0 +1,140 @@
+/* Motion v2: eliminate scale/popup artifacts and keep selection materials optically centered. */
+:root {
+  --motion-v2-view: 320ms;
+  --motion-v2-select: 300ms;
+  --motion-v2-sheet: 270ms;
+  --motion-v2-ease: cubic-bezier(.2,.72,.2,1);
+  --motion-v2-ease-out: cubic-bezier(.16,1,.3,1);
+}
+
+/* Tab changes: no scale. A small directional drift reads as navigation rather than a flash. */
+body.ui-motion-v2 .view.is-active {
+  animation: motion-v2-view-enter var(--motion-v2-view) var(--motion-v2-ease) both !important;
+}
+body.ui-motion-v2[data-runtime-nav-direction="forward"] .view.is-active {
+  animation-name: motion-v2-view-enter-forward !important;
+}
+body.ui-motion-v2[data-runtime-nav-direction="back"] .view.is-active {
+  animation-name: motion-v2-view-enter-back !important;
+}
+@keyframes motion-v2-view-enter {
+  from { opacity:.84; transform:translateY(1px); }
+  to { opacity:1; transform:none; }
+}
+@keyframes motion-v2-view-enter-forward {
+  from { opacity:.82; transform:translateX(4px); }
+  to { opacity:1; transform:none; }
+}
+@keyframes motion-v2-view-enter-back {
+  from { opacity:.82; transform:translateX(-4px); }
+  to { opacity:1; transform:none; }
+}
+
+/* Segmented controls use equal slots and translate only. No width/height "growing from a corner" motion. */
+body.ui-motion-v2 .runtime-choice-track {
+  box-sizing:border-box !important;
+}
+body.ui-motion-v2 #home-destination-chips.runtime-choice-track {
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  align-items:stretch !important;
+}
+body.ui-motion-v2 .tt-destination-buttons.runtime-choice-track {
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  align-items:stretch !important;
+}
+body.ui-motion-v2 .tt-campus-tabs.runtime-choice-track {
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  align-items:stretch !important;
+}
+body.ui-motion-v2 .search-mode.runtime-choice-track {
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  align-items:stretch !important;
+}
+body.ui-motion-v2 .runtime-choice-track .runtime-choice-glider {
+  box-sizing:border-box !important;
+  border:0 !important;
+  background:#fff !important;
+  box-shadow:0 1px 5px rgba(22,22,28,.055),inset 0 0 0 1px rgba(36,36,41,.025) !important;
+  transition:transform var(--motion-v2-select) var(--motion-v2-ease) !important;
+  transform:translate3d(var(--runtime-choice-x,0px),var(--runtime-choice-y,0px),0) !important;
+  will-change:transform;
+}
+body.ui-motion-v2 .runtime-choice-track.runtime-choice-instant .runtime-choice-glider {
+  transition:none !important;
+}
+body.ui-motion-v2 .runtime-choice-track > button,
+body.ui-motion-v2 .runtime-choice-track > button:active,
+body.ui-motion-v2 .bottom-nav button:active {
+  transform:none !important;
+}
+body.ui-motion-v2 .runtime-choice-track > button {
+  min-width:0 !important;
+  transition:color 180ms ease !important;
+}
+body.ui-motion-v2 #home-destination-chips.runtime-choice-track > button,
+body.ui-motion-v2 .tt-destination-buttons.runtime-choice-track > button {
+  width:100% !important;
+  justify-content:center !important;
+  text-align:center !important;
+}
+
+/* Prevent legacy renderer swaps from replaying card/button entrance effects during a selection change. */
+body.runtime-dom-swap #view-home .next-card-content,
+body.runtime-dom-swap #view-home .journey-card,
+body.runtime-dom-swap #view-home .chip,
+body.runtime-dom-swap #view-timetable .route-timetable-card,
+body.runtime-dom-swap #view-timetable .tt-campus-tabs button,
+body.runtime-dom-swap #view-timetable .tt-destination-buttons button {
+  animation:none !important;
+  transition:none !important;
+}
+
+/* Route role labels are centered inside their own dark rounded material. */
+body.ui-motion-v2 .route-role.is-origin,
+body.ui-motion-v2 .route-role.is-destination {
+  justify-content:center !important;
+  text-align:center !important;
+  padding-left:10px !important;
+  padding-right:10px !important;
+}
+
+/* Sheets keep less travel and a longer ease-out so they settle instead of popping. */
+body.ui-motion-v2 .search-sheet[open],
+body.ui-motion-v2 .tt-detail-sheet[open],
+body.ui-motion-v2 .share-card-dialog[open] {
+  animation:motion-v2-sheet-in var(--motion-v2-sheet) var(--motion-v2-ease-out) both !important;
+}
+body.ui-motion-v2 .campus-dialog[open] {
+  animation:motion-v2-dialog-in var(--motion-v2-sheet) var(--motion-v2-ease-out) both !important;
+}
+body.ui-motion-v2 dialog[open]::backdrop {
+  animation:motion-v2-backdrop-in 220ms ease both !important;
+}
+@keyframes motion-v2-sheet-in {
+  from { opacity:0; transform:translateY(7px); }
+  to { opacity:1; transform:none; }
+}
+@keyframes motion-v2-dialog-in {
+  from { opacity:0; transform:translateY(2px); }
+  to { opacity:1; transform:none; }
+}
+@keyframes motion-v2-backdrop-in { from { opacity:0; } to { opacity:1; } }
+
+@media (prefers-reduced-motion:reduce) {
+  body.ui-motion-v2 .view.is-active,
+  body.ui-motion-v2 .runtime-choice-track .runtime-choice-glider,
+  body.ui-motion-v2 .search-sheet[open],
+  body.ui-motion-v2 .tt-detail-sheet[open],
+  body.ui-motion-v2 .share-card-dialog[open],
+  body.ui-motion-v2 .campus-dialog[open],
+  body.ui-motion-v2 dialog[open]::backdrop {
+    animation:none !important;
+    transition:none !important;
+  }
+}
