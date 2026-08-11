@@ -1,10 +1,8 @@
 :root {
   --current-page-gutter: 18px;
-  --current-motion-view: 300ms;
   --current-motion-choice: 280ms;
   --current-motion-sheet: 360ms;
   --current-motion-close: 220ms;
-  --current-ease-view: cubic-bezier(.2,.7,.2,1);
   --current-ease-choice: cubic-bezier(.2,.8,.2,1);
   --current-ease-sheet: cubic-bezier(.16,1,.3,1);
   --current-track: #EDEDF0;
@@ -13,10 +11,10 @@
   --current-control-font-size: 12px;
   --current-control-line-height: 1;
   --current-control-ink: #66666F;
-  --current-control-selected-ink: #242429;
+  --current-control-selected-ink: #111118;
 }
 
-/* Current layer owns only interaction geometry/motion. Legacy version scopes remain visual foundations. */
+/* Current layer owns interaction geometry; whole-screen tab motion is owned by view-lifecycle. */
 body.ui-current .topbar {
   padding-left: var(--current-page-gutter) !important;
   padding-right: var(--current-page-gutter) !important;
@@ -32,15 +30,6 @@ body.ui-current #service-banner {
 body.ui-current #view-search .results-section > .section-title-row {
   padding-left: 4px !important;
   padding-right: 4px !important;
-}
-
-/* A changed tab gets one restrained fade. Same-tab clicks are stopped before legacy handlers. */
-body.ui-current .view.is-active {
-  animation: current-view-enter var(--current-motion-view) var(--current-ease-view) both !important;
-}
-@keyframes current-view-enter {
-  from { opacity: .72; transform: translate3d(0,1px,0); }
-  to { opacity: 1; transform: none; }
 }
 
 /* Bottom navigation uses one persistent glider. */
@@ -112,6 +101,10 @@ body.ui-current .search-mode > button.is-active {
   box-shadow: none !important;
   color: var(--current-control-selected-ink) !important;
   -webkit-text-fill-color: var(--current-control-selected-ink) !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  text-shadow: none !important;
 }
 body.ui-current #home-destination-chips > button:active,
 body.ui-current .search-mode > button:active { transform: none !important; }
@@ -190,6 +183,10 @@ body.ui-current .tt-destination-buttons > button.is-active {
   box-shadow: none !important;
   color: var(--current-control-selected-ink) !important;
   -webkit-text-fill-color: var(--current-control-selected-ink) !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  text-shadow: none !important;
 }
 body.ui-current .tt-campus-tabs > button:active,
 body.ui-current .tt-destination-buttons > button:active { transform: none !important; }
@@ -291,7 +288,6 @@ body.ui-current .runtime-choice-glider { display: none !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.ui-current .view.is-active,
   body.ui-current .search-sheet[open],
   body.ui-current .tt-detail-sheet[open],
   body.ui-current .share-card-dialog[open],

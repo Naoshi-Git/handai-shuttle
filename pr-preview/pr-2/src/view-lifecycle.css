@@ -9,17 +9,6 @@ body.ui-view-transitioning {
   overscroll-behavior: none;
 }
 
-/* WebKit contrast guard for segmented timetable selections. */
-body.ui-view-lifecycle.ui-current .tt-campus-tabs > button.is-active,
-body.ui-view-lifecycle.ui-current .tt-destination-buttons > button.is-active {
-  color: #111118 !important;
-  -webkit-text-fill-color: #111118 !important;
-  font-weight: 700 !important;
-  opacity: 1 !important;
-  filter: none !important;
-  text-shadow: none !important;
-}
-
 .view-transition-veil {
   position: fixed;
   z-index: 2147483000;
