@@ -1,11 +1,11 @@
 /* v5: compact search sheets and fixed metadata alignment. */
 
-body.ui-v5[data-active-view="search"] #view-search > .page-heading,
-body.ui-v5[data-active-view="timetable"] #view-timetable > .page-heading,
-body.ui-v5[data-active-view="settings"] #view-settings > .page-heading { display: none; }
-body.ui-v5[data-active-view="search"] #view-search,
-body.ui-v5[data-active-view="timetable"] #view-timetable,
-body.ui-v5[data-active-view="settings"] #view-settings { padding-top: 10px; }
+body.ui-system[data-active-view="search"] #view-search > .page-heading,
+body.ui-system[data-active-view="timetable"] #view-timetable > .page-heading,
+body.ui-system[data-active-view="settings"] #view-settings > .page-heading { display: none; }
+body.ui-system[data-active-view="search"] #view-search,
+body.ui-system[data-active-view="timetable"] #view-timetable,
+body.ui-system[data-active-view="settings"] #view-settings { padding-top: 10px; }
 
 .search-summary-button {
   width: 100%; min-height: 48px; margin-top: 8px; padding: 7px 10px;
@@ -20,8 +20,8 @@ body.ui-v5[data-active-view="settings"] #view-settings { padding-top: 10px; }
 .search-summary-main small { color: var(--muted); font-size: 8.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .search-summary-value { color: var(--ou-900); font-size: 11px; font-weight: 900; white-space: nowrap; }
 .search-summary-chevron { color: #aaa8bb; font-size: 20px; line-height: 1; }
-body.ui-v5 #search-form #service-banner.is-search-context { margin: 9px 0 0; border-radius: 12px; padding: 8px 10px; font-size: 10px; line-height: 1.45; }
-body.ui-v5 #search-form #service-banner.is-search-context::before { width: 6px; height: 6px; }
+body.ui-system #search-form #service-banner.is-search-context { margin: 9px 0 0; border-radius: 12px; padding: 8px 10px; font-size: 10px; line-height: 1.45; }
+body.ui-system #search-form #service-banner.is-search-context::before { width: 6px; height: 6px; }
 
 .search-sheet {
   box-sizing: border-box; width: min(100%, 540px); max-width: 540px; max-height: min(74dvh, 620px);
@@ -47,12 +47,12 @@ body.ui-v5 #search-form #service-banner.is-search-context::before { width: 6px; 
 #search-condition-sheet .search-options .option-list { margin: 0; padding: 0; border: 0; }
 #search-condition-sheet .toggle-row:first-child { border-top: 0; }
 
-body.ui-v5 #timetable-route-controls {
+body.ui-system #timetable-route-controls {
   top: calc(var(--app-topbar-height, 70px) + var(--tt-sticky-ad-height, 0px));
   z-index: 18;
   scroll-margin-top: calc(var(--app-topbar-height, 70px) + var(--tt-sticky-ad-height, 0px) + 118px);
 }
-body.ui-v5 .route-timetable-card[data-v4-compact="true"] { scroll-margin-top: calc(var(--app-topbar-height, 70px) + var(--tt-sticky-ad-height, 0px) + 128px); }
+body.ui-system .route-timetable-card[data-v4-compact="true"] { scroll-margin-top: calc(var(--app-topbar-height, 70px) + var(--tt-sticky-ad-height, 0px) + 128px); }
 
 .tt-compact-badges.tt-compact-badges-v5 { display: grid; grid-template-columns: 42px 58px minmax(0,auto); align-items: center; justify-content: start; gap: 4px; overflow: visible; }
 .tt-compact-badges-v5 > .crowding-icon { grid-column: 1; grid-row: 1; margin: 0; justify-self: start; }
