@@ -70,6 +70,7 @@ test("Bottom Sheetの経路線は全停留所共通の1本軸で描画する", a
 test("選択便をブランド付きPNG共有カードとして共有できる", async () => {
   const source = await read("src/ui-v4.mjs");
   const share = await read("src/share-card.mjs");
+  const identity = await read("src/share-identity.mjs");
   const css = await read("ui-v4.css");
   assert.match(source, /openSharePreview/);
   assert.match(source, /next-share-button/);
@@ -82,7 +83,8 @@ test("選択便をブランド付きPNG共有カードとして共有できる",
   assert.match(share, /new File/);
   assert.match(share, /naoshi-git\.github\.io\/handai-shuttle/);
   assert.match(share, /shareTargetUrl/);
-  assert.match(share, /pr-preview/);
-  assert.match(share, /window\.location\.origin/);
+  assert.match(share, /shareLandingUrl/);
+  assert.match(identity, /share\.html/);
+  assert.match(identity, /new URL\("share\.html", base\)/);
   assert.match(css, /share-card-dialog/);
 });
