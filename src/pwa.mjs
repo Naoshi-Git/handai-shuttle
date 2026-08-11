@@ -134,8 +134,13 @@ function isSafariBrowser() {
   return /Safari/i.test(ua) && !/(CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo)/i.test(ua);
 }
 
+function settingsUiIsActive() {
+  return document.body?.classList.contains("settings-subpage-open") === true
+    || document.getElementById("view-settings")?.classList.contains("is-active") === true;
+}
+
 export function shouldShowInstallNudge() {
-  if (isStandalone() || !isIosDevice() || !isSafariBrowser()) return false;
+  if (isStandalone() || !isIosDevice() || !isSafariBrowser() || settingsUiIsActive()) return false;
   try { return localStorage.getItem(INSTALL_NUDGE_DISMISS_KEY) !== "1"; } catch { return true; }
 }
 
@@ -175,6 +180,12 @@ function installSafariNudge() {
   nudge.querySelector("[data-pwa-install-dismiss]")?.addEventListener("click", dismissInstallNudge);
 }
 
+function bindInstallNudgeLifecycle() {
+  window.addEventListener("handai:viewchange", (event) => {
+    if (event.detail?.view === "settings") document.querySelector("[data-pwa-install-nudge]")?.remove();
+  });
+}
+
 async function autoCheckStandalone() {
   if (!isStandalone()) return;
   const meta = await fetchVersion().catch(() => null);
@@ -195,6 +206,7 @@ function init() {
   installRasterIcons();
   installStyles();
   installSettingsCard();
+  bindInstallNudgeLifecycle();
   window.setTimeout(installSafariNudge, 1350);
   window.setTimeout(() => void autoCheckStandalone(), 650);
 }
