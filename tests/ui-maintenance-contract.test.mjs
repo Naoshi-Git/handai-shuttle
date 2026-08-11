@@ -48,6 +48,15 @@ test("remaining foundation CSS is keyed to semantic ui-system scope, not runtime
   assert.match(foundationCss, /body\.ui-system \.journey-card\.is-favorite-trip/);
 });
 
+test("foundation keeps only live utility tokens and delegates sheet motion to ui-system", () => {
+  for (const removed of ["--ui-card-radius", "--ui-panel-radius", "--ui-surface-soft", "--ui-warning-bg", "--ui-warning-border", "--ui-warning-ink"]) {
+    assert.doesNotMatch(foundationCss, new RegExp(removed));
+  }
+  assert.doesNotMatch(foundationCss, /search-sheet-in|\.search-sheet\[open\][\s\S]*animation/);
+  assert.match(systemCss, /body\.ui-system \.search-sheet\[open\]/);
+  assert.match(systemCss, /@keyframes ui-sheet-in/);
+});
+
 test("base stylesheet does not retain superseded first-generation Search markup", () => {
   for (const obsolete of ["eyebrow", "route-fields", "field-card", "detail-stop-row", "sub-field"]) {
     assert.doesNotMatch(baseCss, new RegExp(`\\.${obsolete}(?![\\w-])`));
