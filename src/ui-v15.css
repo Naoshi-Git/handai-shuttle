@@ -1,4 +1,4 @@
-/* v15: fix splash reliability, refine route editor geometry, and add restrained material motion. */
+/* v15: refine route editor geometry and add restrained material motion. */
 :root {
   --v15-material: rgba(247,247,249,.68);
   --v15-material-strong: rgba(252,252,253,.82);
@@ -47,8 +47,7 @@ body.ui-v15 .bottom-nav button {
 body.ui-v15 .bottom-nav button.is-active { background: transparent !important; box-shadow: none !important; }
 body.ui-v15 .bottom-nav button:active { transform: scale(.97) !important; }
 
-/* Top utility material: slightly more transparent, with a fine inner highlight rather than an opaque strip. */
-body.ui-v15 .topbar,
+/* Settings subpage keeps its own material; app Topbar ownership lives in ui-current. */
 body.ui-v15 .settings-subpage-header {
   background: rgba(248,248,250,.74) !important;
   border: 0 !important;
@@ -168,14 +167,6 @@ body.ui-v15 .install-guide-track { grid-auto-columns: minmax(88%,1fr) !important
 body.ui-v15 .install-guide-slide > strong { font-size: 12.5px !important; font-weight: 650 !important; }
 body.ui-v15 .install-guide-slide > p { font-size: 10.5px !important; color: #71717A !important; }
 
-/* View changes should feel settled, not like separate web pages popping in. */
-body.ui-v15 .view.is-active {
-  animation: v15-view-enter .19s var(--v15-motion) both !important;
-}
-@keyframes v15-view-enter {
-  from { opacity: .72; transform: translateY(2px) scale(.998); }
-  to { opacity: 1; transform: none; }
-}
 body.ui-v15 .settings-subpage-v13 {
   transition: transform .27s var(--v15-motion) !important;
 }
@@ -190,7 +181,6 @@ body.ui-v15 .settings-subpage-back:active { transform: scale(.94); }
 
 @media (prefers-reduced-transparency: reduce) {
   body.ui-v15 .bottom-nav,
-  body.ui-v15 .topbar,
   body.ui-v15 .settings-subpage-header,
   body.ui-v15 .search-panel-compact .swap-button {
     background: #F8F8FA !important;
@@ -199,7 +189,6 @@ body.ui-v15 .settings-subpage-back:active { transform: scale(.94); }
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  body.ui-v15 .view.is-active { animation: none !important; }
   body.ui-v15 .bottom-nav .nav-glider-v15,
   body.ui-v15 .bottom-nav button,
   body.ui-v15 .settings-subpage-v13,
