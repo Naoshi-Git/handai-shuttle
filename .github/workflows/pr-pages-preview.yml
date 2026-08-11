@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Validate source tree
         run: |
@@ -38,7 +40,7 @@ jobs:
       - name: Build preview payload
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          BUILD_SHA: ${{ github.sha }}
+          BUILD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           rm -rf source
           mkdir -p source
@@ -99,5 +101,5 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Deploy PR ${PR_NUMBER} preview ${GITHUB_SHA}"
+          git commit -m "Deploy PR ${PR_NUMBER} preview ${BUILD_SHA:-$GITHUB_SHA}"
           git push origin HEAD:gh-pages
