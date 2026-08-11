@@ -6,12 +6,14 @@ const entry = await readFile(new URL("../src/features-v3.mjs", import.meta.url),
 const source = await readFile(new URL("../src/ui-v12.mjs", import.meta.url), "utf8");
 const css = await readFile(new URL("../src/ui-system.css", import.meta.url), "utf8");
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+const pwa = await readFile(new URL("../src/pwa.mjs", import.meta.url), "utf8");
 
 await import("../src/ui-v12.mjs");
 
 test("v12 remains a functional layer before v13 and ui-current", () => {
   assert.match(entry, /import "\.\/route-preferences\.mjs";[\s\S]*import "\.\/ui-v12\.mjs";[\s\S]*import "\.\/ui-v13\.mjs";[\s\S]*import "\.\/ui-current\.mjs";/);
   assert.doesNotMatch(entry, /import "\.\/ui-v10\.mjs";/);
+  assert.doesNotMatch(source, /classList\.add\("ui-v12"\)|ui-v12\.css/);
 });
 
 test("semantic presentation CSS is linked in head before modules run", () => {
@@ -66,11 +68,14 @@ test("settings use disclosures while favorites and searches remain visible", () 
   assert.match(css, /\.settings-disclosure > summary/);
 });
 
-test("home-screen install guide is built for real screenshot assets", () => {
-  assert.match(source, /ios-01-share\.webp/);
-  assert.match(source, /ios-02-add-home\.webp/);
-  assert.match(source, /ios-03-confirm\.webp/);
+test("home-screen install guide uses empty phone frames instead of embedded screenshots", () => {
+  assert.match(source, /INSTALL_GUIDE_STEPS/);
+  assert.match(source, /install-guide-phone-frame/);
+  assert.match(source, /install-guide-phone-screen/);
+  assert.doesNotMatch(source, /ios-01-share\.webp|ios-02-add-home\.webp|ios-03-confirm\.webp|new Image\(/);
   assert.match(css, /scroll-snap-type:\s*x mandatory/);
+  assert.match(pwa, /install-guide-media\{height:clamp\(238px,32dvh,300px\)!important/);
+  assert.match(pwa, /install-guide-phone-frame/);
 });
 
 test("v12 observes only owned settings and timetable surfaces", () => {
