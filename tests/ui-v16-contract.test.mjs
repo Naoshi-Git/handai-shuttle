@@ -40,10 +40,12 @@ test("current observers are targeted to stable UI surfaces", () => {
   assert.match(current, /favoriteObserver\.observe\(section/);
 });
 
-test("full-screen tab motion is isolated from current selection and sheet motion", () => {
-  assert.match(lifecycleCss, /\.view-transition-veil/);
-  assert.match(lifecycleCss, /opacity 150ms/);
-  assert.match(lifecycleCss, /\.view-transition-spinner/);
+test("ordinary tab motion crossfades content while persistent shell chrome stays outside", () => {
+  assert.match(lifecycleCss, /view-crossfade-leaving/);
+  assert.match(lifecycleCss, /view-crossfade-entering/);
+  assert.match(lifecycleCss, /transition:\s*opacity 190ms/);
+  assert.match(lifecycleCss, /\.bottom-nav[\s\S]*z-index:\s*60 !important/);
+  assert.doesNotMatch(lifecycleCss, /view-transition-veil/);
   assert.doesNotMatch(currentCss, /current-view-enter|--current-motion-view/);
   assert.match(currentCss, /current-sheet-in/);
   assert.match(currentCss, /current-backdrop-in/);
@@ -51,14 +53,17 @@ test("full-screen tab motion is isolated from current selection and sheet motion
   assert.match(currentCss, /--current-motion-sheet:\s*360ms/);
 });
 
-test("timetable transition waits for DOM and scroll to settle", () => {
+test("timetable transition alone waits for DOM and scroll to settle behind a content loader", () => {
   assert.match(lifecycle, /waitForTimetableDomQuiet/);
   assert.match(lifecycle, /waitForScrollIdle/);
   assert.match(lifecycle, /view === "timetable"/);
   assert.match(lifecycle, /MutationObserver/);
   assert.match(lifecycle, /scrollStableFrames/);
+  assert.match(lifecycleCss, /timetable-transition-loader/);
+  assert.match(lifecycle, /event\.preventDefault\(\);\s*event\.stopPropagation\(\)/);
+  assert.doesNotMatch(lifecycle, /stopImmediatePropagation/);
   assert.doesNotMatch(lifecycle, /\.click\(\)/);
-  assert.doesNotMatch(lifecycle, /preventDefault|stopImmediatePropagation/);
+  assert.doesNotMatch(lifecycle, /pointerdown/);
 });
 
 test("desktop containment and reduced-motion fallbacks remain available", () => {
