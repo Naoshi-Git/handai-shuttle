@@ -59,6 +59,9 @@ Do not return strings such as `祝日には運行しません` from the data/ser
 append `のため` in a view. Each UI surface owns the complete sentence around the reason.
 This keeps Home banner, Timetable status, and Search warnings grammatically consistent.
 
+Do not add a MutationObserver or other post-hoc repair layer that rewrites malformed copy
+after render. Copy defects should be corrected at the service/view composition boundary.
+
 ## Compatibility boundary
 
 Some active JavaScript modules still have historical filenames (`ui-v12.mjs`,
@@ -84,6 +87,7 @@ removes the obsolete v10–v16/current scopes after module initialization. Older
 - Keep `view-lifecycle.css` free of ordinary component styling.
 - Route new main-view entry points through `view-lifecycle.mjs` rather than toggling views directly.
 - Keep `getServiceStatus().reason` as a reason noun phrase; views own complete Japanese sentences.
+- Do not repair copy after render with MutationObservers or text replacement passes.
 - Prefer low-specificity component selectors. Use `!important` only where the semantic
   system must override still-active pre-consolidation foundation CSS; remove it when that
   lower foundation is retired.
@@ -112,11 +116,26 @@ are now owned only by the `Navigation` and `Responsive / accessibility` sections
 `src/ui-system.css`. The `ui-v6` JavaScript behavior module remains active for favorites and
 navigation icon markup; removing a presentation owner does not imply removing that behavior.
 
+A later cascade-pruning pass removed additional `body.ui-v6` declarations whose final values
+were already fully owned by `src/ui-system.css`, including legacy Search/Settings surface
+borders and shadows, primary-button surface values, warning/soft pill colors, closed service
+banner colors, and the old Timetable `favorite-flash` animation. These rules were dead in the
+computed presentation because the semantic system supplied later `!important` final values.
+Contract tests now prevent those version-scoped restatements from returning.
+
+The remaining Favorite placement/state styles, saved-search structure, Search-sheet base,
+Search-context banner geometry, Timetable sticky/scroll offsets, and metadata-column layout
+are still live foundation responsibilities. They must be migrated explicitly before their
+legacy selectors or body scopes are removed.
+
 ## Next safe cleanup boundary
 
 The remaining legacy CSS (`style.css`, `ui-v2.css`, `ui-v4.css`, `ui-v5.css`) is not treated
 as disposable version residue because it still contains structural/base rules used by the
-active app. Continue migration component-by-component with regression guards. In
-particular, the remaining `ui-v5` / `ui-v6` body-scoped rules include live Search banner,
-sticky timetable, favorite controls and legacy-saved-route suppression responsibilities;
-move those responsibilities explicitly before removing their scopes.
+active app. Continue migration component-by-component with regression guards.
+
+The next useful boundary is to migrate Search sheet/summary presentation and Favorite/saved
+collection presentation into their semantic Search/Timetable/Settings sections without
+changing the corresponding JavaScript behavior modules. After those moves, reassess whether
+`ui-v5` / `ui-v6` body classes still have any presentation responsibility before removing
+those compatibility scopes.
