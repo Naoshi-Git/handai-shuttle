@@ -10,6 +10,10 @@
   --current-track: #EDEDF0;
   --current-selection: rgba(255,255,255,.94);
   --current-selection-shadow: 0 1px 5px rgba(20,20,28,.065);
+  --current-control-font-size: 12px;
+  --current-control-line-height: 1;
+  --current-control-ink: #66666F;
+  --current-control-selected-ink: #242429;
 }
 
 /* Current layer owns only interaction geometry/motion. Legacy version scopes remain visual foundations. */
@@ -94,7 +98,11 @@ body.ui-current .search-mode > button {
   border-radius: 12px !important;
   background: transparent !important;
   box-shadow: none !important;
-  color: #66666F !important;
+  color: var(--current-control-ink) !important;
+  -webkit-text-fill-color: var(--current-control-ink) !important;
+  font-size: var(--current-control-font-size) !important;
+  line-height: var(--current-control-line-height) !important;
+  font-weight: 600 !important;
   transition: color 180ms ease !important;
   white-space: nowrap !important;
 }
@@ -102,12 +110,13 @@ body.ui-current #home-destination-chips > button.is-active,
 body.ui-current .search-mode > button.is-active {
   background: transparent !important;
   box-shadow: none !important;
-  color: var(--ou-900) !important;
+  color: var(--current-control-selected-ink) !important;
+  -webkit-text-fill-color: var(--current-control-selected-ink) !important;
 }
 body.ui-current #home-destination-chips > button:active,
 body.ui-current .search-mode > button:active { transform: none !important; }
 
-/* Timetable controls are recreated by the legacy data layer, but both moving materials live on the stable parent. */
+/* Timetable controls are recreated by the data layer, but both moving materials live on the stable parent. */
 body.ui-current #timetable-route-controls {
   position: sticky !important;
   isolation: isolate !important;
@@ -167,7 +176,11 @@ body.ui-current .tt-destination-buttons > button {
   border-radius: 12px !important;
   background: transparent !important;
   box-shadow: none !important;
-  color: #66666F !important;
+  color: var(--current-control-ink) !important;
+  -webkit-text-fill-color: var(--current-control-ink) !important;
+  font-size: var(--current-control-font-size) !important;
+  line-height: var(--current-control-line-height) !important;
+  font-weight: 600 !important;
   transition: color 180ms ease !important;
   white-space: nowrap !important;
 }
@@ -175,17 +188,14 @@ body.ui-current .tt-campus-tabs > button.is-active,
 body.ui-current .tt-destination-buttons > button.is-active {
   background: transparent !important;
   box-shadow: none !important;
-  color: var(--ou-900) !important;
+  color: var(--current-control-selected-ink) !important;
+  -webkit-text-fill-color: var(--current-control-selected-ink) !important;
 }
 body.ui-current .tt-campus-tabs > button:active,
 body.ui-current .tt-destination-buttons > button:active { transform: none !important; }
 body.ui-current .tt-destination-row { align-items: center !important; }
 
-/* Route label width is stable; Suita stop detail belongs in route content/origin label, not the selector. */
-body.ui-current #home-destination-chips [data-home-destination="suita"] {
-  font-size: inherit !important;
-  padding-inline: 10px !important;
-}
+/* Suita stop detail belongs in route content/origin label, not the selector. */
 body.ui-current #home-origin-label {
   overflow: hidden;
   text-overflow: ellipsis;
