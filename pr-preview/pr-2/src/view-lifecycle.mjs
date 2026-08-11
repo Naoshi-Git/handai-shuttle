@@ -2,7 +2,7 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 const TIMING = Object.freeze({
-  crossfadeMs: 190,
+  crossfadeMs: 220,
   timetableMinimumMs: 220,
   timetableQuietMs: 110,
   timetableMaxMs: 640,
@@ -12,6 +12,9 @@ const TIMING = Object.freeze({
 
 let loader = null;
 let transitionId = 0;
+let headerGhost = null;
+let serviceBannerGhost = null;
+let serviceBannerPlaceholder = null;
 
 function reducedMotion() {
   return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
@@ -53,11 +56,102 @@ function nextFrame() {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }
 
+function stripIds(root) {
+  root.removeAttribute?.("id");
+  root.querySelectorAll?.("[id]").forEach((node) => node.removeAttribute("id"));
+}
+
+function fixedGhost(source, className) {
+  if (!source) return null;
+  const rect = source.getBoundingClientRect();
+  if (!rect.width || !rect.height) return null;
+  const ghost = source.cloneNode(true);
+  stripIds(ghost);
+  ghost.classList.add(className);
+  ghost.setAttribute("aria-hidden", "true");
+  ghost.style.setProperty("--view-ghost-top", `${rect.top}px`);
+  ghost.style.setProperty("--view-ghost-left", `${rect.left}px`);
+  ghost.style.setProperty("--view-ghost-width", `${rect.width}px`);
+  ghost.style.setProperty("--view-ghost-height", `${rect.height}px`);
+  document.body.append(ghost);
+  return ghost;
+}
+
 function clearViewTransitionClasses() {
   $$(".view").forEach((view) => {
     view.classList.remove("view-crossfade-leaving", "view-crossfade-entering", "view-crossfade-running");
     view.removeAttribute("aria-hidden");
+    view.style.removeProperty("--view-crossfade-top");
+    view.style.removeProperty("--view-crossfade-left");
+    view.style.removeProperty("--view-crossfade-width");
   });
+}
+
+function clearHeaderTransition() {
+  headerGhost?.remove();
+  headerGhost = null;
+  const copy = $(".topbar .brand-copy");
+  copy?.classList.remove("view-header-copy-entering", "view-crossfade-running");
+}
+
+function clearServiceBannerTransition() {
+  serviceBannerGhost?.remove();
+  serviceBannerGhost = null;
+  serviceBannerPlaceholder?.remove();
+  serviceBannerPlaceholder = null;
+  const banner = $("#service-banner");
+  banner?.classList.remove("view-service-banner-entering", "view-crossfade-running");
+}
+
+function prepareHeaderTransition() {
+  clearHeaderTransition();
+  const copy = $(".topbar .brand-copy");
+  if (!copy) return;
+  headerGhost = fixedGhost(copy, "view-header-copy-ghost");
+  if (headerGhost) copy.classList.add("view-header-copy-entering");
+}
+
+function runHeaderTransition() {
+  headerGhost?.classList.add("view-crossfade-running");
+  $(".topbar .brand-copy.view-header-copy-entering")?.classList.add("view-crossfade-running");
+}
+
+function prepareServiceBannerTransition(fromView, toView) {
+  clearServiceBannerTransition();
+  const crossesSearchBoundary = (fromView === "search") !== (toView === "search");
+  if (!crossesSearchBoundary) return;
+
+  const banner = $("#service-banner");
+  if (!banner) return;
+  serviceBannerGhost = fixedGhost(banner, "view-service-banner-ghost");
+
+  if (fromView === "search") {
+    const rect = banner.getBoundingClientRect();
+    const styles = getComputedStyle(banner);
+    serviceBannerPlaceholder = document.createElement("div");
+    serviceBannerPlaceholder.className = "service-banner-transition-placeholder";
+    serviceBannerPlaceholder.setAttribute("aria-hidden", "true");
+    serviceBannerPlaceholder.style.height = `${rect.height}px`;
+    serviceBannerPlaceholder.style.marginTop = styles.marginTop;
+    serviceBannerPlaceholder.style.marginRight = styles.marginRight;
+    serviceBannerPlaceholder.style.marginBottom = styles.marginBottom;
+    serviceBannerPlaceholder.style.marginLeft = styles.marginLeft;
+    banner.before(serviceBannerPlaceholder);
+    banner.classList.add("view-service-banner-entering");
+  }
+}
+
+function runServiceBannerTransition() {
+  serviceBannerGhost?.classList.add("view-crossfade-running");
+  $("#service-banner.view-service-banner-entering")?.classList.add("view-crossfade-running");
+}
+
+function freezeOutgoingView(view) {
+  if (!view) return;
+  const rect = view.getBoundingClientRect();
+  view.style.setProperty("--view-crossfade-top", `${rect.top}px`);
+  view.style.setProperty("--view-crossfade-left", `${rect.left}px`);
+  view.style.setProperty("--view-crossfade-width", `${rect.width}px`);
 }
 
 function hideLoader() {
@@ -84,6 +178,8 @@ function commitView(view) {
 
 function resetTransitionArtifacts() {
   clearViewTransitionClasses();
+  clearHeaderTransition();
+  clearServiceBannerTransition();
   hideLoader();
   document.body.classList.remove("ui-view-crossfading");
 }
@@ -140,12 +236,19 @@ async function crossfadeTo(view, id) {
   const incoming = $(`.view[data-view="${view}"]`);
   if (!incoming || !outgoing || incoming === outgoing) return;
 
+  const fromView = outgoing.dataset.view || "home";
   hideLoader();
   clearViewTransitionClasses();
   document.body.classList.add("ui-view-crossfading");
+
+  // Freeze the exact outgoing viewport geometry before commitView changes header/body state,
+  // moves the shared service banner, or resets scroll position.
+  freezeOutgoingView(outgoing);
   outgoing.classList.add("view-crossfade-leaving");
   incoming.classList.add("view-crossfade-entering");
   outgoing.setAttribute("aria-hidden", "true");
+  prepareHeaderTransition();
+  prepareServiceBannerTransition(fromView, view);
 
   commitView(view);
   await nextFrame();
@@ -153,15 +256,21 @@ async function crossfadeTo(view, id) {
 
   outgoing.classList.add("view-crossfade-running");
   incoming.classList.add("view-crossfade-running");
+  runHeaderTransition();
+  runServiceBannerTransition();
   await delay(reducedMotion() ? 0 : TIMING.crossfadeMs);
   if (id !== transitionId) return;
 
   clearViewTransitionClasses();
+  clearHeaderTransition();
+  clearServiceBannerTransition();
   document.body.classList.remove("ui-view-crossfading");
 }
 
 async function revealTimetable(id) {
   clearViewTransitionClasses();
+  clearServiceBannerTransition();
+  prepareHeaderTransition();
   const layer = ensureLoader();
   const started = performance.now();
   document.body.classList.add("ui-timetable-loading");
@@ -170,6 +279,7 @@ async function revealTimetable(id) {
 
   commitView("timetable");
   await nextFrame();
+  runHeaderTransition();
   await nextFrame();
   if (id !== transitionId) return;
 
@@ -182,6 +292,7 @@ async function revealTimetable(id) {
 
   await nextFrame();
   hideLoader();
+  clearHeaderTransition();
 }
 
 function switchTab(view) {
