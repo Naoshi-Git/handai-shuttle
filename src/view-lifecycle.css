@@ -1,0 +1,74 @@
+/* Full-screen tab lifecycle: fade the app to a neutral surface, prepare hidden UI, then reveal. */
+body.ui-view-transitioning {
+  overscroll-behavior: none;
+}
+
+body.ui-view-transitioning .view.is-active,
+body.ui-view-transitioning.ui-current .view.is-active,
+body.ui-view-transitioning.ui-v15 .view.is-active {
+  animation: none !important;
+}
+
+.view-transition-veil {
+  position: fixed;
+  z-index: 2147483000;
+  inset: 0 auto 0 50%;
+  width: min(100%, 540px);
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  transform: translateX(-50%);
+  background: #F7F7F9;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 150ms cubic-bezier(.2,.7,.2,1),
+    visibility 0s linear 190ms;
+}
+
+.view-transition-veil.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 150ms cubic-bezier(.2,.7,.2,1),
+    visibility 0s linear 0s;
+}
+
+.view-transition-spinner {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(36,36,41,.14);
+  border-top-color: rgba(36,36,41,.72);
+  opacity: 0;
+  transform: scale(.96);
+}
+
+.view-transition-veil.is-visible.is-loading .view-transition-spinner {
+  opacity: 1;
+  transform: scale(1);
+  animation: current-view-spinner 720ms linear infinite;
+  transition: opacity 120ms ease 90ms, transform 160ms ease 90ms;
+}
+
+@keyframes current-view-spinner {
+  to { transform: rotate(360deg); }
+}
+
+@media (min-width: 760px) {
+  .view-transition-veil {
+    top: 28px;
+    bottom: 28px;
+    min-height: 0;
+    border-radius: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-transition-veil,
+  .view-transition-spinner {
+    transition: none !important;
+    animation: none !important;
+  }
+}
