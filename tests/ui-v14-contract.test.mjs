@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 
 const entry = await readFile(new URL("../src/features-v3.mjs", import.meta.url), "utf8");
 const current = await readFile(new URL("../src/ui-current.mjs", import.meta.url), "utf8");
+const currentCss = await readFile(new URL("../src/ui-current.css", import.meta.url), "utf8");
 const css = await readFile(new URL("../src/ui-v14.css", import.meta.url), "utf8");
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
@@ -31,9 +32,10 @@ test("radius hierarchy differentiates groups controls and pills", () => {
   assert.match(css, /--v14-radius-pill:\s*999px/);
 });
 
-test("glass-like material stays on navigation and control layers", () => {
+test("glass-like material stays on navigation and settings subpage while app topbar belongs to current", () => {
   assert.match(css, /\.bottom-nav[\s\S]*backdrop-filter:\s*blur\(22px\)/);
-  assert.match(css, /\.topbar[\s\S]*backdrop-filter:\s*blur\(18px\)/);
+  assert.doesNotMatch(css, /body\.ui-v14 \.topbar/);
+  assert.match(currentCss, /body\.ui-current \.topbar[\s\S]*backdrop-filter:\s*blur\(24px\)/);
   assert.match(css, /\.settings-subpage-header[\s\S]*backdrop-filter:\s*blur\(20px\)/);
   assert.match(css, /prefers-reduced-transparency/);
 });
