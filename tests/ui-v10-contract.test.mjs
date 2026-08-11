@@ -23,11 +23,14 @@ test("all house placements start from the stable compact top banner creative", (
   assert.match(ads, /TIMETABLE_INLINE\]: COMPACT_HOUSE_CREATIVE/);
 });
 
-test("v10 prevents older raster repair layers from replacing the compact banner", () => {
-  assert.match(source, /slot\.dataset\.pngRasterized = "true"/);
-  assert.match(source, /slot\.dataset\.v9EdgeFixed = "true"/);
+test("v10 normalizes only current compact ad state and does not retain removed repair flags", () => {
+  assert.match(source, /slot\.dataset\.v10Compact = "true"/);
   assert.match(source, /COMPACT_AD\.src/);
-  assert.match(source, /attributeFilter: \["src", "style", "class"\]/);
+  assert.doesNotMatch(source, /pngRasterized/);
+  assert.doesNotMatch(source, /v9EdgeFixed/);
+  assert.match(source, /adObserver\.observe\(root, \{ childList: true, subtree: true \}\)/);
+  assert.doesNotMatch(source, /attributeFilter/);
+  assert.doesNotMatch(source, /attributes:\s*true/);
   assert.match(css, /aspect-ratio:\s*640 \/ 89 !important/);
 });
 
