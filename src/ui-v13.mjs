@@ -3,7 +3,7 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 const LEGACY_SAVED_ROUTES_ID = "saved-routes";
 const SETTINGS_PANEL_ID = "settings-subpage-v13";
-const SWIPE_EDGE_MAX_PX = 96;
+const SWIPE_EDGE_BASE_PX = 96;
 const SWIPE_EDGE_RATIO = 0.24;
 const SWIPE_LOCK_PX = 8;
 const SWIPE_COMMIT_CAP_PX = 84;
@@ -110,7 +110,7 @@ function closeSettingsPanel() {
 function isSwipeCandidate(panel, event) {
   if (!panel.classList.contains("is-open")) return false;
   if (event.pointerType && event.pointerType !== "touch" && event.pointerType !== "pen") return false;
-  const edgeLimit = Math.max(SWIPE_EDGE_MAX_PX, panel.clientWidth * SWIPE_EDGE_RATIO);
+  const edgeLimit = Math.max(SWIPE_EDGE_BASE_PX, panel.clientWidth * SWIPE_EDGE_RATIO);
   if (event.clientX > edgeLimit) return false;
   const target = event.target instanceof Element ? event.target : null;
   if (target?.closest(SWIPE_INTERACTIVE_SELECTOR)) return false;
