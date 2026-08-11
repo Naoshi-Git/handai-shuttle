@@ -10,6 +10,7 @@ import "./ui-v6.mjs";
 import "./route-preferences.mjs";
 import "./ui-v12.mjs";
 import "./ui-v13.mjs";
+import "./view-lifecycle.mjs";
 import "./ui-current.mjs";
 
 if (typeof document !== "undefined") document.body?.classList.add("ui-v10");
