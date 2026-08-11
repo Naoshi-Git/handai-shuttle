@@ -26,6 +26,7 @@ jobs:
       - name: Validate app
         run: |
           test -f source/index.html
+          test -f source/share.html
           node --check source/src/search-engine.mjs
           node --check source/src/app.mjs
           node --check source/src/enhancements.mjs
@@ -43,6 +44,7 @@ jobs:
           node --check source/src/ui-current.mjs
           node --check source/src/pwa.mjs
           node --check source/src/crowding-prediction.mjs
+          node --check source/src/share-identity.mjs
           node --check source/src/share-card.mjs
           node --check source/src/ads.mjs
           node --check source/data/location-points.mjs
@@ -61,6 +63,8 @@ jobs:
           test ! -e source/src/ui-current.css
           test -f source/docs/UI-ARCHITECTURE.md
           test -f source/assets/brand/app-icon.svg
+          test -f source/assets/brand/app-icon-32.png
+          test -f source/assets/brand/app-icon-180.png
           test -f source/assets/brand/brand-icon-rounded.svg
           test -f source/assets/brand/brand-symbol-white.svg
           test -f source/assets/brand/splash-white.webp
@@ -77,8 +81,8 @@ jobs:
       - name: Sync production while preserving PR previews
         run: |
           rm -rf pages/assets pages/data pages/src pages/lp
-          rm -f pages/index.html pages/manifest.webmanifest pages/style.css pages/ui-v2.css pages/ui-v3.css pages/ui-v4.css pages/ui-v5.css pages/ui-v7.css pages/ui-v9.css pages/ads.css pages/version.json
-          cp source/index.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ads.css pages/
+          rm -f pages/index.html pages/share.html pages/manifest.webmanifest pages/style.css pages/ui-v2.css pages/ui-v3.css pages/ui-v4.css pages/ui-v5.css pages/ui-v7.css pages/ui-v9.css pages/ads.css pages/version.json
+          cp source/index.html source/share.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ads.css pages/
           cp -R source/assets source/data source/src source/lp pages/
           touch pages/.nojekyll
       - name: Generate production build marker
@@ -86,9 +90,9 @@ jobs:
           python3 - <<'PY'
           import json, os
           assets = [
-              "index.html", "manifest.webmanifest", "style.css", "ui-v2.css", "ui-v3.css", "ui-v4.css", "ads.css",
-              "src/app.mjs", "src/enhancements.mjs", "src/features-v3.mjs", "src/features-v3-core.mjs", "src/ui-v4.mjs", "src/ui-v5.mjs", "src/route-preferences.mjs", "src/ui-v12.mjs", "src/ui-v13.mjs", "src/view-lifecycle.mjs", "src/ui-current.mjs", "src/ui-system.css", "src/view-lifecycle.css", "src/pwa.mjs", "src/ads.mjs",
-              "assets/brand/app-icon.svg", "assets/brand/brand-icon-rounded.svg", "assets/brand/brand-symbol-white.svg", "assets/brand/splash-white.webp", "assets/brand/splash-black.webp", "assets/brand/splash-gradient.webp", "assets/help/install/ios-01-share.webp", "assets/help/install/ios-02-add-home.webp", "assets/help/install/ios-03-confirm.webp"
+              "index.html", "share.html", "manifest.webmanifest", "style.css", "ui-v2.css", "ui-v3.css", "ui-v4.css", "ads.css",
+              "src/app.mjs", "src/enhancements.mjs", "src/features-v3.mjs", "src/features-v3-core.mjs", "src/ui-v4.mjs", "src/ui-v5.mjs", "src/route-preferences.mjs", "src/ui-v12.mjs", "src/ui-v13.mjs", "src/view-lifecycle.mjs", "src/ui-current.mjs", "src/ui-system.css", "src/view-lifecycle.css", "src/pwa.mjs", "src/share-identity.mjs", "src/share-card.mjs", "src/ads.mjs",
+              "assets/brand/app-icon.svg", "assets/brand/app-icon-32.png", "assets/brand/app-icon-180.png", "assets/brand/brand-icon-rounded.svg", "assets/brand/brand-symbol-white.svg", "assets/brand/splash-white.webp", "assets/brand/splash-black.webp", "assets/brand/splash-gradient.webp", "assets/help/install/ios-01-share.webp", "assets/help/install/ios-02-add-home.webp", "assets/help/install/ios-03-confirm.webp"
           ]
           with open("pages/version.json", "w", encoding="utf-8") as handle:
               json.dump({"build": os.environ["GITHUB_SHA"], "assets": assets}, handle, separators=(",", ":"))
