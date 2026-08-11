@@ -66,10 +66,11 @@ test("settings use disclosures while favorites and searches remain visible", () 
   assert.match(css, /\.settings-disclosure > summary/);
 });
 
-test("home-screen install guide is built for real screenshot assets", () => {
-  assert.match(source, /ios-01-share\.webp/);
-  assert.match(source, /ios-02-add-home\.webp/);
-  assert.match(source, /ios-03-confirm\.webp/);
+test("home-screen install guide is built for supplied screenshot assets with cache busting", () => {
+  assert.match(source, /ios-01-share\.webp\?v=20260811b/);
+  assert.match(source, /ios-02-add-home\.webp\?v=20260811b/);
+  assert.match(source, /ios-03-confirm\.webp\?v=20260811b/);
+  assert.doesNotMatch(source, /スクリーンショットを追加予定/);
   assert.match(css, /scroll-snap-type:\s*x mandatory/);
 });
 
