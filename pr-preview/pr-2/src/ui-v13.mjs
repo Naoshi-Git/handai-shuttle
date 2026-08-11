@@ -38,6 +38,10 @@ function iconChevron() {
   return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
 }
 
+function settingsViewIsActive() {
+  return document.getElementById("view-settings")?.classList.contains("is-active") === true;
+}
+
 function createSettingsPanel() {
   let panel = document.getElementById(SETTINGS_PANEL_ID);
   if (panel) return panel;
@@ -77,12 +81,13 @@ function finishSettingsClose(panel, state) {
   panel.style.removeProperty("transform");
   panel.setAttribute("aria-hidden", "true");
   panel.inert = true;
+  document.body.classList.remove("settings-subpage-open");
   restoreSettingsCard(state);
   settingsOpenState = null;
 }
 
 function openSettingsPanel(details) {
-  if (!details || settingsOpenState) return;
+  if (!details || settingsOpenState || !settingsViewIsActive()) return;
   const card = $(".settings-card", details);
   if (!card) return;
   const meta = settingsMeta(details);
@@ -99,6 +104,7 @@ function openSettingsPanel(details) {
   panel.setAttribute("aria-hidden", "false");
   panel.inert = false;
   document.body.classList.add("settings-subpage-open");
+  document.querySelector("[data-pwa-install-nudge]")?.remove();
 
   if (card.matches("[data-pwa-settings]")) {
     $(".pwa-install-guide", card)?.classList.add("is-open");
@@ -273,20 +279,21 @@ function observeSettingsUi() {
   const settings = document.getElementById("view-settings");
   if (!settings || settingsObserver) return;
   settingsObserver = new MutationObserver((records) => {
+    if (settingsOpenState && !settingsViewIsActive()) closeSettingsPanel({ immediate: true });
     if (records.some((record) => record.type === "childList")) queueSettingsNormalization();
   });
-  settingsObserver.observe(settings, { childList: true, subtree: true });
+  settingsObserver.observe(settings, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
 }
 
 function bindSettingsPanelLifecycle() {
   if (lifecycleBound) return;
   lifecycleBound = true;
-  document.addEventListener("click", (event) => {
+  window.addEventListener("click", (event) => {
     const navButton = event.target instanceof Element ? event.target.closest(".bottom-nav [data-nav]") : null;
     if (!navButton || !settingsOpenState) return;
-    closeSettingsPanel({ immediate: true });
+    if (navButton.dataset.nav !== "settings") closeSettingsPanel({ immediate: true });
   }, true);
-  document.addEventListener("handai:viewchange", (event) => {
+  window.addEventListener("handai:viewchange", (event) => {
     if (!settingsOpenState) return;
     const next = event.detail?.view || event.detail?.to || "";
     if (next && next !== "settings") closeSettingsPanel({ immediate: true });
