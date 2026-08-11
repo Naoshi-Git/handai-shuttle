@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 
 const entry = await readFile(new URL("../src/features-v3.mjs", import.meta.url), "utf8");
 const source = await readFile(new URL("../src/ui-v12.mjs", import.meta.url), "utf8");
-const css = await readFile(new URL("../src/ui-v12.css", import.meta.url), "utf8");
+const css = await readFile(new URL("../src/ui-system.css", import.meta.url), "utf8");
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
 await import("../src/ui-v12.mjs");
@@ -14,27 +14,26 @@ test("v12 remains a functional layer before v13 and ui-current", () => {
   assert.doesNotMatch(entry, /import "\.\/ui-v10\.mjs";/);
 });
 
-test("final presentation CSS is linked in head before modules run", () => {
+test("semantic presentation CSS is linked in head before modules run", () => {
   assert.match(html, /ui-v4\.css" data-ui-v4/);
   assert.match(html, /ads\.css" data-ads-ui/);
-  assert.match(html, /ui-v10\.css" data-ui-v10/);
-  assert.match(html, /ui-v11\.css" data-ui-v11/);
-  assert.match(html, /ui-v12\.css" data-ui-v12/);
+  assert.match(html, /ui-system\.css"[\s\S]*data-ui-v12[\s\S]*data-ui-current/);
+  assert.doesNotMatch(html, /src\/ui-v10\.css|src\/ui-v11\.css|src\/ui-v12\.css|src\/ui-v13\.css|src\/ui-v14\.css|src\/ui-v15\.css|src\/ui-current\.css/);
   assert.match(html, /class="app-boot"/);
   assert.match(html, /brand-icon-rounded\.svg/);
 });
 
-test("legacy refresh is hidden and boot layer prevents FOUC", () => {
+test("legacy refresh is hidden and critical boot layer prevents FOUC", () => {
   assert.match(css, /#refresh-button[\s\S]*display:\s*none/);
-  assert.match(css, /body\.app-booting \.app-shell[\s\S]*opacity:\s*0/);
+  assert.match(html, /<style id="boot-critical">[\s\S]*body\.app-booting \.app-shell\{opacity:0!important/);
   assert.match(source, /finishBoot\(\)/);
 });
 
-test("bottom navigation is fixed, compact, and guarded for landscape/desktop", () => {
-  assert.match(css, /\.bottom-nav[\s\S]*position:\s*fixed !important/);
-  assert.match(css, /min-height:\s*46px !important/);
+test("bottom navigation keeps the current fixed floating geometry", () => {
+  assert.match(css, /\.bottom-nav \{[\s\S]*position:\s*fixed !important/);
+  assert.match(css, /\.bottom-nav button \{[\s\S]*min-height:\s*48px !important/);
   assert.match(css, /min-width:\s*760px[\s\S]*max-height:\s*599px/);
-  assert.match(css, /\.bottom-nav::after[\s\S]*height:\s*28px/);
+  assert.match(css, /\.bottom-nav::after[\s\S]*display:\s*none !important/);
 });
 
 test("manual campus selection explicitly drives location status", () => {
@@ -46,8 +45,8 @@ test("manual campus selection explicitly drives location status", () => {
 
 test("timetable next-bus cue is stronger without a selected blue frame", () => {
   assert.match(source, /次の便/);
-  assert.match(css, /\.route-timetable-card:focus-visible[\s\S]*outline:\s*0/);
-  assert.match(css, /\.is-next::before[\s\S]*width:\s*2px/);
+  assert.match(css, /\.route-timetable-card:focus-visible[\s\S]*outline:\s*0 !important/);
+  assert.match(css, /\.is-next::before[\s\S]*width:\s*3px !important/);
 });
 
 test("timetable advertisements are integrated and lazy detail sheet gets a footer ad", () => {

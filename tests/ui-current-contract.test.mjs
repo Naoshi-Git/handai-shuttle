@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 const entry = await readFile(new URL("../src/features-v3.mjs", import.meta.url), "utf8");
 const app = await readFile(new URL("../src/app.mjs", import.meta.url), "utf8");
 const current = await readFile(new URL("../src/ui-current.mjs", import.meta.url), "utf8");
-const currentCss = await readFile(new URL("../src/ui-current.css", import.meta.url), "utf8");
+const currentCss = await readFile(new URL("../src/ui-system.css", import.meta.url), "utf8");
 const preferences = await readFile(new URL("../src/route-preferences.mjs", import.meta.url), "utf8");
 
 await import("../src/ui-current.mjs");
@@ -60,16 +60,16 @@ test("selection materials live on persistent parents instead of recreated child 
   assert.match(currentCss, /#timetable-route-controls::after/);
   assert.doesNotMatch(current, /runtime-choice-glider/);
   assert.match(current, /nav\.prepend\(glider\)/);
-  assert.match(currentCss, /\.tt-campus-tabs \{ grid-template-columns: repeat\(3,minmax\(0,1fr\)\)/);
-  assert.match(currentCss, /\.tt-destination-buttons \{ grid-template-columns: repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(currentCss, /\.tt-campus-tabs\s*\{[\s\S]*grid-template-columns:\s*repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(currentCss, /\.tt-destination-buttons\s*\{[\s\S]*grid-template-columns:\s*repeat\(2,minmax\(0,1fr\)\)/);
 });
 
 test("segmented typography is explicit and selected text stays strongly contrasted", () => {
-  assert.match(currentCss, /--current-control-font-size:\s*12px/);
-  assert.match(currentCss, /--current-control-selected-ink:\s*#111118/);
-  assert.match(currentCss, /#home-destination-chips > button[\s\S]*font-size:\s*var\(--current-control-font-size\) !important/);
-  assert.match(currentCss, /\.tt-campus-tabs > button[\s\S]*font-size:\s*var\(--current-control-font-size\) !important/);
-  assert.match(currentCss, /\.tt-campus-tabs > button\.is-active[\s\S]*-webkit-text-fill-color:\s*var\(--current-control-selected-ink\) !important/);
+  assert.match(currentCss, /--ui-control-font-size:\s*12px/);
+  assert.match(currentCss, /--ui-control-selected-ink:\s*#111118/);
+  assert.match(currentCss, /#home-destination-chips > button[\s\S]*font-size:\s*var\(--ui-control-font-size\) !important/);
+  assert.match(currentCss, /\.tt-campus-tabs > button[\s\S]*font-size:\s*var\(--ui-control-font-size\) !important/);
+  assert.match(currentCss, /\.tt-campus-tabs > button\.is-active[\s\S]*-webkit-text-fill-color:\s*var\(--ui-control-selected-ink\) !important/);
   assert.match(currentCss, /\.tt-destination-buttons > button\.is-active[\s\S]*font-weight:\s*700 !important[\s\S]*opacity:\s*1 !important/);
   assert.doesNotMatch(currentCss, /data-home-destination="suita"[\s\S]{0,160}font-size:\s*inherit/);
 });
@@ -85,17 +85,17 @@ test("same nav and same segmented choice are true no-ops", () => {
 
 test("current motion owns selection and sheets, not tab-page fading", () => {
   assert.doesNotMatch(currentCss, /current-view-enter|--current-motion-view/);
-  assert.match(currentCss, /--current-motion-choice:\s*280ms/);
-  assert.match(currentCss, /--current-motion-sheet:\s*360ms/);
+  assert.match(currentCss, /--ui-motion-choice:\s*280ms/);
+  assert.match(currentCss, /--ui-motion-sheet:\s*360ms/);
   assert.match(currentCss, /translate3d\(0,16px,0\)/);
   assert.doesNotMatch(current, /startViewTransition/);
 });
 
 test("destination track and selection use the same geometry", () => {
-  assert.match(currentCss, /\.tt-destination-buttons[\s\S]*border-radius:\s*16px/);
-  assert.match(currentCss, /\.tt-destination-buttons > button[\s\S]*border-radius:\s*12px/);
+  assert.match(currentCss, /\.tt-destination-buttons[\s\S]*border-radius:\s*16px !important/);
+  assert.match(currentCss, /\.tt-destination-buttons > button[\s\S]*border-radius:\s*12px !important/);
   assert.match(currentCss, /#timetable-route-controls::after[\s\S]*border-radius:\s*12px/);
-  assert.match(currentCss, /background:\s*var\(--current-track\)/);
+  assert.match(currentCss, /background:\s*var\(--ui-track\)/);
 });
 
 test("favorite normalization cannot self-trigger forever", () => {

@@ -37,13 +37,17 @@ jobs:
           test -f ads.css
           test -f ui-v4.css
           test -f ui-v5.css
-          test -f src/ui-v10.css
-          test -f src/ui-v11.css
-          test -f src/ui-v12.css
-          test -f src/ui-v13.css
-          test -f src/ui-v14.css
-          test -f src/ui-v15.css
-          test -f src/ui-current.css
+          test -f src/ui-system.css
+          test -f src/view-lifecycle.css
+          test ! -e src/ui-v10.css
+          test ! -e src/ui-v11.css
+          test ! -e src/ui-v12.css
+          test ! -e src/ui-v13.css
+          test ! -e src/ui-v14.css
+          test ! -e src/ui-v15.css
+          test ! -e src/ui-v16.css
+          test ! -e src/ui-current.css
+          test -f docs/UI-ARCHITECTURE.md
           test -f assets/brand/app-icon.svg
           test -f assets/brand/brand-icon-rounded.svg
           test -f assets/brand/brand-symbol-white.svg

@@ -4,7 +4,7 @@ import { readFile, stat } from "node:fs/promises";
 
 const adsSource = await readFile(new URL("../src/ads.mjs", import.meta.url), "utf8");
 const adsCss = await readFile(new URL("../ads.css", import.meta.url), "utf8");
-const v10Css = await readFile(new URL("../src/ui-v10.css", import.meta.url), "utf8");
+const systemCss = await readFile(new URL("../src/ui-system.css", import.meta.url), "utf8");
 const spec = await readFile(new URL("../docs/AD-MONETIZATION-SPEC.md", import.meta.url), "utf8");
 
 await import("../src/ads.mjs");
@@ -36,13 +36,13 @@ test("runtime house ads share the previously stable compact horizontal creative"
   assert.doesNotMatch(adsSource, /house-rectangle-600x500\.svg|house-inline-640x180\.svg/);
 });
 
-test("ad geometry follows content width and v10 normalizes all house slots to one shell", () => {
+test("ad geometry follows content width and finished creatives keep their intended crop without a second frame", () => {
   assert.match(adsCss, /\.house-ad-card\s*\{[\s\S]*max-width:\s*none/);
   assert.doesNotMatch(adsCss, /max-width:\s*(320|360)px/);
-  assert.match(v10Css, /\.house-ad-card[\s\S]*border-radius:\s*12px !important/);
-  assert.match(v10Css, /\.house-ad-creative[\s\S]*aspect-ratio:\s*640 \/ 89 !important/);
-  assert.match(v10Css, /\.house-ad-creative img[\s\S]*object-fit:\s*cover !important/);
-  assert.match(v10Css, /\.ad-slot-search-primary \.house-ad-card,[\s\S]*border-radius:\s*12px !important/);
+  assert.match(adsCss, /aspect-ratio:\s*var\(--house-ad-ratio,\s*640 \/ 89\)/);
+  assert.match(adsCss, /\.house-ad-creative img[\s\S]*object-fit:\s*cover !important/);
+  assert.match(systemCss, /\.house-ad-card,[\s\S]*border-radius:\s*0 !important/);
+  assert.match(systemCss, /\.house-ad-card[\s\S]*overflow:\s*visible !important/);
 });
 
 test("Yahoo-style placement keeps a primary ad outside the search form and an opaque seamless timetable stack", () => {
@@ -50,7 +50,7 @@ test("Yahoo-style placement keeps a primary ad outside the search form and an op
   assert.match(adsSource, /controls\.insertAdjacentElement\("beforebegin", createSlot\(AD_PLACEMENTS\.TIMETABLE_HEADER\)\)/);
   assert.match(adsCss, /\.ad-slot-timetable-header\s*\{[\s\S]*position:\s*sticky[\s\S]*background:\s*#fff/);
   assert.match(adsCss, /\.ad-slot-timetable-header::after[\s\S]*bottom:\s*-3px[\s\S]*background:\s*#fff/);
-  assert.match(adsCss, /body\.ui-v5 #timetable-route-controls\s*\{[\s\S]*- 2px\)[\s\S]*background:\s*#fff/);
+  assert.match(adsCss, /body\.ui-system #timetable-route-controls\s*\{[\s\S]*- 2px\)[\s\S]*background:\s*#fff/);
 });
 
 test("long result feeds get occasional, bounded inline ads", () => {

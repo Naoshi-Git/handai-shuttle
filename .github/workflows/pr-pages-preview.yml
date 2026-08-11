@@ -58,13 +58,17 @@ jobs:
           node --check source/data/location-points.mjs
           test -f source/ads.css
           test -f source/ui-v5.css
-          test -f source/src/ui-v10.css
-          test -f source/src/ui-v11.css
-          test -f source/src/ui-v12.css
-          test -f source/src/ui-v13.css
-          test -f source/src/ui-v14.css
-          test -f source/src/ui-v15.css
-          test -f source/src/ui-current.css
+          test -f source/src/ui-system.css
+          test -f source/src/view-lifecycle.css
+          test ! -e source/src/ui-v10.css
+          test ! -e source/src/ui-v11.css
+          test ! -e source/src/ui-v12.css
+          test ! -e source/src/ui-v13.css
+          test ! -e source/src/ui-v14.css
+          test ! -e source/src/ui-v15.css
+          test ! -e source/src/ui-v16.css
+          test ! -e source/src/ui-current.css
+          test -f source/docs/UI-ARCHITECTURE.md
           test -f source/assets/brand/app-icon.svg
           test -f source/assets/brand/brand-icon-rounded.svg
           test -f source/assets/brand/brand-symbol-white.svg

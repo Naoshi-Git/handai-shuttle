@@ -7,7 +7,8 @@ const css = await readFile(new URL("../ui-v5.css", import.meta.url), "utf8");
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const lifecycleCss = await readFile(new URL("../src/view-lifecycle.css", import.meta.url), "utf8");
 const adsSource = await readFile(new URL("../src/ads.mjs", import.meta.url), "utf8");
-const v10Css = await readFile(new URL("../src/ui-v10.css", import.meta.url), "utf8");
+const adsCss = await readFile(new URL("../ads.css", import.meta.url), "utf8");
+const systemCss = await readFile(new URL("../src/ui-system.css", import.meta.url), "utf8");
 await import("../src/ui-v6.mjs");
 
 test("saved search conditions and favorite trips use separate storage concepts", () => {
@@ -34,7 +35,7 @@ test("app header removes decorative English from the DOM and bottom navigation u
   for (const label of ["ホーム", "ルート検索", "時刻表", "設定"]) assert.match(source, new RegExp(label));
 });
 
-test("visual system restricts semantic warning and route-via styling to restrained tones", () => {
+test("legacy base visual variables remain restrained until their foundation is migrated", () => {
   assert.match(css, /--ui-warning-bg:\s*#FFF7E7/);
   assert.match(css, /\.pill-warning[\s\S]*#F8F2E6/);
   assert.match(css, /\.service-banner\.is-closed/);
@@ -42,12 +43,12 @@ test("visual system restricts semantic warning and route-via styling to restrain
   assert.match(css, /--ui-control-radius:\s*12px/);
 });
 
-test("final ad layer uses the compact horizontal creative with one shared radius", () => {
+test("final ad layer keeps the compact creative ratio while semantic presentation owns framing", () => {
   assert.match(adsSource, /house-banner-simple-640x89\.webp/);
   assert.match(adsSource, /ratio:\s*"640 \/ 89"/);
   assert.doesNotMatch(adsSource, /house-inline-640x180\.svg|house-rectangle-600x500\.svg/);
-  assert.match(v10Css, /\.house-ad-card[\s\S]*border-radius:\s*12px !important/);
-  assert.match(v10Css, /\.house-ad-creative[\s\S]*aspect-ratio:\s*640 \/ 89 !important/);
+  assert.match(adsCss, /aspect-ratio:\s*var\(--house-ad-ratio,\s*640 \/ 89\)/);
+  assert.match(systemCss, /\.house-ad-card,[\s\S]*border-radius:\s*0 !important/);
 });
 
 test("tab transitions are owned by the current lifecycle and respect reduced motion", () => {

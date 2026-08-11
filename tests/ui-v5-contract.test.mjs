@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 
 const source = await readFile(new URL("../src/ui-v5.mjs", import.meta.url), "utf8");
 const css = await readFile(new URL("../ui-v5.css", import.meta.url), "utf8");
-const currentCss = await readFile(new URL("../src/ui-current.css", import.meta.url), "utf8");
+const systemCss = await readFile(new URL("../src/ui-system.css", import.meta.url), "utf8");
 
 test("contextual header uses one Japanese title line while duplicate page headings stay hidden", () => {
   assert.match(source, /home:\s*"阪大シャトル"/);
@@ -15,7 +15,7 @@ test("contextual header uses one Japanese title line while duplicate page headin
   assert.match(source, /\.topbar \.brand-copy h1/);
   assert.match(css, /#view-search > \.page-heading/);
   assert.match(css, /#view-timetable > \.page-heading/);
-  assert.match(currentCss, /body\.ui-current \.topbar \.brand-copy h1/);
+  assert.match(systemCss, /body\.ui-system \.topbar \.brand-copy h1/);
 });
 
 test("search date-time and detailed conditions are moved into dedicated bottom sheets", () => {
