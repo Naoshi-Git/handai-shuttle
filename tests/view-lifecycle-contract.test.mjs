@@ -48,6 +48,14 @@ test("app topbar has one Japanese title line and no legacy eyebrow state", () =>
   assert.match(currentCss, /body\.ui-current \.topbar \.brand-copy h1[\s\S]*margin:\s*0 !important[\s\S]*line-height:\s*1\.15 !important/);
 });
 
+test("topbar material is stable and independent of fading content underneath", () => {
+  const topbarBlock = currentCss.match(/body\.ui-current \.topbar \{[\s\S]*?\n}/)?.[0] || "";
+  assert.match(topbarBlock, /background:\s*#F8F8FA !important/);
+  assert.match(topbarBlock, /-webkit-backdrop-filter:\s*none !important/);
+  assert.match(topbarBlock, /backdrop-filter:\s*none !important/);
+  assert.doesNotMatch(topbarBlock, /rgba\(248,248,250,\.74\)|blur\(24px\)|saturate\(160%\)/);
+});
+
 test("legacy version CSS no longer owns the app Topbar or old view enter animation", () => {
   assert.doesNotMatch(uiV10Css, /body\.ui-v10 \.brand-copy h1/);
   assert.doesNotMatch(uiV11Css, /body\.ui-v11 \.topbar|body\.ui-v11 \.brand-copy h1/);
@@ -82,11 +90,18 @@ test("dense screens use an asymmetric dissolve instead of a long 50-50 double ex
   assert.match(lifecycle, /crossfadeMs:\s*220/);
 });
 
-test("contextual header title dissolves while Bottom Nav stays persistent", () => {
+test("contextual header title dissolves inside one stable Topbar grid cell", () => {
   assert.match(lifecycle, /prepareHeaderTransition\(\)/);
   assert.match(lifecycle, /runHeaderTransition\(\)/);
-  assert.match(lifecycleCss, /view-header-copy-ghost/);
-  assert.match(lifecycleCss, /brand-copy\.view-header-copy-entering/);
+  assert.match(lifecycle, /headerTitleGhost = title\.cloneNode\(true\)/);
+  assert.match(lifecycle, /title\.after\(headerTitleGhost\)/);
+  assert.doesNotMatch(lifecycle, /fixedGhost\(copy|view-header-copy-ghost/);
+  assert.match(currentCss, /body\.ui-current \.topbar \.brand-copy[\s\S]*display:\s*grid !important/);
+  assert.match(currentCss, /body\.ui-current \.topbar \.brand-copy h1[\s\S]*grid-area:\s*1 \/ 1/);
+  assert.match(lifecycleCss, /view-header-title-ghost/);
+  assert.match(lifecycleCss, /view-header-title-entering/);
+  const titleBlock = lifecycleCss.match(/view-header-title-ghost[\s\S]*?view-header-title-entering\.view-crossfade-running[\s\S]*?\n}/)?.[0] || "";
+  assert.doesNotMatch(titleBlock, /transform:|position:\s*(?:fixed|absolute)/);
   assert.match(lifecycleCss, /\.bottom-nav[\s\S]*z-index:\s*60 !important/);
   assert.doesNotMatch(lifecycleCss, /\.bottom-nav[\s\S]{0,160}opacity:/);
 });
