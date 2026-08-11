@@ -20,12 +20,14 @@ test("saved search conditions and favorite trips use separate storage concepts",
   assert.match(source, /☆ 条件を保存/);
 });
 
-test("favorite controls are attached to search and timetable cards", () => {
+test("favorite controls stay behavior-owned while timetable surface highlighting stays semantic", () => {
   assert.match(source, /journey-favorite-button/);
   assert.match(source, /tt-favorite-button/);
   assert.match(source, /data-tt-trip/);
-  assert.match(css, /\.route-timetable-card\.is-favorite-trip/);
   assert.match(css, /\.journey-card\.is-favorite-trip/);
+  assert.match(css, /\.tt-favorite-button/);
+  assert.doesNotMatch(css, /\.route-timetable-card\.is-favorite-trip/);
+  assert.match(systemCss, /route-timetable-card\.favorite-flash[\s\S]*animation:\s*none !important/);
 });
 
 test("app header removes decorative English from the DOM and bottom navigation uses consistent SVG icons", () => {
@@ -35,12 +37,14 @@ test("app header removes decorative English from the DOM and bottom navigation u
   for (const label of ["ホーム", "ルート検索", "時刻表", "設定"]) assert.match(source, new RegExp(label));
 });
 
-test("legacy base visual variables remain restrained until their foundation is migrated", () => {
-  assert.match(css, /--ui-warning-bg:\s*#FFF7E7/);
-  assert.match(css, /\.pill-warning[\s\S]*#F8F2E6/);
-  assert.match(css, /\.service-banner\.is-closed/);
-  assert.match(css, /--ui-card-radius:\s*16px/);
+test("legacy utility variables remain only where active foundation still consumes them", () => {
+  assert.match(css, /--ui-sheet-radius:\s*24px/);
   assert.match(css, /--ui-control-radius:\s*12px/);
+  assert.match(css, /--ui-favorite:\s*#A97916/);
+  assert.doesNotMatch(css, /body\.ui-v6 \.pill-warning/);
+  assert.doesNotMatch(css, /body\.ui-v6 \.service-banner\.is-closed/);
+  assert.match(systemCss, /body\.ui-system \.pill-warning[\s\S]*#F2EFEA/);
+  assert.match(systemCss, /body\.ui-system \.service-banner\.is-closed/);
 });
 
 test("final ad layer keeps the compact creative ratio while semantic presentation owns framing", () => {
