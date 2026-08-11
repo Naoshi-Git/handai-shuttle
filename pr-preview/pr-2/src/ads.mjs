@@ -1,3 +1,5 @@
+import { ensureShareIdentity, shareLandingUrl } from "./share-identity.mjs";
+
 const ADS_MODE_KEY = "handai-shuttle:ads-mode";
 const DEFAULT_MODE = "house";
 
@@ -43,12 +45,11 @@ function installStyles() {
 }
 
 function shareUrl() {
-  const url = new URL(window.location.href);
-  url.hash = "";
-  return url.toString();
+  return shareLandingUrl();
 }
 
 async function shareHandaiShuttle(button) {
+  ensureShareIdentity();
   const payload = {
     title: "阪大シャトル",
     text: "阪大の学内連絡バス、次の便がすぐわかる。阪大シャトルを使ってみて。",
@@ -190,6 +191,7 @@ function observeDynamicFeeds() {
 
 export function initAds() {
   installStyles();
+  ensureShareIdentity();
   refreshAdSlots();
   observeDynamicFeeds();
   window.setTimeout(refreshAdSlots, 300);
