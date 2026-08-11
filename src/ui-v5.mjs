@@ -2,10 +2,10 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 const HEADER_COPY = Object.freeze({
-  home: { eyebrow: "HANDAI SHUTTLE", title: "阪大シャトル" },
-  search: { eyebrow: "ROUTE SEARCH", title: "ルート検索" },
-  timetable: { eyebrow: "TIMETABLE", title: "時刻表" },
-  settings: { eyebrow: "SETTINGS", title: "設定" }
+  home: "阪大シャトル",
+  search: "ルート検索",
+  timetable: "時刻表",
+  settings: "設定"
 });
 
 let serviceBannerAnchor = null;
@@ -67,11 +67,9 @@ function normalizeStatusCopy() {
 
 function syncHeader() {
   const view = activeView();
-  const copy = HEADER_COPY[view] || HEADER_COPY.home;
-  const eyebrow = $(".topbar .eyebrow");
+  const titleCopy = HEADER_COPY[view] || HEADER_COPY.home;
   const title = $(".topbar .brand-copy h1");
-  if (eyebrow && eyebrow.textContent !== copy.eyebrow) eyebrow.textContent = copy.eyebrow;
-  if (title && title.textContent !== copy.title) title.textContent = copy.title;
+  if (title && title.textContent !== titleCopy) title.textContent = titleCopy;
   document.body.dataset.activeView = view;
 
   if (view === "search") moveServiceBannerToSearch();
