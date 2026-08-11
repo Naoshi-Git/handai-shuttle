@@ -90,7 +90,7 @@ test("contextual header title dissolves inside one stable Topbar grid cell", () 
   assert.match(lifecycleCss, /view-header-title-entering/);
   const titleBlock = lifecycleCss.match(/view-header-title-ghost[\s\S]*?view-header-title-entering\.view-crossfade-running[\s\S]*?\n}/)?.[0] || "";
   assert.doesNotMatch(titleBlock, /transform:|position:\s*(?:fixed|absolute)/);
-  assert.match(lifecycleCss, /\.bottom-nav[\s\S]*z-index:\s*60 !important/);
+  assert.match(lifecycleCss, /\.bottom-nav[\s\S]*z-index:\s*1200 !important/);
   assert.doesNotMatch(lifecycleCss, /\.bottom-nav[\s\S]{0,160}opacity:/);
 });
 
@@ -102,12 +102,13 @@ test("Search boundary preserves the moving shared service banner during dissolve
   assert.match(lifecycleCss, /view-service-banner-entering/);
 });
 
-test("Timetable alone gets a content loader while hidden route and scroll work settles", () => {
+test("Timetable alone gets a content loader that continues behind persistent navigation", () => {
   assert.match(lifecycle, /revealTimetable/);
   assert.match(lifecycle, /waitForTimetableDomQuiet/);
   assert.match(lifecycle, /waitForScrollIdle/);
   assert.match(lifecycleCss, /timetable-transition-loader/);
-  assert.match(lifecycleCss, /bottom:\s*calc\(76px \+ env\(safe-area-inset-bottom\)\)/);
+  assert.match(lifecycleCss, /\.timetable-transition-loader \{[\s\S]*bottom:\s*0;/);
+  assert.match(lifecycleCss, /padding-bottom:\s*calc\(var\(--ui-nav-height, 60px\) \+ 24px \+ env\(safe-area-inset-bottom\)\)/);
   assert.match(lifecycle, /prepareHeaderTransition\(\)/);
 });
 
