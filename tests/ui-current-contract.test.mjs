@@ -64,6 +64,16 @@ test("selection materials live on persistent parents instead of recreated child 
   assert.match(currentCss, /\.tt-destination-buttons \{ grid-template-columns: repeat\(2,minmax\(0,1fr\)\)/);
 });
 
+test("segmented typography is explicit and selected text stays high contrast", () => {
+  assert.match(currentCss, /--current-control-font-size:\s*12px/);
+  assert.match(currentCss, /--current-control-selected-ink:\s*#242429/);
+  assert.match(currentCss, /#home-destination-chips > button[\s\S]*font-size:\s*var\(--current-control-font-size\) !important/);
+  assert.match(currentCss, /\.tt-campus-tabs > button[\s\S]*font-size:\s*var\(--current-control-font-size\) !important/);
+  assert.match(currentCss, /\.tt-campus-tabs > button\.is-active[\s\S]*-webkit-text-fill-color:\s*var\(--current-control-selected-ink\) !important/);
+  assert.match(currentCss, /\.tt-destination-buttons > button\.is-active[\s\S]*color:\s*var\(--current-control-selected-ink\) !important/);
+  assert.doesNotMatch(currentCss, /data-home-destination="suita"[\s\S]{0,160}font-size:\s*inherit/);
+});
+
 test("same nav and same segmented choice are true no-ops", () => {
   assert.match(current, /\.bottom-nav \[data-nav\]\.is-active/);
   assert.match(current, /event\.stopPropagation\(\)/);
