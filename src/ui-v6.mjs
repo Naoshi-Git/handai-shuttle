@@ -474,7 +474,6 @@ function observeDynamicPolish() {
 }
 
 function init() {
-  document.body.classList.add("ui-v6");
   setupSaveSemantics();
   installBottomNavIcons();
   resetScrollOnViewEntry();
