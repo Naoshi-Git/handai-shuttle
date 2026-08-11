@@ -11,9 +11,9 @@ const preferences = await readFile(new URL("../src/route-preferences.mjs", impor
 await import("../src/ui-current.mjs");
 await import("../src/route-preferences.mjs");
 
-test("active graph has one current interaction owner", () => {
+test("active graph has one current interaction owner after the view lifecycle layer", () => {
   assert.match(entry, /import "\.\/route-preferences\.mjs";/);
-  assert.match(entry, /import "\.\/ui-current\.mjs";/);
+  assert.match(entry, /import "\.\/view-lifecycle\.mjs";[\s\S]*import "\.\/ui-current\.mjs";/);
   assert.doesNotMatch(entry, /ui-v7-fixes/);
   assert.doesNotMatch(entry, /ui-v9\.mjs/);
   assert.doesNotMatch(entry, /ui-runtime\.mjs/);
@@ -64,13 +64,13 @@ test("selection materials live on persistent parents instead of recreated child 
   assert.match(currentCss, /\.tt-destination-buttons \{ grid-template-columns: repeat\(2,minmax\(0,1fr\)\)/);
 });
 
-test("segmented typography is explicit and selected text stays high contrast", () => {
+test("segmented typography is explicit and selected text stays strongly contrasted", () => {
   assert.match(currentCss, /--current-control-font-size:\s*12px/);
-  assert.match(currentCss, /--current-control-selected-ink:\s*#242429/);
+  assert.match(currentCss, /--current-control-selected-ink:\s*#111118/);
   assert.match(currentCss, /#home-destination-chips > button[\s\S]*font-size:\s*var\(--current-control-font-size\) !important/);
   assert.match(currentCss, /\.tt-campus-tabs > button[\s\S]*font-size:\s*var\(--current-control-font-size\) !important/);
   assert.match(currentCss, /\.tt-campus-tabs > button\.is-active[\s\S]*-webkit-text-fill-color:\s*var\(--current-control-selected-ink\) !important/);
-  assert.match(currentCss, /\.tt-destination-buttons > button\.is-active[\s\S]*color:\s*var\(--current-control-selected-ink\) !important/);
+  assert.match(currentCss, /\.tt-destination-buttons > button\.is-active[\s\S]*font-weight:\s*700 !important[\s\S]*opacity:\s*1 !important/);
   assert.doesNotMatch(currentCss, /data-home-destination="suita"[\s\S]{0,160}font-size:\s*inherit/);
 });
 
@@ -83,12 +83,10 @@ test("same nav and same segmented choice are true no-ops", () => {
   assert.match(current, /\.search-mode \[data-mode\]\.is-active/);
 });
 
-test("motion grammar separates tab, selection and sheets", () => {
-  assert.match(currentCss, /--current-motion-view:\s*300ms/);
+test("current motion owns selection and sheets, not tab-page fading", () => {
+  assert.doesNotMatch(currentCss, /current-view-enter|--current-motion-view/);
   assert.match(currentCss, /--current-motion-choice:\s*280ms/);
   assert.match(currentCss, /--current-motion-sheet:\s*360ms/);
-  assert.match(currentCss, /opacity:\s*\.72/);
-  assert.match(currentCss, /translate3d\(0,1px,0\)/);
   assert.match(currentCss, /translate3d\(0,16px,0\)/);
   assert.doesNotMatch(current, /startViewTransition/);
 });
@@ -114,7 +112,7 @@ test("utility behavior formerly in runtime is retained by current owner", () => 
   assert.match(current, /"次の便"/);
 });
 
-test("reduced motion remains explicit", () => {
+test("reduced motion remains explicit for current-owned sheets and selections", () => {
   assert.match(currentCss, /prefers-reduced-motion:\s*reduce/);
   assert.match(currentCss, /animation:\s*none !important/);
   assert.match(currentCss, /transition:\s*none !important/);
