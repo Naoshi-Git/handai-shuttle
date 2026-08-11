@@ -24,12 +24,22 @@ test("timetable uses a rounded grouped list instead of detached square rows", ()
   assert.match(css, /timetable-group-v13 > \.route-timetable-card[\s\S]*border-radius:\s*0 !important/);
 });
 
-test("settings configuration opens as a horizontal subpage with swipe back", () => {
+test("settings configuration opens as a horizontal subpage with reliable swipe back", () => {
   assert.match(source, /settings-subpage-v13/);
   assert.match(source, /installSwipeBack/);
-  assert.match(source, /event\.clientX > 52/);
+  assert.match(source, /SWIPE_EDGE_MAX_PX = 96/);
+  assert.match(source, /translate3d\(calc\(-50% \+ \$\{Math\.min\(dx, panel\.clientWidth\)\}px\),0,0\)/);
+  assert.match(source, /SWIPE_FAST_VELOCITY/);
   assert.match(css, /settings-subpage-v13[\s\S]*translateX\(calc\(-50% \+ 100%\)\)/);
+  assert.match(css, /touch-action:\s*pan-y/);
+  assert.match(css, /\.settings-subpage-v13\.is-swiping[\s\S]*transition:\s*none !important/);
   assert.match(css, /settings-menu-v13[\s\S]*border-radius:\s*18px/);
+});
+
+test("v13 observes only the settings surface instead of the whole document", () => {
+  assert.match(source, /settingsObserver\.observe\(settings, \{ childList: true, subtree: true \}\)/);
+  assert.doesNotMatch(source, /observe\(document\.body/);
+  assert.doesNotMatch(source, /attributes:\s*true/);
 });
 
 test("legacy saved routes UI is removed in favor of search conditions and favorite trips", () => {
