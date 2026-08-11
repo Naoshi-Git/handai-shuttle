@@ -35,23 +35,30 @@ test("favorite controls stay behavior-owned while presentation stays semantic", 
   assert.match(systemCss, /route-timetable-card\.favorite-flash[\s\S]*animation:\s*none !important/);
 });
 
-test("search and timetable favorites identify the same physical trip", () => {
-  const identity = source.match(/function favoriteIdentity\(item\) \{[\s\S]*?\n\}/)?.[0] || "";
-  assert.match(identity, /item\.tripId/);
-  assert.match(identity, /item\.departure/);
-  assert.match(identity, /item\.arrival/);
-  assert.doesNotMatch(identity, /originName|destinationName|source/);
+test("favorite trip IDs are canonical across search, timetable, and existing storage", () => {
+  assert.match(source, /function normalizeTripId/);
+  assert.match(source, /\.replace\(\/便\$\/,\s*""\)/);
+  assert.match(source, /function migrateFavoriteTrips/);
+  assert.match(source, /tripId:\s*normalizeTripId\(item\?\.tripId\)/);
+  assert.match(source, /const tripLabel = [\s\S]*\^\[EW\]\\d\+便\$/);
+  assert.match(source, /const tripId = normalizeTripId\(tripLabel\)/);
 });
 
-test("opening a favorite routes to its matching timetable trip and opens detail", () => {
+test("opening a favorite selects its timetable route, scrolls, and opens detail", () => {
   const block = source.match(/function openFavorite\(item\) \{[\s\S]*?\n\}\n\nfunction renderFavoriteTrips/)?.[0] || "";
+  assert.match(block, /const tripId = normalizeTripId/);
   assert.match(block, /data-nav="timetable"/);
   assert.match(block, /data-tt-origin/);
   assert.match(block, /data-tt-destination/);
-  assert.match(block, /data-tt-trip/);
+  assert.match(block, /data-tt-trip="\$\{tripId\}"/);
   assert.match(block, /scrollIntoView/);
   assert.match(block, /card\.click\(\)/);
-  assert.doesNotMatch(block, /item\.source === "timetable"/);
+});
+
+test("bottom navigation is portaled to body so fixed positioning is not trapped by app-shell stacking", () => {
+  assert.match(source, /function portalBottomNav/);
+  assert.match(source, /document\.body\.append\(nav\)/);
+  assert.match(source, /portalBottomNav\(\);[\s\S]*setupSaveSemantics/);
 });
 
 test("app header removes decorative English from the DOM and bottom navigation uses consistent SVG icons", () => {
