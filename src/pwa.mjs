@@ -55,6 +55,27 @@ export async function checkForAppUpdate({ force = false, reload = true } = {}) {
   }
 }
 
+function installRasterIcons() {
+  let favicon = document.head.querySelector('link[rel="icon"][sizes="32x32"]');
+  if (!favicon) {
+    favicon = document.createElement("link");
+    favicon.rel = "icon";
+    document.head.append(favicon);
+  }
+  favicon.href = "./assets/brand/app-icon-32.png";
+  favicon.setAttribute("sizes", "32x32");
+  favicon.type = "image/png";
+
+  let appleTouch = document.head.querySelector('link[rel="apple-touch-icon"]');
+  if (!appleTouch) {
+    appleTouch = document.createElement("link");
+    appleTouch.rel = "apple-touch-icon";
+    document.head.append(appleTouch);
+  }
+  appleTouch.href = "./assets/brand/app-icon-180.png";
+  appleTouch.setAttribute("sizes", "180x180");
+}
+
 function installStyles() {
   if (document.querySelector("style[data-pwa-ui]")) return;
   const style = document.createElement("style");
@@ -168,6 +189,7 @@ async function autoCheckStandalone() {
 }
 
 function init() {
+  installRasterIcons();
   installStyles();
   installSettingsCard();
   window.setTimeout(installSafariNudge, 1350);
