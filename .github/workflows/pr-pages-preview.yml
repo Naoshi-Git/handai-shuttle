@@ -48,7 +48,6 @@ jobs:
           node --check source/src/ui-v4-polish.mjs
           node --check source/src/ui-v5.mjs
           node --check source/src/route-preferences.mjs
-          node --check source/src/ui-v10.mjs
           node --check source/src/ui-v12.mjs
           node --check source/src/ui-v13.mjs
           node --check source/src/ui-current.mjs
