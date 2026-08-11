@@ -26,10 +26,10 @@ test("search date-time and detailed conditions are moved into dedicated bottom s
   assert.match(css, /\.search-sheet\s*\{/);
 });
 
-test("search page moves the service banner below the search button and fixes weekend Japanese", () => {
+test("search page moves the service banner without post-hoc Japanese repair", () => {
   assert.match(source, /submit\.insertAdjacentElement\("afterend", banner\)/);
-  assert.match(source, /本日は土・日曜日のため運休です。通常時刻表のみ表示しています。/);
-  assert.match(source, /は土・日曜日のため運休です。/);
+  assert.doesNotMatch(source, /normalizeJapaneseText|normalizeStatusCopy/);
+  assert.doesNotMatch(source, /土日には運行しません|運行しませんのため/);
 });
 
 test("timetable and search metadata use fixed columns so route label length does not shift crowding/date", () => {
@@ -46,7 +46,8 @@ test("timetable selector is offset below the sticky ad stack", () => {
 test("v5 observes only owned dynamic surfaces instead of the whole app shell", () => {
   assert.match(source, /observeSurface\(\$\("#search-results"\)/);
   assert.match(source, /observeSurface\(\$\("#timetable-list"\)/);
-  assert.match(source, /observeSurface\(\$\("#service-banner"\)/);
+  assert.doesNotMatch(source, /observeSurface\(\$\("#service-banner"\)/);
+  assert.doesNotMatch(source, /characterData:\s*true/);
   assert.doesNotMatch(source, /observe\(root, \{[\s\S]*attributeFilter:\s*\["class"\]/);
   assert.doesNotMatch(source, /const root = \$\("\.app-shell"\)/);
 });
