@@ -32,10 +32,13 @@ test("radius hierarchy differentiates groups controls and pills", () => {
   assert.match(css, /--v14-radius-pill:\s*999px/);
 });
 
-test("glass-like material stays on navigation and settings subpage while app topbar belongs to current", () => {
+test("glass-like material stays on navigation and settings while app topbar is stable current shell", () => {
   assert.match(css, /\.bottom-nav[\s\S]*backdrop-filter:\s*blur\(22px\)/);
   assert.doesNotMatch(css, /body\.ui-v14 \.topbar/);
-  assert.match(currentCss, /body\.ui-current \.topbar[\s\S]*backdrop-filter:\s*blur\(24px\)/);
+  const topbarBlock = currentCss.match(/body\.ui-current \.topbar \{[\s\S]*?\n}/)?.[0] || "";
+  assert.match(topbarBlock, /background:\s*#F8F8FA !important/);
+  assert.match(topbarBlock, /backdrop-filter:\s*none !important/);
+  assert.doesNotMatch(topbarBlock, /blur\(|saturate\(/);
   assert.match(css, /\.settings-subpage-header[\s\S]*backdrop-filter:\s*blur\(20px\)/);
   assert.match(css, /prefers-reduced-transparency/);
 });
