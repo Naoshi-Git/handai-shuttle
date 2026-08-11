@@ -1,12 +1,23 @@
 /* Full-screen tab lifecycle: fade the app to a neutral surface, prepare hidden UI, then reveal. */
+body.ui-view-lifecycle .view.is-active,
+body.ui-view-lifecycle.ui-current .view.is-active,
+body.ui-view-lifecycle.ui-v15 .view.is-active {
+  animation: none !important;
+}
+
 body.ui-view-transitioning {
   overscroll-behavior: none;
 }
 
-body.ui-view-transitioning .view.is-active,
-body.ui-view-transitioning.ui-current .view.is-active,
-body.ui-view-transitioning.ui-v15 .view.is-active {
-  animation: none !important;
+/* WebKit contrast guard for segmented timetable selections. */
+body.ui-view-lifecycle.ui-current .tt-campus-tabs > button.is-active,
+body.ui-view-lifecycle.ui-current .tt-destination-buttons > button.is-active {
+  color: #111118 !important;
+  -webkit-text-fill-color: #111118 !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  text-shadow: none !important;
 }
 
 .view-transition-veil {
