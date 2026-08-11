@@ -5,17 +5,22 @@ import { readFile } from "node:fs/promises";
 const entry = await readFile(new URL("../src/features-v3.mjs", import.meta.url), "utf8");
 const current = await readFile(new URL("../src/ui-current.mjs", import.meta.url), "utf8");
 const currentCss = await readFile(new URL("../src/ui-current.css", import.meta.url), "utf8");
+const lifecycle = await readFile(new URL("../src/view-lifecycle.mjs", import.meta.url), "utf8");
+const lifecycleCss = await readFile(new URL("../src/view-lifecycle.css", import.meta.url), "utf8");
 
 await import("../src/ui-current.mjs");
+await import("../src/view-lifecycle.mjs");
 
 test("legacy behavior version modules are inactive and ui-current is the final behavior import", () => {
   assert.doesNotMatch(entry, /ui-v7-fixes|ui-v9\.mjs|ui-runtime|ui-safe-fixes|ui-v10\.mjs|ui-v11\.mjs|ui-v14\.mjs|ui-v15\.mjs|ui-v16\.mjs/);
   const imports = [...entry.matchAll(/import\s+"([^"]+)";/g)].map((match) => match[1]);
+  assert.equal(imports.at(-2), "./view-lifecycle.mjs");
   assert.equal(imports.at(-1), "./ui-current.mjs");
 });
 
 test("current motion avoids full-document snapshots and recreated child gliders", () => {
   assert.doesNotMatch(current, /startViewTransition/);
+  assert.doesNotMatch(lifecycle, /startViewTransition/);
   assert.doesNotMatch(currentCss, /::view-transition/);
   assert.doesNotMatch(current, /runtime-choice-glider/);
   assert.match(currentCss, /#home-destination-chips::before/);
@@ -35,19 +40,30 @@ test("current observers are targeted to stable UI surfaces", () => {
   assert.match(current, /favoriteObserver\.observe\(section/);
 });
 
-test("navigation sheets and choice motion share the final current grammar", () => {
-  assert.match(current, /nav-glider-v15/);
-  assert.match(current, /HTMLDialogElement\.prototype\.close/);
-  assert.match(currentCss, /current-view-enter/);
+test("full-screen tab motion is isolated from current selection and sheet motion", () => {
+  assert.match(lifecycleCss, /\.view-transition-veil/);
+  assert.match(lifecycleCss, /opacity 150ms/);
+  assert.match(lifecycleCss, /\.view-transition-spinner/);
+  assert.doesNotMatch(currentCss, /current-view-enter|--current-motion-view/);
   assert.match(currentCss, /current-sheet-in/);
   assert.match(currentCss, /current-backdrop-in/);
-  assert.match(currentCss, /--current-motion-view:\s*300ms/);
   assert.match(currentCss, /--current-motion-choice:\s*280ms/);
   assert.match(currentCss, /--current-motion-sheet:\s*360ms/);
+});
+
+test("timetable transition waits for DOM and scroll to settle", () => {
+  assert.match(lifecycle, /waitForTimetableDomQuiet/);
+  assert.match(lifecycle, /waitForScrollIdle/);
+  assert.match(lifecycle, /view === "timetable"/);
+  assert.match(lifecycle, /MutationObserver/);
+  assert.match(lifecycle, /scrollStableFrames/);
+  assert.doesNotMatch(lifecycle, /\.click\(\)/);
+  assert.doesNotMatch(lifecycle, /preventDefault|stopImmediatePropagation/);
 });
 
 test("desktop containment and reduced-motion fallbacks remain available", () => {
   assert.match(currentCss, /@media \(min-width: 760px\)/);
   assert.match(currentCss, /width:\s*min\(520px,calc\(100vw - 48px\)\)/);
   assert.match(currentCss, /prefers-reduced-motion:\s*reduce/);
+  assert.match(lifecycleCss, /prefers-reduced-motion:\s*reduce/);
 });
