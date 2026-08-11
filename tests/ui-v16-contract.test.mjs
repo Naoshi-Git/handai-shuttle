@@ -8,9 +8,10 @@ const currentCss = await readFile(new URL("../src/ui-current.css", import.meta.u
 
 await import("../src/ui-current.mjs");
 
-test("legacy behavior version modules are inactive and ui-current is final", () => {
-  assert.doesNotMatch(entry, /ui-v7-fixes|ui-v9\.mjs|ui-runtime|ui-safe-fixes|ui-v11\.mjs|ui-v14\.mjs|ui-v15\.mjs|ui-v16\.mjs/);
-  assert.match(entry, /import "\.\/ui-current\.mjs";\s*$/);
+test("legacy behavior version modules are inactive and ui-current is the final behavior import", () => {
+  assert.doesNotMatch(entry, /ui-v7-fixes|ui-v9\.mjs|ui-runtime|ui-safe-fixes|ui-v10\.mjs|ui-v11\.mjs|ui-v14\.mjs|ui-v15\.mjs|ui-v16\.mjs/);
+  const imports = [...entry.matchAll(/import\s+"([^"]+)";/g)].map((match) => match[1]);
+  assert.equal(imports.at(-1), "./ui-current.mjs");
 });
 
 test("current motion avoids full-document snapshots and recreated child gliders", () => {
