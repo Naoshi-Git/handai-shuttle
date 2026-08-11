@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const source = await readFile(new URL("../src/ui-v6.mjs", import.meta.url), "utf8");
-const css = await readFile(new URL("../ui-v5.css", import.meta.url), "utf8");
+const css = await readFile(new URL("../src/ui-foundation.css", import.meta.url), "utf8");
+const shim = await readFile(new URL("../ui-v5.css", import.meta.url), "utf8");
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const lifecycleCss = await readFile(new URL("../src/view-lifecycle.css", import.meta.url), "utf8");
 const adsSource = await readFile(new URL("../src/ads.mjs", import.meta.url), "utf8");
@@ -23,6 +24,7 @@ test("saved search conditions and favorite trips use separate storage concepts",
 test("v6 behavior no longer creates a presentation runtime scope", () => {
   assert.doesNotMatch(source, /classList\.add\("ui-v6"\)/);
   assert.doesNotMatch(css, /body\.ui-v6/);
+  assert.match(shim, /src\/ui-foundation\.css/);
 });
 
 test("favorite controls stay behavior-owned while timetable surface highlighting stays semantic", () => {
