@@ -36,3 +36,11 @@ test("timetable and search metadata use fixed columns so route label length does
 test("timetable selector is offset below the sticky ad stack", () => {
   assert.match(css, /#timetable-route-controls[\s\S]*var\(--tt-sticky-ad-height/);
 });
+
+test("v5 observes only owned dynamic surfaces instead of the whole app shell", () => {
+  assert.match(source, /observeSurface\(\$\("#search-results"\)/);
+  assert.match(source, /observeSurface\(\$\("#timetable-list"\)/);
+  assert.match(source, /observeSurface\(\$\("#service-banner"\)/);
+  assert.doesNotMatch(source, /observe\(root, \{[\s\S]*attributeFilter:\s*\["class"\]/);
+  assert.doesNotMatch(source, /const root = \$\("\.app-shell"\)/);
+});
