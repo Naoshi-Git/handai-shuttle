@@ -31,14 +31,6 @@ function restoreServiceBanner() {
   banner.classList.remove("is-search-context");
 }
 
-function moveServiceBannerToSearch() {
-  const banner = $("#service-banner");
-  const submit = $("#search-form .search-submit");
-  if (!banner || !submit) return;
-  if (banner.previousElementSibling !== submit) submit.insertAdjacentElement("afterend", banner);
-  banner.classList.add("is-search-context");
-}
-
 function syncHeader() {
   const view = activeView();
   const titleCopy = HEADER_COPY[view] || HEADER_COPY.home;
@@ -46,9 +38,7 @@ function syncHeader() {
   if (title && title.textContent !== titleCopy) title.textContent = titleCopy;
   document.body.dataset.activeView = view;
 
-  if (view === "search") moveServiceBannerToSearch();
-  else restoreServiceBanner();
-
+  restoreServiceBanner();
   syncStickyMetrics();
 }
 
