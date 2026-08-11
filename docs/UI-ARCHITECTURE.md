@@ -33,6 +33,32 @@ New visual changes belong in the matching section of `src/ui-system.css`:
 cross-view dissolve, header-title dissolve, Search shared-banner transition, and Timetable
 entry loader.
 
+## Navigation lifecycle ownership
+
+`src/view-lifecycle.mjs` is the current owner of visible view changes. A route into another
+main view must not mutate `.view.is-active` / Bottom Nav state in isolation because that
+bypasses header dissolve, shared-banner handling, persistent nav state, glider measurement,
+and the `handai:viewchange` contract.
+
+Bottom Navigation clicks are fully captured by the lifecycle owner. Home Search entry points
+(`この区間を検索`, `到着時刻から`, `条件変更`) and legacy recent/saved route buttons are
+pre-committed through the same lifecycle before their existing bubble handlers prepare the
+Search parameters. Those parameter handlers intentionally continue to bubble; presentation
+transition ownership and Search-condition ownership are separate responsibilities.
+
+When future code introduces a new cross-view entry point, route it through the lifecycle
+owner rather than adding another direct view toggle.
+
+## Service status copy contract
+
+`src/search-engine.mjs#getServiceStatus()` returns `reason` as a reason noun phrase suitable
+for UI composition, not as a completed sentence. Examples are `祝日`, `土・日曜日`,
+`夏季休業`, and `大学行事等`.
+
+Do not return strings such as `祝日には運行しません` from the data/service layer and then
+append `のため` in a view. Each UI surface owns the complete sentence around the reason.
+This keeps Home banner, Timetable status, and Search warnings grammatically consistent.
+
 ## Compatibility boundary
 
 Some active JavaScript modules still have historical filenames (`ui-v12.mjs`,
@@ -56,6 +82,8 @@ removes the obsolete v10–v16/current scopes after module initialization. Older
 - Change the existing semantic owner instead of overriding it later in the cascade.
 - If a rule is superseded, replace/delete it; do not keep both old and new values.
 - Keep `view-lifecycle.css` free of ordinary component styling.
+- Route new main-view entry points through `view-lifecycle.mjs` rather than toggling views directly.
+- Keep `getServiceStatus().reason` as a reason noun phrase; views own complete Japanese sentences.
 - Prefer low-specificity component selectors. Use `!important` only where the semantic
   system must override still-active pre-consolidation foundation CSS; remove it when that
   lower foundation is retired.
