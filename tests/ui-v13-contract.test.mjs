@@ -32,6 +32,14 @@ test("settings subpage is portaled to body and restores content after the transi
   assert.match(source, /closeSettingsPanel\(\{ immediate: true \}\)/);
 });
 
+test("settings subpage closes on the same window lifecycle used by bottom navigation", () => {
+  assert.match(source, /settingsViewIsActive\(\)/);
+  assert.match(source, /window\.addEventListener\("click",[\s\S]*\.bottom-nav \[data-nav\]/);
+  assert.match(source, /window\.addEventListener\("handai:viewchange"/);
+  assert.match(source, /next !== "settings"\) closeSettingsPanel\(\{ immediate: true \}\)/);
+  assert.match(source, /document\.querySelector\("\[data-pwa-install-nudge\]"\)\?\.remove\(\)/);
+});
+
 test("settings edge swipe remains bounded and does not steal carousel or form gestures", () => {
   assert.match(source, /installSwipeBack/);
   assert.match(source, /SWIPE_EDGE_BASE_PX = 96/);
@@ -44,10 +52,10 @@ test("settings edge swipe remains bounded and does not steal carousel or form ge
   assert.match(css, /\.settings-subpage-v13\.is-swiping[\s\S]*transition:\s*none !important/);
 });
 
-test("v13 observes only the settings surface instead of the whole document", () => {
-  assert.match(source, /settingsObserver\.observe\(settings, \{ childList: true, subtree: true \}\)/);
+test("v13 observes only the settings surface and only its active-view class", () => {
+  assert.match(source, /settingsObserver\.observe\(settings, \{ childList: true, subtree: true, attributes: true, attributeFilter: \["class"\] \}\)/);
   assert.doesNotMatch(source, /observe\(document\.body/);
-  assert.doesNotMatch(source, /attributes:\s*true/);
+  assert.doesNotMatch(source, /attributeFilter:\s*\["class",\s*"open"\]/);
 });
 
 test("legacy saved routes UI is removed in favor of search conditions and favorite trips", () => {
@@ -57,10 +65,16 @@ test("legacy saved routes UI is removed in favor of search conditions and favori
   assert.match(source, /favorite-trips-v6/);
 });
 
-test("install guide deliberately renders blank phone frames until replacement screenshots exist", () => {
+test("install guide renders supplied screenshots without image probing or crop logic", () => {
+  assert.match(v12, /INSTALL_GUIDE_SOURCES/);
+  assert.match(v12, /ios-01-share\.webp/);
+  assert.match(v12, /ios-02-add-home\.webp/);
+  assert.match(v12, /ios-03-confirm\.webp/);
   assert.match(v12, /install-guide-phone-frame/);
   assert.match(v12, /install-guide-phone-screen/);
-  assert.doesNotMatch(v12, /<img alt=|new Image\(/);
+  assert.match(v12, /background-image:url/);
+  assert.match(v12, /background-size:contain/);
+  assert.doesNotMatch(v12, /new Image\(/);
   assert.match(pwa, /height:clamp\(238px,32dvh,300px\)!important/);
   assert.match(pwa, /aspect-ratio:9\/19\.5/);
 });
