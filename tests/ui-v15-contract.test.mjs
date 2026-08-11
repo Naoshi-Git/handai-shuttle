@@ -49,11 +49,15 @@ test("low resolution install screenshots are detected and no longer over-enlarge
   assert.match(css, /\.install-guide-media\.is-low-res-source-v15 img[\s\S]*180px/);
 });
 
-test("current selection and sheet motion override legacy timing while tab fade is full-screen", () => {
+test("current selection and sheet motion are separate from the preloaded content crossfade", () => {
   assert.match(css, /--v15-motion:\s*cubic-bezier/);
   assert.doesNotMatch(currentCss, /--current-motion-view/);
   assert.match(currentCss, /--current-motion-choice:\s*280ms/);
   assert.match(currentCss, /--current-motion-sheet:\s*360ms/);
-  assert.match(lifecycleCss, /\.view-transition-veil[\s\S]*opacity 150ms/);
+  assert.match(lifecycleCss, /view-crossfade-leaving/);
+  assert.match(lifecycleCss, /view-crossfade-entering/);
+  assert.match(lifecycleCss, /transition:\s*opacity 190ms/);
+  assert.match(lifecycleCss, /\.bottom-nav[\s\S]*z-index:\s*60 !important/);
+  assert.doesNotMatch(lifecycleCss, /view-transition-veil/);
   assert.match(currentCss, /prefers-reduced-motion/);
 });
