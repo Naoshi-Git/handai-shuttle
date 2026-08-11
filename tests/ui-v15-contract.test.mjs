@@ -49,14 +49,16 @@ test("low resolution install screenshots are detected and no longer over-enlarge
   assert.match(css, /\.install-guide-media\.is-low-res-source-v15 img[\s\S]*180px/);
 });
 
-test("current selection and sheet motion are separate from the preloaded content crossfade", () => {
+test("current selection and sheet motion are separate from the stable asymmetric tab dissolve", () => {
   assert.match(css, /--v15-motion:\s*cubic-bezier/);
   assert.doesNotMatch(currentCss, /--current-motion-view/);
   assert.match(currentCss, /--current-motion-choice:\s*280ms/);
   assert.match(currentCss, /--current-motion-sheet:\s*360ms/);
   assert.match(lifecycleCss, /view-crossfade-leaving/);
   assert.match(lifecycleCss, /view-crossfade-entering/);
-  assert.match(lifecycleCss, /transition:\s*opacity 190ms/);
+  assert.match(lifecycleCss, /--view-dissolve-out:\s*145ms/);
+  assert.match(lifecycleCss, /--view-dissolve-in:\s*185ms/);
+  assert.match(lifecycleCss, /--view-dissolve-in-delay:\s*18ms/);
   assert.match(lifecycleCss, /\.bottom-nav[\s\S]*z-index:\s*60 !important/);
   assert.doesNotMatch(lifecycleCss, /view-transition-veil/);
   assert.match(currentCss, /prefers-reduced-motion/);
