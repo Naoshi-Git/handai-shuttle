@@ -75,31 +75,26 @@ body.ui-view-lifecycle .view.view-crossfade-entering.view-crossfade-running {
   transition: opacity var(--view-dissolve-in) var(--view-dissolve-in-ease) var(--view-dissolve-in-delay) !important;
 }
 
-/* Header chrome remains fixed, but its contextual title participates in the same dissolve. */
-.view-header-copy-ghost {
-  position: fixed !important;
-  z-index: 45;
-  top: var(--view-ghost-top, 0px) !important;
-  left: var(--view-ghost-left, 0px) !important;
-  width: var(--view-ghost-width, auto) !important;
-  height: var(--view-ghost-height, auto) !important;
-  margin: 0 !important;
+/* Header chrome remains fixed. Old/new title text is layered in the same brand-copy grid cell,
+   so both states inherit the exact same Topbar typography and geometry. No fixed body ghost,
+   absolute positioning, translation, or scaling participates in the title dissolve. */
+body.ui-view-lifecycle .topbar .brand-copy h1.view-header-title-ghost {
   opacity: 1;
   pointer-events: none !important;
   will-change: opacity;
 }
 
-body.ui-view-lifecycle .topbar .brand-copy.view-header-copy-entering {
+body.ui-view-lifecycle .topbar .brand-copy h1.view-header-title-entering {
   opacity: 0;
   will-change: opacity;
 }
 
-.view-header-copy-ghost.view-crossfade-running {
+body.ui-view-lifecycle .topbar .brand-copy h1.view-header-title-ghost.view-crossfade-running {
   opacity: 0;
   transition: opacity var(--view-dissolve-out) var(--view-dissolve-out-ease) !important;
 }
 
-body.ui-view-lifecycle .topbar .brand-copy.view-header-copy-entering.view-crossfade-running {
+body.ui-view-lifecycle .topbar .brand-copy h1.view-header-title-entering.view-crossfade-running {
   opacity: 1;
   transition: opacity var(--view-dissolve-in) var(--view-dissolve-in-ease) var(--view-dissolve-in-delay) !important;
 }
@@ -194,9 +189,9 @@ body.ui-view-lifecycle .bottom-nav {
 @media (prefers-reduced-motion: reduce) {
   body.ui-view-lifecycle .view.view-crossfade-leaving,
   body.ui-view-lifecycle .view.view-crossfade-entering,
-  body.ui-view-lifecycle .topbar .brand-copy.view-header-copy-entering,
+  body.ui-view-lifecycle .topbar .brand-copy h1.view-header-title-entering,
+  body.ui-view-lifecycle .topbar .brand-copy h1.view-header-title-ghost,
   body.ui-view-lifecycle #service-banner.view-service-banner-entering,
-  .view-header-copy-ghost,
   .view-service-banner-ghost,
   .timetable-transition-loader,
   .timetable-transition-spinner {
