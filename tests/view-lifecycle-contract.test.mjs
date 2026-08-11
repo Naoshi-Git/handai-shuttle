@@ -3,12 +3,32 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
-const [lifecycle, lifecycleCss, currentCss, preferences, core] = await Promise.all([
+const [
+  lifecycle,
+  lifecycleCss,
+  currentCss,
+  preferences,
+  core,
+  html,
+  uiV5,
+  uiV5Css,
+  uiV10Css,
+  uiV11Css,
+  uiV14Css,
+  uiV15Css
+] = await Promise.all([
   read("src/view-lifecycle.mjs"),
   read("src/view-lifecycle.css"),
   read("src/ui-current.css"),
   read("src/route-preferences.mjs"),
-  read("src/features-v3-core.mjs")
+  read("src/features-v3-core.mjs"),
+  read("index.html"),
+  read("src/ui-v5.mjs"),
+  read("ui-v5.css"),
+  read("src/ui-v10.css"),
+  read("src/ui-v11.css"),
+  read("src/ui-v14.css"),
+  read("src/ui-v15.css")
 ]);
 
 test("timetable selection material stays below button text instead of washing it out", () => {
@@ -17,6 +37,24 @@ test("timetable selection material stays below button text instead of washing it
   const trackBlock = currentCss.match(/body\.ui-current \.tt-campus-tabs,[\s\S]*?box-shadow:[^\n]+\n}/)?.[0] || "";
   assert.doesNotMatch(trackBlock, /z-index:\s*0/);
   assert.match(currentCss, /--current-control-selected-ink:\s*#111118/);
+});
+
+test("app topbar has one Japanese title line and no legacy eyebrow state", () => {
+  assert.doesNotMatch(html, /class="eyebrow"/);
+  assert.match(html, /<div class="brand-copy"><h1>阪大シャトル<\/h1><\/div>/);
+  assert.doesNotMatch(uiV5, /\.topbar \.eyebrow|eyebrow\s*:/);
+  assert.doesNotMatch(uiV5Css, /\.topbar \.eyebrow|data-active-view[^\n]*\.topbar/);
+  assert.match(currentCss, /body\.ui-current \.topbar[\s\S]*min-height:\s*68px !important/);
+  assert.match(currentCss, /body\.ui-current \.topbar \.brand-copy h1[\s\S]*margin:\s*0 !important[\s\S]*line-height:\s*1\.15 !important/);
+});
+
+test("legacy version CSS no longer owns the app Topbar or old view enter animation", () => {
+  assert.doesNotMatch(uiV10Css, /body\.ui-v10 \.brand-copy h1/);
+  assert.doesNotMatch(uiV11Css, /body\.ui-v11 \.topbar|body\.ui-v11 \.brand-copy h1/);
+  assert.doesNotMatch(uiV14Css, /body\.ui-v14 \.topbar/);
+  assert.doesNotMatch(uiV15Css, /body\.ui-v15 \.topbar|v15-view-enter/);
+  assert.doesNotMatch(uiV5Css, /v6-view-enter/);
+  assert.doesNotMatch(lifecycleCss, /ui-v6 \.view\.is-active|ui-v15 \.view\.is-active/);
 });
 
 test("ordinary bottom tabs dissolve preloaded content without a white interstitial", () => {
