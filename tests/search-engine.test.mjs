@@ -116,3 +116,24 @@ test("吹田の人間科学部前を出発地点に指定できる", () => {
   assert.equal(result.journeys[0].tripId, "W05");
   assert.equal(result.journeys[0].departureTime, "09:25");
 });
+
+test("運休理由はUI文へ自然に接続できる名詞句で返す", () => {
+  assert.deepEqual(
+    { code: getServiceStatus("2026-08-11").code, reason: getServiceStatus("2026-08-11").reason },
+    { code: "holiday", reason: "祝日" }
+  );
+  assert.deepEqual(
+    { code: getServiceStatus("2026-08-08").code, reason: getServiceStatus("2026-08-08").reason },
+    { code: "weekend", reason: "土・日曜日" }
+  );
+  assert.deepEqual(
+    { code: getServiceStatus("2026-11-02").code, reason: getServiceStatus("2026-11-02").reason },
+    { code: "closure", reason: "大学行事等" }
+  );
+});
+
+test("運休理由に完成文の『運行しません』を含めない", () => {
+  for (const date of ["2026-08-11", "2026-08-08", "2026-08-12", "2026-11-02"]) {
+    assert.doesNotMatch(getServiceStatus(date).reason, /運行しません|運休のため/);
+  }
+});
