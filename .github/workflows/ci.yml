@@ -36,9 +36,10 @@ jobs:
           node --check data/location-points.mjs
           test -f ads.css
           test -f ui-v4.css
-          test -f ui-v5.css
           test -f src/ui-system.css
           test -f src/view-lifecycle.css
+          test ! -e ui-v5.css
+          test ! -e src/ui-foundation.css
           test ! -e src/ui-v10.css
           test ! -e src/ui-v11.css
           test ! -e src/ui-v12.css

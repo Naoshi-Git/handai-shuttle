@@ -3,13 +3,13 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const source = await readFile(new URL("../src/ui-v5.mjs", import.meta.url), "utf8");
-const css = await readFile(new URL("../src/ui-foundation.css", import.meta.url), "utf8");
-const shim = await readFile(new URL("../ui-v5.css", import.meta.url), "utf8");
 const systemCss = await readFile(new URL("../src/ui-system.css", import.meta.url), "utf8");
+const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
-test("legacy ui-v5 path is only a compatibility import", () => {
-  assert.match(shim, /@import url\("\.\/src\/ui-foundation\.css"\)/);
-  assert.doesNotMatch(shim, /\.search-sheet\s*\{|#timetable-route-controls|\.journey-card\.is-favorite-trip/);
+test("v5 behavior no longer owns or injects a stylesheet", () => {
+  assert.doesNotMatch(source, /installStyles|ui-v5\.css|data-ui-v5/);
+  assert.doesNotMatch(html, /ui-v5\.css|ui-foundation\.css/);
+  assert.match(html, /src\/ui-system\.css/);
 });
 
 test("contextual header uses one Japanese title line while duplicate page headings stay hidden", () => {
@@ -19,8 +19,8 @@ test("contextual header uses one Japanese title line while duplicate page headin
   assert.match(source, /settings:\s*"設定"/);
   assert.doesNotMatch(source, /eyebrow|ROUTE SEARCH|TIMETABLE|SETTINGS/);
   assert.match(source, /\.topbar \.brand-copy h1/);
-  assert.match(css, /#view-search > \.page-heading/);
-  assert.match(css, /#view-timetable > \.page-heading/);
+  assert.match(systemCss, /#view-search > \.page-heading/);
+  assert.match(systemCss, /#view-timetable > \.page-heading/);
   assert.match(systemCss, /body\.ui-system \.topbar \.brand-copy h1/);
 });
 
@@ -29,7 +29,7 @@ test("search date-time and detailed conditions are moved into dedicated bottom s
   assert.match(source, /search-condition-sheet/);
   assert.match(source, /timingBody\.append\(nowButton, mode, dateTime\)/);
   assert.match(source, /conditionBody\.append\(options\)/);
-  assert.match(css, /\.search-sheet\s*\{/);
+  assert.match(systemCss, /\.search-sheet\s*\{/);
 });
 
 test("search page moves the service banner without post-hoc Japanese repair", () => {
@@ -39,14 +39,14 @@ test("search page moves the service banner without post-hoc Japanese repair", ()
 });
 
 test("timetable and search metadata use fixed columns so route label length does not shift crowding/date", () => {
-  assert.match(css, /\.tt-compact-badges\.tt-compact-badges-v5/);
-  assert.match(css, /grid-template-columns:\s*42px 58px/);
-  assert.match(css, /#search-results \.journey-details\.journey-details-v5/);
-  assert.match(css, /grid-template-columns:\s*42px 70px 68px/);
+  assert.match(systemCss, /\.tt-compact-badges\.tt-compact-badges-v5/);
+  assert.match(systemCss, /grid-template-columns:\s*42px 58px/);
+  assert.match(systemCss, /#search-results \.journey-details\.journey-details-v5/);
+  assert.match(systemCss, /grid-template-columns:\s*42px 70px 68px/);
 });
 
 test("timetable selector is offset below the sticky ad stack", () => {
-  assert.match(css, /#timetable-route-controls[\s\S]*var\(--tt-sticky-ad-height/);
+  assert.match(systemCss, /#timetable-route-controls[\s\S]*var\(--tt-sticky-ad-height/);
 });
 
 test("v5 observes only owned dynamic surfaces instead of the whole app shell", () => {

@@ -4,13 +4,11 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-const [entry, html, systemCss, baseCss, foundationCss, v5Shim, v5, ads, v12, v13, current] = await Promise.all([
+const [entry, html, systemCss, baseCss, v5, ads, v12, v13, current] = await Promise.all([
   read("src/features-v3.mjs"),
   read("index.html"),
   read("src/ui-system.css"),
   read("style.css"),
-  read("src/ui-foundation.css"),
-  read("ui-v5.css"),
   read("src/ui-v5.mjs"),
   read("src/ads.mjs"),
   read("src/ui-v12.mjs"),
@@ -26,7 +24,7 @@ test("removed compatibility behavior owners cannot silently re-enter the active 
 
 test("presentation has one semantic authority instead of version stylesheet stacking", () => {
   assert.match(html, /src\/ui-system\.css/);
-  assert.doesNotMatch(html, /src\/ui-v1[0-6]\.css|src\/ui-current\.css/);
+  assert.doesNotMatch(html, /ui-v5\.css|ui-foundation\.css|src\/ui-v1[0-6]\.css|src\/ui-current\.css/);
   assert.match(entry, /classList\.add\("ui-system"\)/);
   assert.match(entry, /classList\.remove\(\.\.\.LEGACY_PRESENTATION_SCOPES\)/);
   assert.match(entry, /"ui-v5"/);
@@ -34,25 +32,19 @@ test("presentation has one semantic authority instead of version stylesheet stac
   assert.doesNotMatch(systemCss, /body\.ui-v\d+|body\.ui-current/);
 });
 
-test("legacy ui-v5 stylesheet is an import-only compatibility shim", () => {
-  assert.match(v5Shim, /@import url\("\.\/src\/ui-foundation\.css"\)/);
-  assert.doesNotMatch(v5Shim, /body\.ui-system|body\.ui-v5|body\.ui-v6|\.search-sheet\s*\{/);
+test("structural compatibility rules are absorbed into ui-system", () => {
+  assert.doesNotMatch(v5, /installStyles|ui-v5\.css|classList\.add\("ui-v5"\)/);
+  assert.match(systemCss, /body\.ui-system\[data-active-view="search"\]/);
+  assert.match(systemCss, /body\.ui-system #search-form #service-banner\.is-search-context/);
+  assert.match(systemCss, /body\.ui-system #timetable-route-controls/);
+  assert.match(systemCss, /body\.ui-system \.journey-card\.is-favorite-trip/);
 });
 
-test("remaining foundation CSS is keyed to semantic ui-system scope, not runtime version classes", () => {
-  assert.doesNotMatch(foundationCss, /body\.ui-v5|body\.ui-v6/);
-  assert.doesNotMatch(v5, /classList\.add\("ui-v5"\)/);
-  assert.match(foundationCss, /body\.ui-system\[data-active-view="search"\]/);
-  assert.match(foundationCss, /body\.ui-system #search-form #service-banner\.is-search-context/);
-  assert.match(foundationCss, /body\.ui-system #timetable-route-controls/);
-  assert.match(foundationCss, /body\.ui-system \.journey-card\.is-favorite-trip/);
-});
-
-test("foundation keeps only live utility tokens and delegates sheet motion to ui-system", () => {
-  for (const removed of ["--ui-card-radius", "--ui-panel-radius", "--ui-surface-soft", "--ui-warning-bg", "--ui-warning-border", "--ui-warning-ink"]) {
-    assert.doesNotMatch(foundationCss, new RegExp(removed));
+test("absorbed compatibility layer keeps only live utility tokens and delegates sheet motion to current owner", () => {
+  for (const removed of ["--ui-card-radius", "--ui-panel-radius", "--ui-warning-bg", "--ui-warning-border", "--ui-warning-ink"]) {
+    assert.doesNotMatch(systemCss, new RegExp(removed));
   }
-  assert.doesNotMatch(foundationCss, /search-sheet-in|\.search-sheet\[open\][\s\S]*animation/);
+  assert.doesNotMatch(systemCss, /search-sheet-in/);
   assert.match(systemCss, /body\.ui-system \.search-sheet\[open\]/);
   assert.match(systemCss, /@keyframes ui-sheet-in/);
 });
@@ -66,19 +58,15 @@ test("base stylesheet does not retain superseded first-generation Search markup"
 });
 
 test("Bottom Navigation presentation no longer has a ui-v6 owner", () => {
-  assert.doesNotMatch(foundationCss, /body\.ui-v6 \.bottom-nav/);
+  assert.doesNotMatch(systemCss, /body\.ui-v6 \.bottom-nav/);
   assert.match(systemCss, /body\.ui-system \.bottom-nav \{/);
   assert.match(systemCss, /body\.ui-system \.bottom-nav button \{/);
   assert.match(systemCss, /prefers-reduced-motion:[\s\S]*body\.ui-system \.bottom-nav button/);
 });
 
-test("foundation no longer restates surfaces and status colors owned by ui-system", () => {
-  assert.doesNotMatch(foundationCss, /body\.ui-v6 \.search-panel/);
-  assert.doesNotMatch(foundationCss, /body\.ui-v6 \.settings-card/);
-  assert.doesNotMatch(foundationCss, /body\.ui-v6 \.pill-warning/);
-  assert.doesNotMatch(foundationCss, /body\.ui-v6 \.pill-soft/);
-  assert.doesNotMatch(foundationCss, /body\.ui-v6 \.service-banner\.is-closed/);
-  assert.doesNotMatch(foundationCss, /@keyframes favorite-flash|route-timetable-card\.favorite-flash\s*\{\s*animation/);
+test("semantic system owns final surfaces and status colors without version restatements", () => {
+  assert.doesNotMatch(systemCss, /body\.ui-v6 \.search-panel|body\.ui-v6 \.settings-card|body\.ui-v6 \.pill-warning|body\.ui-v6 \.service-banner\.is-closed/);
+  assert.doesNotMatch(systemCss, /@keyframes favorite-flash|route-timetable-card\.favorite-flash\s*\{\s*animation/);
   assert.match(systemCss, /body\.ui-system \.search-panel[\s\S]*border:\s*0 !important/);
   assert.match(systemCss, /body\.ui-system \.settings-card[\s\S]*border:\s*0 !important/);
   assert.match(systemCss, /body\.ui-system \.pill-warning/);
