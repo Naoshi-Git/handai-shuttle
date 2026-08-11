@@ -1,73 +1,102 @@
-/* Full-screen tab lifecycle: fade the app to a neutral surface, prepare hidden UI, then reveal. */
+/* Tab lifecycle owner. Ordinary tabs crossfade preloaded views; Timetable alone may use a content loading surface. */
 body.ui-view-lifecycle .view.is-active,
 body.ui-view-lifecycle.ui-current .view.is-active,
+body.ui-view-lifecycle.ui-v6 .view.is-active,
 body.ui-view-lifecycle.ui-v15 .view.is-active {
   animation: none !important;
 }
 
-body.ui-view-transitioning {
-  overscroll-behavior: none;
+body.ui-view-lifecycle main {
+  position: relative;
 }
 
-.view-transition-veil {
+/* True content crossfade: incoming view is the layout owner, outgoing view is a temporary overlay.
+   Top chrome and the fixed Bottom Nav are never inside this transition layer. */
+body.ui-view-lifecycle .view.view-crossfade-leaving,
+body.ui-view-lifecycle .view.view-crossfade-entering {
+  display: block !important;
+  will-change: opacity;
+  pointer-events: none !important;
+}
+
+body.ui-view-lifecycle .view.view-crossfade-leaving {
+  position: absolute !important;
+  z-index: 2;
+  inset: 0 0 auto;
+  width: 100%;
+  opacity: 1;
+}
+
+body.ui-view-lifecycle .view.view-crossfade-entering {
+  position: relative !important;
+  z-index: 1;
+  opacity: 0;
+}
+
+body.ui-view-lifecycle .view.view-crossfade-leaving.view-crossfade-running,
+body.ui-view-lifecycle .view.view-crossfade-entering.view-crossfade-running {
+  transition: opacity 190ms cubic-bezier(.2,.68,.2,1) !important;
+}
+
+body.ui-view-lifecycle .view.view-crossfade-leaving.view-crossfade-running { opacity: 0; }
+body.ui-view-lifecycle .view.view-crossfade-entering.view-crossfade-running { opacity: 1; }
+
+/* Bottom Nav is stable shell chrome. It must never be faded or covered by tab transitions. */
+body.ui-view-lifecycle .bottom-nav {
+  z-index: 60 !important;
+}
+
+/* Timetable may need last-moment route/default/scroll preparation. Cover only the content area,
+   keeping Topbar and Bottom Nav visible so the transition reads as in-app loading rather than page navigation. */
+.timetable-transition-loader {
   position: fixed;
-  z-index: 2147483000;
-  inset: 0 auto 0 50%;
+  z-index: 30;
+  top: var(--app-topbar-height, 70px);
+  bottom: calc(76px + env(safe-area-inset-bottom));
+  left: 50%;
   width: min(100%, 540px);
-  min-height: 100dvh;
   display: grid;
   place-items: center;
   transform: translateX(-50%);
-  background: #F7F7F9;
+  background: rgba(247,247,249,.97);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition:
-    opacity 150ms cubic-bezier(.2,.7,.2,1),
-    visibility 0s linear 190ms;
+  transition: opacity 150ms cubic-bezier(.2,.68,.2,1), visibility 0s linear 180ms;
 }
 
-.view-transition-veil.is-visible {
+.timetable-transition-loader.is-visible {
   opacity: 1;
   visibility: visible;
-  transition:
-    opacity 150ms cubic-bezier(.2,.7,.2,1),
-    visibility 0s linear 0s;
+  transition: opacity 150ms cubic-bezier(.2,.68,.2,1), visibility 0s linear 0s;
 }
 
-.view-transition-spinner {
+.timetable-transition-spinner {
   width: 22px;
   height: 22px;
   border-radius: 50%;
   border: 2px solid rgba(36,36,41,.14);
   border-top-color: rgba(36,36,41,.72);
-  opacity: 0;
-  transform: scale(.96);
+  animation: timetable-transition-spin 720ms linear infinite;
 }
 
-.view-transition-veil.is-visible.is-loading .view-transition-spinner {
-  opacity: 1;
-  transform: scale(1);
-  animation: current-view-spinner 720ms linear infinite;
-  transition: opacity 120ms ease 90ms, transform 160ms ease 90ms;
-}
-
-@keyframes current-view-spinner {
+@keyframes timetable-transition-spin {
   to { transform: rotate(360deg); }
 }
 
 @media (min-width: 760px) {
-  .view-transition-veil {
-    top: 28px;
-    bottom: 28px;
-    min-height: 0;
-    border-radius: 32px;
+  .timetable-transition-loader {
+    top: calc(28px + var(--app-topbar-height, 70px));
+    bottom: 104px;
+    border-radius: 0 0 28px 28px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .view-transition-veil,
-  .view-transition-spinner {
+  body.ui-view-lifecycle .view.view-crossfade-leaving,
+  body.ui-view-lifecycle .view.view-crossfade-entering,
+  .timetable-transition-loader,
+  .timetable-transition-spinner {
     transition: none !important;
     animation: none !important;
   }
