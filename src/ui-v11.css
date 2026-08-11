@@ -20,12 +20,6 @@ body.ui-v11 {
   color: var(--v11-ink);
 }
 body.ui-v11 .app-shell { background: var(--v11-canvas) !important; }
-body.ui-v11 .topbar {
-  background: #F9F9FA !important;
-  border-bottom-color: rgba(36,36,41,.07) !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-}
 body.ui-v11 .bottom-nav {
   background: #FAFAFB !important;
   border-top-color: rgba(36,36,41,.08) !important;
@@ -33,8 +27,7 @@ body.ui-v11 .bottom-nav {
   backdrop-filter: none !important;
 }
 
-/* Typography: reserve 700 for real hierarchy; routine labels and controls stay at 500–600. */
-body.ui-v11 .brand-copy h1,
+/* Typography: reserve 700 for real hierarchy; routine labels and controls stay at 500–600. Topbar title is owned by ui-current. */
 body.ui-v11 .page-heading h2,
 body.ui-v11 .section-title-row h2,
 body.ui-v11 .section-title-row h3,
