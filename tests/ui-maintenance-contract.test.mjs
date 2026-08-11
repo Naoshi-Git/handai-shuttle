@@ -31,12 +31,13 @@ test("presentation has one semantic authority instead of version stylesheet stac
   assert.doesNotMatch(systemCss, /body\.ui-v\d+|body\.ui-current/);
 });
 
-test("remaining v5 foundation is keyed to semantic ui-system scope, not ui-v5 runtime state", () => {
-  assert.doesNotMatch(v5Css, /body\.ui-v5/);
+test("remaining foundation CSS is keyed to semantic ui-system scope, not runtime version classes", () => {
+  assert.doesNotMatch(v5Css, /body\.ui-v5|body\.ui-v6/);
   assert.doesNotMatch(v5, /classList\.add\("ui-v5"\)/);
   assert.match(v5Css, /body\.ui-system\[data-active-view="search"\]/);
   assert.match(v5Css, /body\.ui-system #search-form #service-banner\.is-search-context/);
   assert.match(v5Css, /body\.ui-system #timetable-route-controls/);
+  assert.match(v5Css, /body\.ui-system \.journey-card\.is-favorite-trip/);
 });
 
 test("base stylesheet does not retain superseded first-generation Search markup", () => {
