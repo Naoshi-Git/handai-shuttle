@@ -39,6 +39,7 @@ jobs:
           node --check source/src/route-preferences.mjs
           node --check source/src/ui-v12.mjs
           node --check source/src/ui-v13.mjs
+          node --check source/src/view-lifecycle.mjs
           node --check source/src/ui-current.mjs
           node --check source/src/pwa.mjs
           node --check source/src/crowding-prediction.mjs
@@ -53,6 +54,7 @@ jobs:
           test -f source/src/ui-v13.css
           test -f source/src/ui-v14.css
           test -f source/src/ui-v15.css
+          test -f source/src/view-lifecycle.css
           test -f source/src/ui-current.css
           test -f source/assets/brand/app-icon.svg
           test -f source/assets/brand/brand-icon-rounded.svg
@@ -81,7 +83,7 @@ jobs:
           import json, os
           assets = [
               "index.html", "manifest.webmanifest", "style.css", "ui-v2.css", "ui-v3.css", "ui-v4.css", "ui-v5.css", "ads.css",
-              "src/app.mjs", "src/enhancements.mjs", "src/features-v3.mjs", "src/features-v3-core.mjs", "src/ui-v4.mjs", "src/ui-v5.mjs", "src/route-preferences.mjs", "src/ui-v12.mjs", "src/ui-v13.mjs", "src/ui-current.mjs", "src/ui-v10.css", "src/ui-v11.css", "src/ui-v12.css", "src/ui-v13.css", "src/ui-v14.css", "src/ui-v15.css", "src/ui-current.css", "src/pwa.mjs", "src/ads.mjs",
+              "src/app.mjs", "src/enhancements.mjs", "src/features-v3.mjs", "src/features-v3-core.mjs", "src/ui-v4.mjs", "src/ui-v5.mjs", "src/route-preferences.mjs", "src/ui-v12.mjs", "src/ui-v13.mjs", "src/view-lifecycle.mjs", "src/ui-current.mjs", "src/ui-v10.css", "src/ui-v11.css", "src/ui-v12.css", "src/ui-v13.css", "src/ui-v14.css", "src/ui-v15.css", "src/view-lifecycle.css", "src/ui-current.css", "src/pwa.mjs", "src/ads.mjs",
               "assets/brand/app-icon.svg", "assets/brand/brand-icon-rounded.svg", "assets/brand/brand-symbol-white.svg", "assets/brand/splash-white.webp", "assets/brand/splash-black.webp", "assets/brand/splash-gradient.webp", "assets/help/install/ios-01-share.webp", "assets/help/install/ios-02-add-home.webp", "assets/help/install/ios-03-confirm.webp"
           ]
           with open("pages/version.json", "w", encoding="utf-8") as handle:
