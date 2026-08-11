@@ -25,6 +25,13 @@ test("iOS Safari can show a dismissible install nudge outside standalone mode", 
   assert.match(source, /app-icon-180\.png/);
 });
 
+test("Safari install surfaces prefer raster favicon and Apple touch icon assets", () => {
+  assert.match(source, /installRasterIcons/);
+  assert.match(source, /app-icon-32\.png/);
+  assert.match(source, /apple-touch-icon/);
+  assert.match(source, /app-icon-180\.png/);
+});
+
 test("standalone app checks deploy version without relying on a service worker", () => {
   assert.match(source, /version\.json/);
   assert.match(source, /cache:\s*"no-store"/);
