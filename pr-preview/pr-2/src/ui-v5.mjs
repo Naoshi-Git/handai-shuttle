@@ -11,15 +11,6 @@ const HEADER_COPY = Object.freeze({
 let serviceBannerAnchor = null;
 const surfaceObservers = [];
 
-function installStyles() {
-  if ($('link[data-ui-v5]')) return;
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = "./ui-v5.css";
-  link.dataset.uiV5 = "true";
-  document.head.append(link);
-}
-
 function activeView() {
   return $(".view.is-active")?.dataset.view || "home";
 }
@@ -271,7 +262,6 @@ function bindNavigation() {
 }
 
 function init() {
-  installStyles();
   ensureServiceBannerAnchor();
   setupCompactSearchForm();
   bindNavigation();

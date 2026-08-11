@@ -1,4 +1,0 @@
-/* Deprecated compatibility shim.
-   Active structural rules moved to src/ui-foundation.css.
-   Keep this import only until the HTML stylesheet reference is migrated. */
-@import url("./src/ui-foundation.css");
