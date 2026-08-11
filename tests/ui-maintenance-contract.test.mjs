@@ -4,11 +4,12 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-const [entry, html, systemCss, baseCss, v5, ads, v12, v13, current] = await Promise.all([
+const [entry, html, systemCss, baseCss, v5Css, v5, ads, v12, v13, current] = await Promise.all([
   read("src/features-v3.mjs"),
   read("index.html"),
   read("src/ui-system.css"),
   read("style.css"),
+  read("ui-v5.css"),
   read("src/ui-v5.mjs"),
   read("src/ads.mjs"),
   read("src/ui-v12.mjs"),
@@ -36,6 +37,13 @@ test("base stylesheet does not retain superseded first-generation Search markup"
   }
   assert.match(html, /class="route-editor"/);
   assert.match(html, /class="route-line"/);
+});
+
+test("Bottom Navigation presentation no longer has a ui-v6 owner", () => {
+  assert.doesNotMatch(v5Css, /body\.ui-v6 \.bottom-nav/);
+  assert.match(systemCss, /body\.ui-system \.bottom-nav \{/);
+  assert.match(systemCss, /body\.ui-system \.bottom-nav button \{/);
+  assert.match(systemCss, /prefers-reduced-motion:[\s\S]*body\.ui-system \.bottom-nav button/);
 });
 
 test("presentation layers do not observe document.body or the whole app shell", () => {

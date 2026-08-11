@@ -45,13 +45,14 @@ version-scoped styles for them. The `data-ui-v10` … `data-ui-current` attribut
 single `ui-system.css` link are deliberate compatibility sentinels: older behavior modules
 use those attributes only to decide whether they need to inject a stylesheet.
 
-At runtime `features-v3.mjs` normalizes the presentation class to `ui-system` and removes
-legacy `ui-vN` / `ui-current` body scopes after module initialization.
+At runtime `features-v3.mjs` normalizes the current presentation class to `ui-system` and
+removes the obsolete v10–v16/current scopes after module initialization. Older `ui-v5` and
+`ui-v6` hooks remain temporarily where they still guard live compatibility rules.
 
 ## Rules for future agents
 
 - Do not add a new `ui-v17.css`, `ui-v18.css`, or another “final override” file.
-- Do not reintroduce `body.ui-vN` or `body.ui-current` selectors.
+- Do not introduce new version-scoped component styling.
 - Change the existing semantic owner instead of overriding it later in the cascade.
 - If a rule is superseded, replace/delete it; do not keep both old and new values.
 - Keep `view-lifecycle.css` free of ordinary component styling.
@@ -77,11 +78,17 @@ active DOM or behavior:
 The active Search editor is the `.route-editor` / `.route-line` structure. Contract tests
 prevent those superseded selectors from being reintroduced into the base stylesheet.
 
+The next pass retired the old `body.ui-v6 .bottom-nav ...` presentation block. Bottom Nav
+geometry, typography, active state, glider material, interaction and reduced-motion behavior
+are now owned only by the `Navigation` and `Responsive / accessibility` sections of
+`src/ui-system.css`. The `ui-v6` JavaScript behavior module remains active for favorites and
+navigation icon markup; removing a presentation owner does not imply removing that behavior.
+
 ## Next safe cleanup boundary
 
 The remaining legacy CSS (`style.css`, `ui-v2.css`, `ui-v4.css`, `ui-v5.css`) is not treated
 as disposable version residue because it still contains structural/base rules used by the
 active app. Continue migration component-by-component with regression guards. In
-particular, resolve remaining `ui-v5` / `ui-v6` body-scoped presentation only after their
-live geometry and utility rules have explicit semantic owners; do not disable those scopes
-just because their names are historical.
+particular, the remaining `ui-v5` / `ui-v6` body-scoped rules include live Search banner,
+sticky timetable, favorite controls and legacy-saved-route suppression responsibilities;
+move those responsibilities explicitly before removing their scopes.
