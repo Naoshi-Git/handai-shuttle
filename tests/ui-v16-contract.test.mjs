@@ -40,10 +40,15 @@ test("current observers are targeted to stable UI surfaces", () => {
   assert.match(current, /favoriteObserver\.observe\(section/);
 });
 
-test("ordinary tab motion crossfades content while persistent shell chrome stays outside", () => {
-  assert.match(lifecycleCss, /view-crossfade-leaving/);
-  assert.match(lifecycleCss, /view-crossfade-entering/);
-  assert.match(lifecycleCss, /transition:\s*opacity 190ms/);
+test("ordinary tab motion freezes outgoing viewport geometry and dissolves title with content", () => {
+  assert.match(lifecycle, /freezeOutgoingView\(outgoing\)/);
+  assert.match(lifecycle, /prepareHeaderTransition\(\)/);
+  assert.match(lifecycle, /prepareServiceBannerTransition\(fromView, view\)/);
+  assert.match(lifecycleCss, /view-crossfade-leaving[\s\S]*position:\s*fixed !important/);
+  assert.match(lifecycleCss, /--view-crossfade-top/);
+  assert.match(lifecycleCss, /view-header-copy-ghost/);
+  assert.match(lifecycleCss, /--view-dissolve-out:\s*145ms/);
+  assert.match(lifecycleCss, /--view-dissolve-in:\s*185ms/);
   assert.match(lifecycleCss, /\.bottom-nav[\s\S]*z-index:\s*60 !important/);
   assert.doesNotMatch(lifecycleCss, /view-transition-veil/);
   assert.doesNotMatch(currentCss, /current-view-enter|--current-motion-view/);
