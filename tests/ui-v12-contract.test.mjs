@@ -10,12 +10,14 @@ const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 await import("../src/ui-v12.mjs");
 
 test("v12 remains a functional layer before v13 and ui-current", () => {
-  assert.match(entry, /import "\.\/ui-v10\.mjs";[\s\S]*import "\.\/ui-v12\.mjs";[\s\S]*import "\.\/ui-v13\.mjs";[\s\S]*import "\.\/ui-current\.mjs";/);
+  assert.match(entry, /import "\.\/route-preferences\.mjs";[\s\S]*import "\.\/ui-v12\.mjs";[\s\S]*import "\.\/ui-v13\.mjs";[\s\S]*import "\.\/ui-current\.mjs";/);
+  assert.doesNotMatch(entry, /import "\.\/ui-v10\.mjs";/);
 });
 
 test("final presentation CSS is linked in head before modules run", () => {
   assert.match(html, /ui-v4\.css" data-ui-v4/);
   assert.match(html, /ads\.css" data-ads-ui/);
+  assert.match(html, /ui-v10\.css" data-ui-v10/);
   assert.match(html, /ui-v11\.css" data-ui-v11/);
   assert.match(html, /ui-v12\.css" data-ui-v12/);
   assert.match(html, /class="app-boot"/);
