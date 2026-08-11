@@ -4,9 +4,9 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const LOCATION_SOURCE_KEY = "ou-bus:location-source-v12";
 const COMPACT_AD_SRC = "./assets/ads/house/v2/house-banner-simple-640x89.webp";
 const INSTALL_GUIDE_IMAGES = Object.freeze([
-  { src: "./assets/help/install/ios-01-share.webp", title: "1. Safariの共有を開く", copy: "画面下部の共有ボタンをタップします。" },
-  { src: "./assets/help/install/ios-02-add-home.webp", title: "2. ホーム画面に追加", copy: "共有メニューから「ホーム画面に追加」を選びます。" },
-  { src: "./assets/help/install/ios-03-confirm.webp", title: "3. 追加を確定", copy: "表示名を確認して右上の「追加」をタップします。" }
+  { src: "./assets/help/install/ios-01-share.webp?v=20260811b", title: "1. Safariの共有を開く", copy: "画面下部の共有ボタンをタップします。" },
+  { src: "./assets/help/install/ios-02-add-home.webp?v=20260811b", title: "2. ホーム画面に追加", copy: "共有メニューから「ホーム画面に追加」を選びます。" },
+  { src: "./assets/help/install/ios-03-confirm.webp?v=20260811b", title: "3. 追加を確定", copy: "表示名を確認して右上の「追加」をタップします。" }
 ]);
 
 let normalizeQueued = false;
@@ -167,7 +167,7 @@ function bindDetailSheetLifecycle() {
 }
 
 function settingsSectionMeta(card) {
-  if (card.matches("[data-pwa-settings]")) return { title: "ホーム画面に追加", subtitle: "追加方法・最新版の確認" };
+  if (card.matches("[data-pwa-settings]")) return { title: "ホーム画面に追加", subtitle: "Safariからアプリとして追加" };
   if (card.id === "suita-stop-preferences-v9") return { title: "吹田のバス停", subtitle: "乗る停留所・着く停留所" };
   if ($("#default-campus", card)) return { title: "現在地の初期設定", subtitle: "位置情報が使えない場合" };
   if (card.classList.contains("source-card")) return { title: "データと利用上の注意", subtitle: "公式時刻表・利用条件" };
@@ -233,7 +233,7 @@ function installGuideCarousel() {
           <article class="install-guide-slide" data-install-slide="${index}">
             <div class="install-guide-media" data-install-media>
               <img alt="${item.title}" loading="lazy" decoding="async">
-              <div class="install-guide-placeholder">スクリーンショットを追加予定<br>${item.title}</div>
+              <div class="install-guide-placeholder">画像を読み込んでいます<br>${item.title}</div>
             </div>
             <strong>${item.title}</strong>
             <p>${item.copy}</p>
