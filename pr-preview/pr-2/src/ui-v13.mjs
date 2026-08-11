@@ -14,6 +14,7 @@ const SWIPE_INTERACTIVE_SELECTOR = "button,a,input,select,textarea,[contentedita
 let settingsOpenState = null;
 let normalizeQueued = false;
 let settingsObserver = null;
+let navigationBound = false;
 
 function installStyles() {
   if ($('link[data-ui-v13]')) return;
@@ -61,7 +62,7 @@ function createSettingsPanel() {
       <span class="settings-subpage-spacer" aria-hidden="true"></span>
     </div>
     <div class="settings-subpage-body" data-settings-subpage-body></div>`;
-  document.querySelector(".app-shell")?.append(panel);
+  document.body.append(panel);
   $(".settings-subpage-back", panel)?.addEventListener("click", closeSettingsPanel);
   installSwipeBack(panel);
   return panel;
@@ -94,7 +95,13 @@ function openSettingsPanel(details) {
 
 function closeSettingsPanel() {
   const panel = document.getElementById(SETTINGS_PANEL_ID);
-  if (!panel || !settingsOpenState) return;
+  if (!panel || !settingsOpenState) {
+    document.body.classList.remove("settings-subpage-open");
+    panel?.classList.remove("is-swiping", "is-open");
+    panel?.style.removeProperty("transform");
+    panel?.setAttribute("aria-hidden", "true");
+    return;
+  }
   panel.classList.remove("is-swiping", "is-open");
   panel.style.removeProperty("transform");
   panel.setAttribute("aria-hidden", "true");
@@ -254,6 +261,20 @@ function observeSettingsUi() {
   settingsObserver.observe(settings, { childList: true, subtree: true });
 }
 
+function bindSettingsPanelNavigation() {
+  if (navigationBound) return;
+  navigationBound = true;
+  document.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target.closest(".bottom-nav [data-nav]") : null;
+    if (!target || target.dataset.nav === "settings") return;
+    closeSettingsPanel();
+  }, true);
+  window.addEventListener("handai:viewchange", () => {
+    const active = $(".view.is-active")?.dataset.view || "home";
+    if (active !== "settings") closeSettingsPanel();
+  });
+}
+
 function init() {
   document.body.classList.add("ui-v13");
   installStyles();
@@ -261,6 +282,7 @@ function init() {
   normalizeTimetable();
   normalizeSettingsUi();
   observeSettingsUi();
+  bindSettingsPanelNavigation();
   window.setTimeout(queueSettingsNormalization, 260);
 }
 
