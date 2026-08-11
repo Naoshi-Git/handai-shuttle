@@ -1,5 +1,5 @@
 const BUILD_KEY = "handai-shuttle:last-build";
-const INSTALL_NUDGE_DISMISS_KEY = "handai-shuttle:install-nudge-dismissed-v2";
+const STATUS_ID = "pwa-update-status";
 
 export function isStandalone() {
   return window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone === true;
@@ -7,6 +7,10 @@ export function isStandalone() {
 
 export function isPreviewBuild() {
   return /\/pr-preview\/pr-\d+\//.test(window.location.pathname);
+}
+
+function previewNumber() {
+  return window.location.pathname.match(/\/pr-preview\/pr-(\d+)\//)?.[1] || "";
 }
 
 async function fetchVersion() {
@@ -17,9 +21,16 @@ async function fetchVersion() {
   return response.json();
 }
 
+function setStatus(message, tone = "neutral") {
+  const node = document.getElementById(STATUS_ID);
+  if (!node) return;
+  node.textContent = message;
+  node.dataset.tone = tone;
+}
+
 async function reloadAssets(meta) {
   const assets = Array.isArray(meta?.assets) ? meta.assets : [];
-  const reloadable = assets.filter((path) => /\.(?:html|css|js|mjs|json|webmanifest|svg|png|webp|jpe?g)$/i.test(path));
+  const reloadable = assets.filter((path) => /\.(?:html|css|js|mjs|json|webmanifest|svg|png|webp)$/i.test(path));
   await Promise.allSettled(reloadable.map((path) => {
     const url = new URL(path, window.location.href);
     url.searchParams.set("__build", String(meta.build || Date.now()).slice(0, 12));
@@ -34,6 +45,7 @@ function reloadDocument(build) {
 }
 
 export async function checkForAppUpdate({ force = false, reload = true } = {}) {
+  setStatus("最新版を確認しています…");
   try {
     const meta = await fetchVersion();
     const current = String(meta?.build || "");
@@ -41,6 +53,7 @@ export async function checkForAppUpdate({ force = false, reload = true } = {}) {
     const changed = Boolean(current && previous && current !== previous);
 
     if (force || changed) {
+      setStatus("最新版を読み込んでいます…");
       await reloadAssets(meta);
       if (current) localStorage.setItem(BUILD_KEY, current);
       if (reload) reloadDocument(current);
@@ -48,9 +61,11 @@ export async function checkForAppUpdate({ force = false, reload = true } = {}) {
     }
 
     if (current) localStorage.setItem(BUILD_KEY, current);
+    setStatus("最新版です", "success");
     return { updated: false, build: current };
   } catch (error) {
     console.warn("Handai Shuttle update check failed", error);
+    setStatus("更新確認に失敗しました。通信状態を確認してください。", "error");
     return { updated: false, error };
   }
 }
@@ -65,18 +80,17 @@ function installStyles() {
     .pwa-settings-state{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:12px;background:var(--ou-50);color:var(--ou-900);font-size:11px;font-weight:800}
     .pwa-settings-state::before{content:"";width:8px;height:8px;border-radius:50%;background:#8e8fa0;flex:0 0 auto}
     .pwa-settings-state[data-installed="true"]::before{background:#2f9a76}
-    .pwa-install-guide{display:block;margin:0;padding:10px 12px;border:1px solid #dfddeb;border-radius:12px;background:#fff;color:var(--ink);font-size:10.5px;line-height:1.7}
+    .pwa-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .pwa-actions button{min-height:42px;border-radius:12px;font-size:11px;font-weight:900;touch-action:manipulation}
+    .pwa-guide-button{border:1px solid #d8d6eb;background:#fff;color:var(--ou-900)}
+    .pwa-refresh-button{border:0;background:linear-gradient(135deg,var(--ou-700),var(--ou-950));color:#fff}
+    .pwa-install-guide{display:none;margin:0;padding:10px 12px;border:1px solid #dfddeb;border-radius:12px;background:#fff;color:var(--ink);font-size:10.5px;line-height:1.7}
     .pwa-install-guide.is-open{display:block}
-    body.ui-system .install-guide-media.is-low-res-source-v15 img{width:min(100%,280px)!important;max-height:58dvh!important}
-    .pwa-install-nudge{position:fixed;z-index:2100;left:50%;bottom:calc(var(--ui-nav-height,58px) + 20px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(calc(100% - 28px),480px);display:grid;grid-template-columns:minmax(0,1fr) 34px;align-items:center;gap:6px;padding:7px;border:1px solid rgba(255,255,255,.72);border-radius:19px;background:rgba(250,250,252,.94);box-shadow:0 10px 28px rgba(28,27,54,.16);-webkit-backdrop-filter:blur(22px) saturate(155%);backdrop-filter:blur(22px) saturate(155%)}
-    .pwa-install-nudge-main{min-width:0;display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:9px;padding:4px 7px 4px 4px;border:0;background:transparent;color:var(--ink);text-align:left}
-    .pwa-install-nudge-main img{width:36px;height:36px;border-radius:10px}
-    .pwa-install-nudge-copy{display:grid;gap:2px;min-width:0}
-    .pwa-install-nudge-copy strong{font-size:11.5px;line-height:1.2}
-    .pwa-install-nudge-copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:9.5px;line-height:1.2}
-    .pwa-install-nudge-cta{padding:6px 9px;border-radius:999px;background:#ecebf7;color:var(--ou-900);font-size:9.5px;font-weight:800}
-    .pwa-install-nudge-close{width:32px;height:32px;padding:0;border:0;border-radius:50%;background:transparent;color:#777780;font-size:20px;line-height:1}
-    @media(max-width:360px){.pwa-install-nudge-copy small{display:none}.pwa-install-nudge-main{grid-template-columns:34px minmax(0,1fr) auto}.pwa-install-nudge-main img{width:34px;height:34px}}
+    .pwa-preview-note{padding:9px 10px;border-radius:11px;background:#fff7df;color:#7a5a16!important;border:1px solid #eedaa3;font-size:10px!important}
+    #${STATUS_ID}{min-height:16px;color:var(--muted);font-size:9.5px!important}
+    #${STATUS_ID}[data-tone="success"]{color:#2f8e72}
+    #${STATUS_ID}[data-tone="error"]{color:#b34a56}
+    @media(max-width:380px){.pwa-actions{grid-template-columns:1fr}}
   `;
   document.head.append(style);
 }
@@ -89,64 +103,28 @@ function installSettingsCard() {
   card.className = "settings-card pwa-settings-card";
   card.dataset.pwaSettings = "true";
   const standalone = isStandalone();
+  const preview = isPreviewBuild();
+  const pr = previewNumber();
+  const previewNote = preview
+    ? `<p class="pwa-preview-note">現在はPR Preview${pr ? ` #${pr}` : ""}です。ここから追加するとこのテスト版として登録されます。正式利用は本番URL公開後に本番ページから追加してください。</p>`
+    : "";
   card.innerHTML = `
     <h3>ホーム画面に追加</h3>
-    <div class="pwa-settings-state" data-installed="${standalone ? "true" : "false"}">${standalone ? "ホーム画面からアプリとして起動中" : "Safariからホーム画面に追加できます"}</div>
+    <div class="pwa-settings-state" data-installed="${standalone ? "true" : "false"}">${standalone ? "ホーム画面からアプリとして起動中" : "ブラウザで利用中"}</div>
     <p>ホーム画面に追加すると、阪大シャトルをアプリのようにすぐ開けます。</p>
-    <div class="pwa-install-guide is-open">iPhone / iPad: Safariの共有ボタン →「ホーム画面に追加」→「追加」。</div>`;
+    ${previewNote}
+    <div class="pwa-actions">
+      <button type="button" class="pwa-guide-button">追加方法を見る</button>
+      <button type="button" class="pwa-refresh-button">最新版を確認</button>
+    </div>
+    <div class="pwa-install-guide">iPhone / iPad: Safariの共有ボタン →「ホーム画面に追加」→「追加」。<br>Android: Chromeのメニュー →「ホーム画面に追加」または「アプリをインストール」。</div>
+    <p id="${STATUS_ID}" aria-live="polite"></p>`;
   if (sourceCard) sourceCard.before(card);
   else settings.append(card);
-}
 
-function isIosDevice() {
-  const ua = navigator.userAgent || "";
-  return /iP(?:hone|ad|od)/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-}
-
-function isSafariBrowser() {
-  const ua = navigator.userAgent || "";
-  return /Safari/i.test(ua) && !/(CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo)/i.test(ua);
-}
-
-export function shouldShowInstallNudge() {
-  if (isStandalone() || !isIosDevice() || !isSafariBrowser()) return false;
-  try { return localStorage.getItem(INSTALL_NUDGE_DISMISS_KEY) !== "1"; } catch { return true; }
-}
-
-function dismissInstallNudge() {
-  document.querySelector("[data-pwa-install-nudge]")?.remove();
-  try { localStorage.setItem(INSTALL_NUDGE_DISMISS_KEY, "1"); } catch { /* storage unavailable */ }
-}
-
-function openInstallGuideFromNudge() {
-  document.querySelector("[data-pwa-install-nudge]")?.remove();
-  document.querySelector('[data-nav="settings"]')?.click();
-  const openRow = () => {
-    const row = [...document.querySelectorAll(".settings-nav-row-v13")]
-      .find((button) => button.querySelector("strong")?.textContent?.trim() === "ホーム画面に追加");
-    row?.click();
-    return Boolean(row);
-  };
-  window.setTimeout(openRow, 60);
-  window.setTimeout(openRow, 220);
-}
-
-function installSafariNudge() {
-  if (!shouldShowInstallNudge() || document.querySelector("[data-pwa-install-nudge]")) return;
-  const nudge = document.createElement("aside");
-  nudge.className = "pwa-install-nudge";
-  nudge.dataset.pwaInstallNudge = "true";
-  nudge.setAttribute("aria-label", "ホーム画面に追加");
-  nudge.innerHTML = `
-    <button type="button" class="pwa-install-nudge-main" data-pwa-install-open>
-      <img src="./assets/brand/app-icon-180.png" width="36" height="36" alt="">
-      <span class="pwa-install-nudge-copy"><strong>ホーム画面に追加</strong><small>アプリのように、すぐ開けます</small></span>
-      <span class="pwa-install-nudge-cta">見る</span>
-    </button>
-    <button type="button" class="pwa-install-nudge-close" data-pwa-install-dismiss aria-label="この案内を閉じる">×</button>`;
-  document.body.append(nudge);
-  nudge.querySelector("[data-pwa-install-open]")?.addEventListener("click", openInstallGuideFromNudge);
-  nudge.querySelector("[data-pwa-install-dismiss]")?.addEventListener("click", dismissInstallNudge);
+  const guide = card.querySelector(".pwa-install-guide");
+  card.querySelector(".pwa-guide-button")?.addEventListener("click", () => guide?.classList.toggle("is-open"));
+  card.querySelector(".pwa-refresh-button")?.addEventListener("click", () => void checkForAppUpdate({ force: true }));
 }
 
 async function autoCheckStandalone() {
@@ -168,7 +146,6 @@ async function autoCheckStandalone() {
 function init() {
   installStyles();
   installSettingsCard();
-  window.setTimeout(installSafariNudge, 1350);
   window.setTimeout(() => void autoCheckStandalone(), 650);
 }
 

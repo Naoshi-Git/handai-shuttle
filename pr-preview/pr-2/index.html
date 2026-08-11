@@ -5,20 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#2d287f">
   <meta name="description" content="大阪大学の豊中・箕面・吹田キャンパス間を走る学内連絡バスの時刻検索Webアプリ">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="阪大シャトル">
-  <meta property="og:title" content="阪大シャトル｜次の便、すぐわかる。">
-  <meta property="og:description" content="豊中・箕面・吹田キャンパス間の学内連絡バスを、次の便・最終便・混雑目安までまとめて確認。">
-  <meta property="og:url" content="https://naoshi-git.github.io/handai-shuttle/pr-preview/pr-2/">
-  <meta property="og:image" content="https://naoshi-git.github.io/handai-shuttle/pr-preview/pr-2/assets/social/og-handai-shuttle.jpg">
-  <meta property="og:image:type" content="image/jpeg">
-  <meta property="og:image:width" content="320">
-  <meta property="og:image:height" content="168">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="阪大シャトル｜次の便、すぐわかる。">
-  <meta name="twitter:description" content="豊中・箕面・吹田キャンパス間の学内連絡バスをすぐ検索。">
-  <meta name="twitter:image" content="https://naoshi-git.github.io/handai-shuttle/pr-preview/pr-2/assets/social/og-handai-shuttle.jpg">
-  <link rel="canonical" href="https://naoshi-git.github.io/handai-shuttle/pr-preview/pr-2/">
   <title>阪大シャトル検索</title>
   <style id="boot-critical">
     html,body{margin:0;background:#2d287f;color:#fff}
@@ -40,9 +26,8 @@
   </style>
   <link rel="preload" href="./assets/brand/brand-symbol-white.svg" as="image" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" href="./assets/brand/app-icon-32.png" sizes="32x32" type="image/png">
   <link rel="icon" href="./assets/brand/app-icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="./assets/brand/app-icon-180.png" sizes="180x180">
+  <link rel="apple-touch-icon" href="./assets/brand/app-icon.svg">
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./ui-v2.css">
   <link rel="stylesheet" href="./ui-v4.css" data-ui-v4>
@@ -104,37 +89,59 @@
             <button class="swap-button" id="swap-button" type="button" aria-label="出発地と到着地を入れ替える">⇅</button>
             <div class="route-line">
               <span class="route-role is-destination">到着</span>
-              <select class="route-campus-select" id="destination-campus" name="destination" aria-label="到着キャンパス"><option value="suita">吹田</option><option value="toyonaka">豊中</option><option value="minoh">箕面</option></select>
+              <select class="route-campus-select" id="destination-campus" name="destination" aria-label="到着キャンパス"><option value="toyonaka">豊中</option><option value="suita">吹田</option><option value="minoh">箕面</option></select>
               <label id="destination-stop-wrap" class="inline-stop is-hidden"><span class="sr-only">吹田の降り場</span><select id="destination-stop" aria-label="吹田の降り場"><option value="suita_engineering">工学部前</option><option value="suita_convention">コンベンション前</option></select></label>
             </div>
           </div>
-          <div class="search-mode" role="group" aria-label="検索方法"><button type="button" class="is-active" data-mode="depart">出発</button><button type="button" data-mode="arrive">到着</button></div>
-          <div class="date-time-row"><label><span>日付</span><input type="date" id="search-date"></label><label><span>時刻</span><input type="time" id="search-time"></label></div>
-          <details class="search-options" id="search-options"><summary>検索条件</summary><div class="option-grid"><label class="check-line"><input type="checkbox" id="direct-only"><span>直行便のみ</span></label><label class="check-line"><input type="checkbox" id="round-trip"><span>往復で検索</span></label><label id="stay-wrap" class="stay-wrap"><span>現地滞在</span><select id="stay-minutes"></select></label></div></details>
-          <button class="primary-button search-submit" type="submit">検索する</button>
+          <div class="segmented search-mode" role="group" aria-label="検索基準"><button type="button" class="is-active" data-mode="depart">出発</button><button type="button" data-mode="arrive">到着</button></div>
+          <div class="date-time-row stable-inputs">
+            <label class="input-field"><span>日付</span><input id="search-date" type="date" required></label>
+            <label class="input-field"><span>時刻</span><input id="search-time" type="time" required></label>
+          </div>
+          <details class="search-options" id="search-options">
+            <summary><span>検索条件</span><span class="summary-hint" id="search-options-summary">直行・往復を指定</span></summary>
+            <div class="option-list">
+              <label class="toggle-row" id="direct-row"><span><strong>直行便のみ</strong><small>豊中―吹田で箕面を経由しない便</small></span><input id="direct-only" type="checkbox"><span class="toggle" aria-hidden="true"></span></label>
+              <label class="toggle-row"><span><strong>往復で検索</strong><small>到着後に利用できる復路も表示</small></span><input id="round-trip" type="checkbox"><span class="toggle" aria-hidden="true"></span></label>
+              <label class="input-field is-hidden" id="stay-wrap"><span>現地での滞在時間</span><select id="stay-minutes"><option value="45">45分</option><option value="60" selected>60分</option><option value="90">90分</option><option value="105">1コマ（105分）</option><option value="120">2時間</option></select></label>
+            </div>
+          </details>
+          <button class="primary-button search-submit" type="submit">検索</button>
         </form>
-        <button class="text-button favorite-current" id="favorite-current-button" type="button">☆ 条件を保存</button>
-        <section class="results-section"><div class="section-title-row"><div><p class="section-kicker">RESULT</p><h2>検索結果</h2></div></div><div class="stack-list" id="search-results"></div></section>
+        <section class="content-section results-section" id="results-section">
+          <div class="section-title-row"><div><p class="section-kicker">RESULT</p><h2 id="results-title">検索結果</h2></div><button class="text-button" id="favorite-current-button" type="button">条件を保存</button></div>
+          <div id="search-message"></div><div class="stack-list" id="search-results"></div>
+        </section>
       </section>
 
       <section class="view" id="view-timetable" data-view="timetable">
-        <div class="page-heading compact-heading"><p class="section-kicker">TIMETABLE</p><h2>時刻表</h2></div>
-        <div class="timetable-direction"></div>
+        <div class="page-heading compact-heading"><p class="section-kicker">TIMETABLE</p><h2>2026年度 時刻表</h2><p>キャンパス目線で通常ダイヤを確認できます。</p></div>
+        <div class="segmented timetable-direction three-way"><button type="button" class="is-active" data-direction="eastbound">豊中→吹田</button><button type="button" data-direction="minoh">箕面発着</button><button type="button" data-direction="westbound">吹田→豊中</button></div>
         <div class="timetable-list" id="timetable-list"></div>
       </section>
 
       <section class="view" id="view-settings" data-view="settings">
-        <div class="page-heading compact-heading"><p class="section-kicker">SETTINGS</p><h2>設定</h2></div>
-        <section class="settings-card"><h3>現在地の初期設定</h3><p>位置情報を使えない場合の初期キャンパスです。</p><label><span>キャンパス</span><select id="default-campus"><option value="suita">吹田</option><option value="toyonaka">豊中</option><option value="minoh">箕面</option></select></label><label id="default-suita-stop-wrap"><span>吹田の乗り場</span><select id="default-suita-stop"><option value="suita_engineering">工学部前</option><option value="suita_human_sciences">人間科学部前</option></select></label></section>
-        <section class="settings-card"><h3>保存したルート</h3><div id="saved-routes"></div></section>
-        <section class="settings-card source-card"><h3>データと利用上の注意</h3><p>2026年度の学内連絡バス時刻表をもとにした非公式Webアプリです。運行変更・臨時運休などは大阪大学の公式案内を優先してください。</p></section>
+        <div class="page-heading compact-heading"><p class="section-kicker">SETTINGS</p><h2>設定・保存</h2><p>設定はこの端末内だけに保存されます。</p></div>
+        <section class="settings-card">
+          <h3>既定の現在地</h3>
+          <label class="input-field"><span>アプリ起動時のキャンパス</span><select id="default-campus"><option value="suita">吹田キャンパス</option><option value="toyonaka">豊中キャンパス</option><option value="minoh">箕面キャンパス</option></select></label>
+          <label class="input-field" id="default-suita-stop-wrap"><span>吹田で使う乗り場</span><select id="default-suita-stop"><option value="suita_engineering">工学部前</option><option value="suita_human_sciences">人間科学部前</option></select></label>
+        </section>
+        <section class="settings-card"><div class="section-title-row"><h3>保存したルート</h3><button class="text-button danger" id="clear-saved-button" type="button">すべて削除</button></div><div id="saved-routes"></div></section>
+        <section class="settings-card source-card"><h3>データと利用上の注意</h3><p>2026年4月1日改正の大阪大学公式時刻表を使用しています。道路・気象状況による遅延や運休は反映されません。</p><p>学内連絡バスは無料ですが、キャンパス間移動を伴う授業・教育・研究等の対象者向けです。通学・通勤目的には利用できません。</p><a class="source-link" href="https://www.osaka-u.ac.jp/ja/access/bus" target="_blank" rel="noreferrer">公式の学内連絡バス情報を確認 ↗</a><p class="data-version" id="data-version"></p></section>
       </section>
     </main>
-    <nav class="bottom-nav" aria-label="メインナビゲーション"><button type="button" class="is-active" data-nav="home">ホーム</button><button type="button" data-nav="search">ルート検索</button><button type="button" data-nav="timetable">時刻表</button><button type="button" data-nav="settings">設定</button></nav>
+
+    <nav class="bottom-nav" aria-label="メインナビゲーション"><button type="button" class="is-active" data-nav="home"><span>⌂</span>ホーム</button><button type="button" data-nav="search"><span>⌕</span>ルート検索</button><button type="button" data-nav="timetable"><span>◷</span>時刻表</button><button type="button" data-nav="settings"><span>◎</span>設定</button></nav>
   </div>
 
-  <dialog class="campus-dialog" id="campus-dialog"><div class="dialog-card"><div class="dialog-head"><div><p class="section-kicker">CURRENT CAMPUS</p><h2>現在地を選択</h2></div><button class="icon-button" id="close-campus-dialog" type="button" aria-label="閉じる">×</button></div><div class="campus-options" id="campus-options"></div><label id="dialog-suita-stop-wrap" class="dialog-stop-select"><span>吹田の乗り場</span><select id="dialog-suita-stop"><option value="suita_engineering">工学部前</option><option value="suita_human_sciences">人間科学部前</option></select></label></div></dialog>
-
+  <dialog id="campus-dialog" class="campus-dialog">
+    <form method="dialog">
+      <div class="dialog-head"><div><p class="section-kicker">CURRENT CAMPUS</p><h2>現在いるキャンパス</h2></div><button value="cancel" class="icon-button" aria-label="閉じる">×</button></div>
+      <div class="campus-options" id="campus-options"></div>
+      <label class="dialog-stop-field" id="dialog-suita-stop-wrap"><span>吹田の乗り場</span><select id="dialog-suita-stop"><option value="suita_engineering">工学部前</option><option value="suita_human_sciences">人間科学部前</option></select></label>
+    </form>
+  </dialog>
   <script type="module" src="./src/app.mjs"></script>
   <script type="module" src="./src/enhancements.mjs"></script>
 </body>
