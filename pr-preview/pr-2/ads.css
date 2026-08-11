@@ -52,8 +52,8 @@
   padding: 0;
   border: 0;
   border-radius: 0;
-  background: transparent;
-  overflow: visible;
+  background: #fff !important;
+  overflow: hidden !important;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -65,7 +65,8 @@
   margin: 0;
   padding: 0;
   border-radius: 0;
-  object-fit: contain;
+  background: #fff !important;
+  object-fit: cover !important;
   object-position: center;
 }
 .house-ad-creative:active { transform: translateY(1px); }
@@ -74,7 +75,7 @@
   outline-offset: 3px;
 }
 
-/* Search primary intentionally uses a near-square 300x250-style creative. */
+/* Search primary intentionally uses the shared compact horizontal creative. */
 .ad-slot-search-primary {
   margin: 12px 0 18px;
 }
@@ -89,7 +90,7 @@
   background: #fff;
 }
 
-/* Search inline uses a purpose-built vector creative; timetable inline stays compact. */
+/* Search inline uses the same finished creative; timetable inline stays compact. */
 .ad-slot-search-inline {
   width: 100%;
   margin: 12px 0 14px;
@@ -164,7 +165,7 @@
 }
 
 /* Selector overlaps the ad by 2px so scrolling rows can never flash through the join. */
-body.ui-v5 #timetable-route-controls {
+body.ui-system #timetable-route-controls {
   top: calc(var(--app-topbar-height, 70px) + var(--tt-sticky-ad-height, 0px) - 2px) !important;
   margin-top: -2px;
   background: #fff;
