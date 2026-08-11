@@ -31,6 +31,14 @@ function navView(target) {
   return nav?.dataset.nav || "";
 }
 
+function searchEntryView(target) {
+  if (!(target instanceof Element)) return "";
+  const trigger = target.closest(
+    "#search-now-button, #arrival-search-button, #open-search-button, [data-route-origin]"
+  );
+  return trigger ? "search" : "";
+}
+
 function installStyles() {
   if ($('link[data-view-lifecycle]')) return;
   const link = document.createElement("link");
@@ -318,13 +326,23 @@ function switchTab(view) {
 
 function onNavClickCapture(event) {
   const view = navView(event.target);
-  if (!view) return;
+  if (view) {
+    // Bottom navigation is owned here. Keep legacy/base tab-entry listeners from repainting
+    // an already-preloaded view.
+    event.preventDefault();
+    event.stopPropagation();
+    if (view === activeView()) return;
+    switchTab(view);
+    return;
+  }
 
-  // Bottom navigation is owned here. Keep legacy/base tab-entry listeners from repainting an already-preloaded view.
-  event.preventDefault();
-  event.stopPropagation();
-  if (view === activeView()) return;
-  switchTab(view);
+  const searchView = searchEntryView(event.target);
+  if (!searchView || searchView === activeView()) return;
+
+  // Home/route shortcuts still have legacy bubble handlers that prepare Search form state.
+  // Pre-commit the view here so those handlers cannot bypass the lifecycle animation/nav
+  // state. Do not stop propagation: the legacy handler still owns the search parameters.
+  switchTab(searchView);
 }
 
 function init() {
