@@ -14,6 +14,8 @@ import "./view-lifecycle.mjs";
 import "./ui-current.mjs";
 
 const LEGACY_PRESENTATION_SCOPES = [
+  "ui-v5",
+  "ui-v6",
   "ui-v10",
   "ui-v11",
   "ui-v12",
@@ -35,7 +37,7 @@ if (typeof document !== "undefined") {
   normalizePresentationScope();
   if (document.readyState === "loading") {
     // Imported modules register their DOMContentLoaded handlers first. Normalize once more
-    // after those legacy behavior modules initialize so version scopes cannot leak back in.
+    // after behavior modules initialize so historical presentation scopes cannot leak back in.
     document.addEventListener("DOMContentLoaded", normalizePresentationScope, { once: true });
   }
 }
