@@ -68,3 +68,12 @@ test("home-screen install guide is built for real screenshot assets", () => {
   assert.match(source, /ios-03-confirm\.webp/);
   assert.match(css, /scroll-snap-type:\s*x mandatory/);
 });
+
+test("v12 observes only owned settings and timetable surfaces", () => {
+  assert.match(source, /\$\("#view-settings"\)/);
+  assert.match(source, /\$\("#timetable-list"\)/);
+  assert.match(source, /\$\("#tt-detail-sheet"\)/);
+  assert.match(source, /dynamicObserver\.observe\(root, \{ childList: true, subtree: true \}\)/);
+  assert.doesNotMatch(source, /observe\(document\.body/);
+  assert.doesNotMatch(source, /attributeFilter:\s*\["class", "open"\]/);
+});
