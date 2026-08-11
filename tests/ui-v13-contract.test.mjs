@@ -25,7 +25,7 @@ test("timetable uses the current rounded grouped list instead of detached rows",
 test("settings subpage is portaled to body and restores content after the transition", () => {
   assert.match(source, /settings-subpage-v13/);
   assert.match(source, /document\.body\.append\(panel\)/);
-  assert.match(source, /panel\.style\.bottom = "calc\(var\(--ui-nav-height, 60px\) \+ 18px \+ env\(safe-area-inset-bottom\)\)"/);
+  assert.match(source, /style\.setProperty\("bottom", "calc\(var\(--ui-nav-height, 60px\) \+ 18px \+ env\(safe-area-inset-bottom\)\)", "important"\)/);
   assert.match(source, /transitionend/);
   assert.match(source, /SETTINGS_CLOSE_FALLBACK_MS = 340/);
   assert.match(source, /panel\.inert = true/);
