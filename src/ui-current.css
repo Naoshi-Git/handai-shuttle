@@ -14,25 +14,28 @@
   --current-control-selected-ink: #111118;
 }
 
-/* Current layer owns the app Topbar. It is always one Japanese title line; no legacy eyebrow state. */
+/* Current layer owns the app Topbar. It is always one Japanese title line; no legacy eyebrow state.
+   The shell is intentionally opaque: tab content fades underneath it, so a translucent backdrop would
+   continuously recomposite its tint/blur during every transition and make the header itself appear to pulse. */
 body.ui-current .topbar {
   min-height: 68px !important;
   padding-left: var(--current-page-gutter) !important;
   padding-right: var(--current-page-gutter) !important;
-  background: rgba(248,248,250,.74) !important;
+  background: #F8F8FA !important;
   border: 0 !important;
-  box-shadow: inset 0 -1px 0 rgba(36,36,41,.035), inset 0 1px 0 rgba(255,255,255,.48) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
-  backdrop-filter: blur(24px) saturate(160%) !important;
+  box-shadow: inset 0 -1px 0 rgba(36,36,41,.045), inset 0 1px 0 rgba(255,255,255,.72) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
 }
 body.ui-current .topbar .brand-copy {
   flex: 1;
   min-width: 0;
   min-height: 42px;
-  display: flex !important;
+  display: grid !important;
   align-items: center !important;
 }
 body.ui-current .topbar .brand-copy h1 {
+  grid-area: 1 / 1;
   margin: 0 !important;
   font-size: 20px !important;
   line-height: 1.15 !important;
@@ -307,14 +310,6 @@ body.ui-current .runtime-choice-glider { display: none !important; }
     max-width: 520px !important;
     margin: auto auto 20px !important;
     border-radius: 24px !important;
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  body.ui-current .topbar {
-    background: #F8F8FA !important;
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
   }
 }
 
