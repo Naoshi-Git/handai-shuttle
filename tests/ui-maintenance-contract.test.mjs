@@ -46,6 +46,20 @@ test("Bottom Navigation presentation no longer has a ui-v6 owner", () => {
   assert.match(systemCss, /prefers-reduced-motion:[\s\S]*body\.ui-system \.bottom-nav button/);
 });
 
+test("ui-v6 foundation no longer restates surfaces and status colors owned by ui-system", () => {
+  assert.doesNotMatch(v5Css, /body\.ui-v6 \.search-panel/);
+  assert.doesNotMatch(v5Css, /body\.ui-v6 \.settings-card/);
+  assert.doesNotMatch(v5Css, /body\.ui-v6 \.pill-warning/);
+  assert.doesNotMatch(v5Css, /body\.ui-v6 \.pill-soft/);
+  assert.doesNotMatch(v5Css, /body\.ui-v6 \.service-banner\.is-closed/);
+  assert.doesNotMatch(v5Css, /@keyframes favorite-flash|route-timetable-card\.favorite-flash\s*\{\s*animation/);
+  assert.match(systemCss, /body\.ui-system \.search-panel[\s\S]*border:\s*0 !important/);
+  assert.match(systemCss, /body\.ui-system \.settings-card[\s\S]*border:\s*0 !important/);
+  assert.match(systemCss, /body\.ui-system \.pill-warning/);
+  assert.match(systemCss, /body\.ui-system \.service-banner\.is-closed/);
+  assert.match(systemCss, /route-timetable-card\.favorite-flash[\s\S]*animation:\s*none !important/);
+});
+
 test("presentation layers do not observe document.body or the whole app shell", () => {
   for (const source of [v5, ads, v12, v13, current]) {
     assert.doesNotMatch(source, /observe\(document\.body/);
