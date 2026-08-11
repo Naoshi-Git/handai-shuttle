@@ -4,12 +4,18 @@ import { readFile } from "node:fs/promises";
 
 const source = await readFile(new URL("../src/ui-v5.mjs", import.meta.url), "utf8");
 const css = await readFile(new URL("../ui-v5.css", import.meta.url), "utf8");
+const currentCss = await readFile(new URL("../src/ui-current.css", import.meta.url), "utf8");
 
-test("contextual header uses the active tab title and hides duplicate page headings", () => {
-  assert.match(source, /search:\s*\{\s*eyebrow:\s*"ROUTE SEARCH",\s*title:\s*"ルート検索"/);
-  assert.match(source, /timetable:\s*\{\s*eyebrow:\s*"TIMETABLE",\s*title:\s*"時刻表"/);
+test("contextual header uses one Japanese title line while duplicate page headings stay hidden", () => {
+  assert.match(source, /home:\s*"阪大シャトル"/);
+  assert.match(source, /search:\s*"ルート検索"/);
+  assert.match(source, /timetable:\s*"時刻表"/);
+  assert.match(source, /settings:\s*"設定"/);
+  assert.doesNotMatch(source, /eyebrow|ROUTE SEARCH|TIMETABLE|SETTINGS/);
+  assert.match(source, /\.topbar \.brand-copy h1/);
   assert.match(css, /#view-search > \.page-heading/);
   assert.match(css, /#view-timetable > \.page-heading/);
+  assert.match(currentCss, /body\.ui-current \.topbar \.brand-copy h1/);
 });
 
 test("search date-time and detailed conditions are moved into dedicated bottom sheets", () => {
