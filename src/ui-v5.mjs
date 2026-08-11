@@ -271,7 +271,6 @@ function bindNavigation() {
 }
 
 function init() {
-  document.body.classList.add("ui-v5");
   installStyles();
   ensureServiceBannerAnchor();
   setupCompactSearchForm();
