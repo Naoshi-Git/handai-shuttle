@@ -28,6 +28,8 @@ test("presentation has one semantic authority instead of version stylesheet stac
   assert.doesNotMatch(html, /src\/ui-v1[0-6]\.css|src\/ui-current\.css/);
   assert.match(entry, /classList\.add\("ui-system"\)/);
   assert.match(entry, /classList\.remove\(\.\.\.LEGACY_PRESENTATION_SCOPES\)/);
+  assert.match(entry, /"ui-v5"/);
+  assert.match(entry, /"ui-v6"/);
   assert.doesNotMatch(systemCss, /body\.ui-v\d+|body\.ui-current/);
 });
 
