@@ -1,5 +1,6 @@
 import "./ui-v4-polish.mjs";
 import { drawBrandMark } from "./brand-canvas.mjs";
+import { ensureShareIdentity, shareLandingUrl } from "./share-identity.mjs";
 
 const APP_URL = "https://naoshi-git.github.io/handai-shuttle/";
 const DISPLAY_URL = "naoshi-git.github.io/handai-shuttle/";
@@ -10,9 +11,7 @@ let activePreviewUrl = null;
 let activeShare = null;
 
 function shareTargetUrl() {
-  if (typeof window === "undefined") return APP_URL;
-  const previewPath = window.location.pathname.match(/^\/handai-shuttle\/pr-preview\/pr-\d+\//)?.[0];
-  return previewPath ? `${window.location.origin}${previewPath}` : APP_URL;
+  return shareLandingUrl();
 }
 
 function font(ctx, weight, size) {
@@ -90,7 +89,6 @@ function drawShareCard(data) {
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
 
-  // Brand header: same strict 1:1 mark used by the app shell and manifest.
   drawBrandMark(ctx, 72, 70, 96);
   ctx.fillStyle = "#2d287f";
   font(ctx, 900, 26);
@@ -232,6 +230,7 @@ function ensureDialog() {
 
   dialog.querySelector("#share-card-native")?.addEventListener("click", async () => {
     if (!activeShare) return;
+    ensureShareIdentity();
     const status = dialog.querySelector("#share-card-status");
     const file = new File([activeShare.blob], "handai-shuttle-route.png", { type: "image/png" });
     const targetUrl = shareTargetUrl();
