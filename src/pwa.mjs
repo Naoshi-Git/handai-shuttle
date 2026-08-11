@@ -1,5 +1,5 @@
 const BUILD_KEY = "handai-shuttle:last-build";
-const INSTALL_NUDGE_DISMISS_KEY = "handai-shuttle:install-nudge-dismissed-v1";
+const INSTALL_NUDGE_DISMISS_KEY = "handai-shuttle:install-nudge-dismissed-v2";
 
 export function isStandalone() {
   return window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone === true;
@@ -67,7 +67,10 @@ function installStyles() {
     .pwa-settings-state[data-installed="true"]::before{background:#2f9a76}
     .pwa-install-guide{display:block;margin:0;padding:10px 12px;border:1px solid #dfddeb;border-radius:12px;background:#fff;color:var(--ink);font-size:10.5px;line-height:1.7}
     .pwa-install-guide.is-open{display:block}
-    .pwa-install-nudge{position:fixed;z-index:1100;left:50%;bottom:calc(var(--ui-nav-height,58px) + 20px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(calc(100% - 28px),480px);display:grid;grid-template-columns:minmax(0,1fr) 34px;align-items:center;gap:6px;padding:7px;border:1px solid rgba(255,255,255,.72);border-radius:19px;background:rgba(250,250,252,.9);box-shadow:0 10px 28px rgba(28,27,54,.16);-webkit-backdrop-filter:blur(22px) saturate(155%);backdrop-filter:blur(22px) saturate(155%)}
+    body.ui-system .install-guide-media{aspect-ratio:auto!important;place-items:stretch!important;padding:0!important;background:transparent!important;border-radius:0!important}
+    body.ui-system .install-guide-media img{display:block!important;width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important;border-radius:0!important;box-shadow:none!important}
+    body.ui-system .install-guide-media.is-low-res-source-v15 img{width:100%!important;box-shadow:none!important}
+    .pwa-install-nudge{position:fixed;z-index:2100;left:50%;bottom:calc(var(--ui-nav-height,58px) + 20px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(calc(100% - 28px),480px);display:grid;grid-template-columns:minmax(0,1fr) 34px;align-items:center;gap:6px;padding:7px;border:1px solid rgba(255,255,255,.72);border-radius:19px;background:rgba(250,250,252,.94);box-shadow:0 10px 28px rgba(28,27,54,.16);-webkit-backdrop-filter:blur(22px) saturate(155%);backdrop-filter:blur(22px) saturate(155%)}
     .pwa-install-nudge-main{min-width:0;display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:9px;padding:4px 7px 4px 4px;border:0;background:transparent;color:var(--ink);text-align:left}
     .pwa-install-nudge-main img{width:36px;height:36px;border-radius:10px}
     .pwa-install-nudge-copy{display:grid;gap:2px;min-width:0}
