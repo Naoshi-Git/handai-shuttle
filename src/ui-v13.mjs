@@ -9,20 +9,13 @@ const SWIPE_LOCK_PX = 8;
 const SWIPE_COMMIT_CAP_PX = 84;
 const SWIPE_COMMIT_RATIO = 0.22;
 const SWIPE_FAST_VELOCITY = 0.52;
+const SETTINGS_CLOSE_FALLBACK_MS = 340;
 const SWIPE_INTERACTIVE_SELECTOR = "button,a,input,select,textarea,[contenteditable='true'],[data-install-guide-track]";
 
 let settingsOpenState = null;
 let normalizeQueued = false;
 let settingsObserver = null;
-
-function installStyles() {
-  if ($('link[data-ui-v13]')) return;
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = "./src/ui-v13.css";
-  link.dataset.uiV13 = "true";
-  document.head.append(link);
-}
+let lifecycleBound = false;
 
 function removeLegacySavedRoutesUi() {
   const legacyList = document.getElementById(LEGACY_SAVED_ROUTES_ID);
@@ -52,6 +45,8 @@ function createSettingsPanel() {
   panel.id = SETTINGS_PANEL_ID;
   panel.className = "settings-subpage-v13";
   panel.setAttribute("aria-hidden", "true");
+  panel.inert = true;
+  panel.style.bottom = "calc(var(--ui-nav-height, 60px) + 18px + env(safe-area-inset-bottom))";
   panel.innerHTML = `
     <div class="settings-subpage-header">
       <button type="button" class="settings-subpage-back" aria-label="設定一覧に戻る">
@@ -61,10 +56,29 @@ function createSettingsPanel() {
       <span class="settings-subpage-spacer" aria-hidden="true"></span>
     </div>
     <div class="settings-subpage-body" data-settings-subpage-body></div>`;
-  document.querySelector(".app-shell")?.append(panel);
-  $(".settings-subpage-back", panel)?.addEventListener("click", closeSettingsPanel);
+  document.body.append(panel);
+  $(".settings-subpage-back", panel)?.addEventListener("click", () => closeSettingsPanel());
   installSwipeBack(panel);
   return panel;
+}
+
+function restoreSettingsCard(state) {
+  if (!state) return;
+  const { card, placeholder } = state;
+  if (placeholder?.parentNode) placeholder.parentNode.insertBefore(card, placeholder);
+  placeholder?.remove();
+}
+
+function finishSettingsClose(panel, state) {
+  if (!state || state !== settingsOpenState) return;
+  if (state.closeTimer) window.clearTimeout(state.closeTimer);
+  panel.removeEventListener("transitionend", state.onTransitionEnd);
+  panel.classList.remove("is-swiping", "is-open");
+  panel.style.removeProperty("transform");
+  panel.setAttribute("aria-hidden", "true");
+  panel.inert = true;
+  restoreSettingsCard(state);
+  settingsOpenState = null;
 }
 
 function openSettingsPanel(details) {
@@ -79,10 +93,11 @@ function openSettingsPanel(details) {
   card.before(placeholder);
   body.replaceChildren(card);
   title.textContent = meta.title;
-  settingsOpenState = { details, card, placeholder };
+  settingsOpenState = { details, card, placeholder, closing: false, closeTimer: null, onTransitionEnd: null };
   panel.style.removeProperty("transform");
   panel.classList.remove("is-swiping");
   panel.setAttribute("aria-hidden", "false");
+  panel.inert = false;
   document.body.classList.add("settings-subpage-open");
 
   if (card.matches("[data-pwa-settings]")) {
@@ -92,23 +107,32 @@ function openSettingsPanel(details) {
   requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add("is-open")));
 }
 
-function closeSettingsPanel() {
+function closeSettingsPanel({ immediate = false } = {}) {
   const panel = document.getElementById(SETTINGS_PANEL_ID);
-  if (!panel || !settingsOpenState) return;
+  const state = settingsOpenState;
+  if (!panel || !state || state.closing) return;
+  state.closing = true;
+  document.body.classList.remove("settings-subpage-open");
+
+  if (immediate) {
+    finishSettingsClose(panel, state);
+    return;
+  }
+
   panel.classList.remove("is-swiping", "is-open");
   panel.style.removeProperty("transform");
   panel.setAttribute("aria-hidden", "true");
-  document.body.classList.remove("settings-subpage-open");
-  const { card, placeholder } = settingsOpenState;
-  settingsOpenState = null;
-  window.setTimeout(() => {
-    placeholder.parentNode?.insertBefore(card, placeholder);
-    placeholder.remove();
-  }, 220);
+  panel.inert = true;
+  state.onTransitionEnd = (event) => {
+    if (event.target !== panel || event.propertyName !== "transform") return;
+    finishSettingsClose(panel, state);
+  };
+  panel.addEventListener("transitionend", state.onTransitionEnd);
+  state.closeTimer = window.setTimeout(() => finishSettingsClose(panel, state), SETTINGS_CLOSE_FALLBACK_MS);
 }
 
 function isSwipeCandidate(panel, event) {
-  if (!panel.classList.contains("is-open")) return false;
+  if (!panel.classList.contains("is-open") || settingsOpenState?.closing) return false;
   if (event.pointerType && event.pointerType !== "touch" && event.pointerType !== "pen") return false;
   const edgeLimit = Math.max(SWIPE_EDGE_BASE_PX, panel.clientWidth * SWIPE_EDGE_RATIO);
   if (event.clientX > edgeLimit) return false;
@@ -254,13 +278,27 @@ function observeSettingsUi() {
   settingsObserver.observe(settings, { childList: true, subtree: true });
 }
 
+function bindSettingsPanelLifecycle() {
+  if (lifecycleBound) return;
+  lifecycleBound = true;
+  document.addEventListener("click", (event) => {
+    const navButton = event.target instanceof Element ? event.target.closest(".bottom-nav [data-nav]") : null;
+    if (!navButton || !settingsOpenState) return;
+    closeSettingsPanel({ immediate: true });
+  }, true);
+  document.addEventListener("handai:viewchange", (event) => {
+    if (!settingsOpenState) return;
+    const next = event.detail?.view || event.detail?.to || "";
+    if (next && next !== "settings") closeSettingsPanel({ immediate: true });
+  });
+}
+
 function init() {
-  document.body.classList.add("ui-v13");
-  installStyles();
   normalizeBootCopy();
   normalizeTimetable();
   normalizeSettingsUi();
   observeSettingsUi();
+  bindSettingsPanelLifecycle();
   window.setTimeout(queueSettingsNormalization, 260);
 }
 
