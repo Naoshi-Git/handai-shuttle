@@ -3,6 +3,8 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 const LEGACY_SAVED_ROUTES_ID = "saved-routes";
 const SETTINGS_PANEL_ID = "settings-subpage-v13";
+const SETTINGS_HIDDEN_TRANSFORM = "translate3d(calc(-50% + 100vw),0,0)";
+const SETTINGS_OPEN_TRANSFORM = "translate3d(-50%,0,0)";
 const SWIPE_EDGE_BASE_PX = 96;
 const SWIPE_EDGE_RATIO = 0.24;
 const SWIPE_LOCK_PX = 8;
@@ -42,6 +44,11 @@ function settingsViewIsActive() {
   return document.getElementById("view-settings")?.classList.contains("is-active") === true;
 }
 
+function setPanelTransform(panel, transform) {
+  if (!panel) return;
+  panel.style.transform = transform;
+}
+
 function createSettingsPanel() {
   let panel = document.getElementById(SETTINGS_PANEL_ID);
   if (panel) return panel;
@@ -50,7 +57,8 @@ function createSettingsPanel() {
   panel.className = "settings-subpage-v13";
   panel.setAttribute("aria-hidden", "true");
   panel.inert = true;
-  panel.style.setProperty("bottom", "calc(var(--ui-nav-height, 60px) + 18px + env(safe-area-inset-bottom))", "important");
+  panel.style.setProperty("bottom", "0", "important");
+  setPanelTransform(panel, SETTINGS_HIDDEN_TRANSFORM);
   panel.innerHTML = `
     <div class="settings-subpage-header">
       <button type="button" class="settings-subpage-back" aria-label="設定一覧に戻る">
@@ -61,6 +69,11 @@ function createSettingsPanel() {
     </div>
     <div class="settings-subpage-body" data-settings-subpage-body></div>`;
   document.body.append(panel);
+  $("[data-settings-subpage-body]", panel)?.style.setProperty(
+    "padding-bottom",
+    "calc(var(--ui-nav-height, 60px) + 36px + env(safe-area-inset-bottom))",
+    "important"
+  );
   $(".settings-subpage-back", panel)?.addEventListener("click", () => closeSettingsPanel());
   installSwipeBack(panel);
   return panel;
@@ -78,7 +91,7 @@ function finishSettingsClose(panel, state) {
   if (state.closeTimer) window.clearTimeout(state.closeTimer);
   panel.removeEventListener("transitionend", state.onTransitionEnd);
   panel.classList.remove("is-swiping", "is-open");
-  panel.style.removeProperty("transform");
+  setPanelTransform(panel, SETTINGS_HIDDEN_TRANSFORM);
   panel.setAttribute("aria-hidden", "true");
   panel.inert = true;
   document.body.classList.remove("settings-subpage-open");
@@ -99,7 +112,7 @@ function openSettingsPanel(details) {
   body.replaceChildren(card);
   title.textContent = meta.title;
   settingsOpenState = { details, card, placeholder, closing: false, closeTimer: null, onTransitionEnd: null };
-  panel.style.removeProperty("transform");
+  setPanelTransform(panel, SETTINGS_HIDDEN_TRANSFORM);
   panel.classList.remove("is-swiping");
   panel.setAttribute("aria-hidden", "false");
   panel.inert = false;
@@ -110,7 +123,10 @@ function openSettingsPanel(details) {
     $(".pwa-install-guide", card)?.classList.add("is-open");
   }
 
-  requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add("is-open")));
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    panel.classList.add("is-open");
+    setPanelTransform(panel, SETTINGS_OPEN_TRANSFORM);
+  }));
 }
 
 function closeSettingsPanel({ immediate = false } = {}) {
@@ -126,7 +142,7 @@ function closeSettingsPanel({ immediate = false } = {}) {
   }
 
   panel.classList.remove("is-swiping", "is-open");
-  panel.style.removeProperty("transform");
+  setPanelTransform(panel, SETTINGS_HIDDEN_TRANSFORM);
   panel.setAttribute("aria-hidden", "true");
   panel.inert = true;
   state.onTransitionEnd = (event) => {
@@ -160,7 +176,7 @@ function installSwipeBack(panel) {
     dragging = false;
     dx = 0;
     panel.classList.remove("is-swiping");
-    if (settle) panel.style.removeProperty("transform");
+    if (settle) setPanelTransform(panel, SETTINGS_OPEN_TRANSFORM);
   };
 
   panel.addEventListener("pointerdown", (event) => {
@@ -189,7 +205,7 @@ function installSwipeBack(panel) {
     dragging = true;
     dx = nextX;
     panel.classList.add("is-swiping");
-    panel.style.transform = `translate3d(calc(-50% + ${Math.min(dx, panel.clientWidth)}px),0,0)`;
+    setPanelTransform(panel, `translate3d(calc(-50% + ${Math.min(dx, panel.clientWidth)}px),0,0)`);
     if (event.cancelable) event.preventDefault();
   }, { passive: false });
 
