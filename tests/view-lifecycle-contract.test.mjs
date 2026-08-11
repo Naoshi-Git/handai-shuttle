@@ -10,8 +10,7 @@ const [
   preferences,
   core,
   html,
-  uiV5,
-  uiV5Css
+  uiV5
 ] = await Promise.all([
   read("src/view-lifecycle.mjs"),
   read("src/view-lifecycle.css"),
@@ -19,8 +18,7 @@ const [
   read("src/route-preferences.mjs"),
   read("src/features-v3-core.mjs"),
   read("index.html"),
-  read("src/ui-v5.mjs"),
-  read("ui-v5.css")
+  read("src/ui-v5.mjs")
 ]);
 
 test("timetable selection material stays below button text instead of washing it out", () => {
@@ -35,7 +33,7 @@ test("app topbar has one Japanese title line and no legacy eyebrow state", () =>
   assert.doesNotMatch(html, /class="eyebrow"/);
   assert.match(html, /<div class="brand-copy"><h1>阪大シャトル<\/h1><\/div>/);
   assert.doesNotMatch(uiV5, /\.topbar \.eyebrow|eyebrow\s*:/);
-  assert.doesNotMatch(uiV5Css, /\.topbar \.eyebrow|data-active-view[^\n]*\.topbar/);
+  assert.doesNotMatch(systemCss, /\.topbar \.eyebrow|data-active-view[^\n]*\.topbar/);
   assert.match(systemCss, /body\.ui-system \.topbar[\s\S]*min-height:\s*68px !important/);
   assert.match(systemCss, /body\.ui-system \.topbar \.brand-copy h1[\s\S]*margin:\s*0 !important[\s\S]*line-height:\s*1\.15 !important/);
 });
@@ -51,9 +49,8 @@ test("topbar material is stable and independent of fading content underneath", (
 test("semantic presentation no longer carries version-owned topbar or old view-enter animation", () => {
   assert.doesNotMatch(systemCss, /body\.ui-v\d+|body\.ui-current/);
   assert.doesNotMatch(systemCss, /v15-view-enter|v6-view-enter/);
-  assert.doesNotMatch(uiV5Css, /v6-view-enter/);
   assert.doesNotMatch(lifecycleCss, /ui-v6 \.view\.is-active|ui-v15 \.view\.is-active/);
-  assert.doesNotMatch(html, /src\/ui-v1[0-6]\.css|src\/ui-current\.css/);
+  assert.doesNotMatch(html, /ui-v5\.css|ui-foundation\.css|src\/ui-v1[0-6]\.css|src\/ui-current\.css/);
 });
 
 test("ordinary bottom tabs dissolve preloaded content without a white interstitial", () => {
