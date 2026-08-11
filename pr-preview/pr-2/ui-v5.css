@@ -77,7 +77,7 @@ body.ui-v5 .route-timetable-card[data-v4-compact="true"] { scroll-margin-top: ca
   #search-results .journey-details-v5 > .journey-date { font-size: 9px; }
 }
 
-/* v6: restrained native-like visual system and richer utility interactions. */
+/* v6: richer utility interactions still used by active behavior. */
 :root {
   --ui-card-radius: 16px;
   --ui-panel-radius: 18px;
@@ -99,48 +99,16 @@ body.ui-v6 .search-sheet-head h3 { margin-top: 0; }
 body.ui-v6 .search-sheet,
 body.ui-v6 .tt-detail-sheet,
 body.ui-v6 .share-card-dialog { border-radius: var(--ui-sheet-radius) var(--ui-sheet-radius) 0 0; }
-body.ui-v6 .search-panel,
-body.ui-v6 .settings-card { border-radius: var(--ui-panel-radius); }
-body.ui-v6 .journey-card,
-body.ui-v6 .route-timetable-card[data-v4-compact="true"],
-body.ui-v6 .search-summary-button,
-body.ui-v6 .feedback-link { border-radius: var(--ui-card-radius); }
-body.ui-v6 .route-line,
 body.ui-v6 .search-now-choice,
 body.ui-v6 .search-sheet-done,
 body.ui-v6 .primary-button,
 body.ui-v6 .secondary-button { border-radius: var(--ui-control-radius); }
 
-body.ui-v6 .journey-card,
-body.ui-v6 .settings-card,
-body.ui-v6 .search-panel { border-color: var(--ui-border); box-shadow: 0 5px 16px rgba(28,28,46,.035); }
-body.ui-v6 .search-submit,
-body.ui-v6 .primary-button { background: var(--ou-900); box-shadow: 0 5px 14px rgba(45,40,127,.14); }
-body.ui-v6 .search-sheet-done { background: var(--ou-900); box-shadow: none; }
-body.ui-v6 .search-summary-icon,
-body.ui-v6 .search-now-choice { background: #F3F2F8; }
-
-body.ui-v6 .pill-warning {
-  background: #F8F2E6 !important;
-  border: 1px solid #EADDBE;
-  color: #79591E !important;
-}
-body.ui-v6 .pill-soft {
-  background: #F3F2F8 !important;
-  color: var(--ou-900) !important;
-}
 body.ui-v6 .pill-last {
   background: var(--ui-danger-bg) !important;
   border: 1px solid var(--ui-danger-border);
   color: var(--ui-danger-ink) !important;
 }
-body.ui-v6 .service-banner.is-closed,
-body.ui-v6 .message.warning {
-  background: var(--ui-warning-bg) !important;
-  border-color: var(--ui-warning-border) !important;
-  color: var(--ui-warning-ink) !important;
-}
-body.ui-v6 .service-banner.is-closed::before { background: #A97916 !important; }
 
 body.ui-v6 .journey-card { transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease; }
 body.ui-v6 .journey-card.has-favorite-control .journey-route { padding-right: 70px; }
@@ -158,14 +126,11 @@ body.ui-v6 .journey-card.has-favorite-control .journey-route { padding-right: 70
 .tt-favorite-button.is-saved { color: var(--ui-favorite); border-color: #E7D7AE; background: #FFFBF2; }
 .journey-favorite-button.is-saved .star-shape,
 .tt-favorite-button.is-saved .star-shape { fill: currentColor; }
-body.ui-v6 .journey-card.is-favorite-trip,
-body.ui-v6 .route-timetable-card.is-favorite-trip { border-color: #E4D3A8 !important; background: linear-gradient(180deg,#fff,#FFFCF5) !important; }
+body.ui-v6 .journey-card.is-favorite-trip { border-color: #E4D3A8 !important; background: linear-gradient(180deg,#fff,#FFFCF5) !important; }
 
 body.ui-v6 .tt-compact-row { grid-template-columns: max-content minmax(0,1fr) 30px 12px; }
 body.ui-v6 .tt-favorite-button { grid-column: 3; grid-row: 1; justify-self: end; }
 body.ui-v6 .tt-compact-chevron { grid-column: 4; grid-row: 1; }
-body.ui-v6 .route-timetable-card.favorite-flash { animation: favorite-flash 1.25s ease; }
-@keyframes favorite-flash { 0%,100% { box-shadow: none; } 35% { box-shadow: 0 0 0 4px rgba(169,121,22,.16); } }
 
 body.ui-v6 .legacy-saved-routes-card { display: none !important; }
 .compact-saved-card { padding: 14px !important; }
