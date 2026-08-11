@@ -5,6 +5,7 @@ import { readFile } from "node:fs/promises";
 const entry = await readFile(new URL("../src/features-v3.mjs", import.meta.url), "utf8");
 const current = await readFile(new URL("../src/ui-current.mjs", import.meta.url), "utf8");
 const currentCss = await readFile(new URL("../src/ui-current.css", import.meta.url), "utf8");
+const lifecycleCss = await readFile(new URL("../src/view-lifecycle.css", import.meta.url), "utf8");
 const css = await readFile(new URL("../src/ui-v15.css", import.meta.url), "utf8");
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const whiteSymbol = await readFile(new URL("../assets/brand/brand-symbol-white.svg", import.meta.url), "utf8");
@@ -13,7 +14,7 @@ await import("../src/ui-current.mjs");
 
 test("v15 visual CSS remains linked while ui-current owns interaction", () => {
   assert.doesNotMatch(entry, /import "\.\/ui-v15\.mjs";/);
-  assert.match(entry, /import "\.\/ui-v13\.mjs";[\s\S]*import "\.\/ui-current\.mjs";/);
+  assert.match(entry, /import "\.\/ui-v13\.mjs";[\s\S]*import "\.\/view-lifecycle\.mjs";[\s\S]*import "\.\/ui-current\.mjs";/);
   assert.match(current, /"ui-v15"/);
   assert.match(html, /ui-v14\.css" data-ui-v14[\s\S]*ui-v15\.css" data-ui-v15/);
 });
@@ -48,10 +49,11 @@ test("low resolution install screenshots are detected and no longer over-enlarge
   assert.match(css, /\.install-guide-media\.is-low-res-source-v15 img[\s\S]*180px/);
 });
 
-test("current motion overrides legacy timing with one final grammar", () => {
+test("current selection and sheet motion override legacy timing while tab fade is full-screen", () => {
   assert.match(css, /--v15-motion:\s*cubic-bezier/);
-  assert.match(currentCss, /--current-motion-view:\s*300ms/);
+  assert.doesNotMatch(currentCss, /--current-motion-view/);
   assert.match(currentCss, /--current-motion-choice:\s*280ms/);
   assert.match(currentCss, /--current-motion-sheet:\s*360ms/);
+  assert.match(lifecycleCss, /\.view-transition-veil[\s\S]*opacity 150ms/);
   assert.match(currentCss, /prefers-reduced-motion/);
 });
