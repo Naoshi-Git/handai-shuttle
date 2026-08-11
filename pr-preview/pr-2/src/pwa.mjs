@@ -88,9 +88,12 @@ function installStyles() {
     .pwa-settings-state[data-installed="true"]::before{background:#2f9a76}
     .pwa-install-guide{display:block;margin:0;padding:10px 12px;border:1px solid #dfddeb;border-radius:12px;background:#fff;color:var(--ink);font-size:10.5px;line-height:1.7}
     .pwa-install-guide.is-open{display:block}
-    body.ui-system .install-guide-media{aspect-ratio:auto!important;place-items:stretch!important;padding:0!important;background:transparent!important;border-radius:0!important}
-    body.ui-system .install-guide-media img{display:block!important;width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important;border-radius:0!important;box-shadow:none!important}
-    body.ui-system .install-guide-media.is-low-res-source-v15 img{width:100%!important;box-shadow:none!important}
+    body.ui-system .install-guide-track{grid-auto-columns:minmax(84%,1fr)!important}
+    body.ui-system .install-guide-media{height:clamp(238px,32dvh,300px)!important;aspect-ratio:auto!important;place-items:center!important;padding:10px!important;background:#F3F3F5!important;border-radius:18px!important}
+    body.ui-system .install-guide-media img,body.ui-system .install-guide-placeholder{display:none!important}
+    body.ui-system .install-guide-phone-frame{position:relative;height:min(100%,276px);aspect-ratio:9/19.5;box-sizing:border-box;padding:5px;border:4px solid #2F2F33;border-radius:28px;background:#2F2F33;box-shadow:0 7px 20px rgba(24,24,30,.11)}
+    body.ui-system .install-guide-phone-frame::before{content:"";position:absolute;z-index:2;top:8px;left:50%;width:38%;height:9px;transform:translateX(-50%);border-radius:999px;background:#2F2F33}
+    body.ui-system .install-guide-phone-screen{width:100%;height:100%;border-radius:20px;background:#FAFAFB}
     .pwa-install-nudge{position:fixed;z-index:2100;left:50%;bottom:calc(var(--ui-nav-height,58px) + 20px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(calc(100% - 28px),480px);display:grid;grid-template-columns:minmax(0,1fr) 34px;align-items:center;gap:6px;padding:7px;border:1px solid rgba(255,255,255,.72);border-radius:19px;background:rgba(250,250,252,.94);box-shadow:0 10px 28px rgba(28,27,54,.16);-webkit-backdrop-filter:blur(22px) saturate(155%);backdrop-filter:blur(22px) saturate(155%)}
     .pwa-install-nudge-main{min-width:0;display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:9px;padding:4px 7px 4px 4px;border:0;background:transparent;color:var(--ink);text-align:left}
     .pwa-install-nudge-main img{width:36px;height:36px;border-radius:10px}
@@ -99,7 +102,7 @@ function installStyles() {
     .pwa-install-nudge-copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:9.5px;line-height:1.2}
     .pwa-install-nudge-cta{padding:6px 9px;border-radius:999px;background:#ecebf7;color:var(--ou-900);font-size:9.5px;font-weight:800}
     .pwa-install-nudge-close{width:32px;height:32px;padding:0;border:0;border-radius:50%;background:transparent;color:#777780;font-size:20px;line-height:1}
-    @media(max-width:360px){.pwa-install-nudge-copy small{display:none}.pwa-install-nudge-main{grid-template-columns:34px minmax(0,1fr) auto}.pwa-install-nudge-main img{width:34px;height:34px}}
+    @media(max-width:360px){body.ui-system .install-guide-media{height:clamp(220px,30dvh,270px)!important}.pwa-install-nudge-copy small{display:none}.pwa-install-nudge-main{grid-template-columns:34px minmax(0,1fr) auto}.pwa-install-nudge-main img{width:34px;height:34px}}
   `;
   document.head.append(style);
 }

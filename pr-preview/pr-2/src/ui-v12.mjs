@@ -3,10 +3,10 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 const LOCATION_SOURCE_KEY = "ou-bus:location-source-v12";
 const COMPACT_AD_SRC = "./assets/ads/house/v2/house-banner-simple-640x89.webp";
-const INSTALL_GUIDE_IMAGES = Object.freeze([
-  { src: "./assets/help/install/ios-01-share.webp?v=20260811b", title: "1. Safariの共有を開く", copy: "画面下部の共有ボタンをタップします。" },
-  { src: "./assets/help/install/ios-02-add-home.webp?v=20260811b", title: "2. ホーム画面に追加", copy: "共有メニューから「ホーム画面に追加」を選びます。" },
-  { src: "./assets/help/install/ios-03-confirm.webp?v=20260811b", title: "3. 追加を確定", copy: "表示名を確認して右上の「追加」をタップします。" }
+const INSTALL_GUIDE_STEPS = Object.freeze([
+  { title: "1. Safariの共有を開く", copy: "画面下部の共有ボタンをタップします。" },
+  { title: "2. ホーム画面に追加", copy: "共有メニューから「ホーム画面に追加」を選びます。" },
+  { title: "3. 追加を確定", copy: "表示名を確認して右上の「追加」をタップします。" }
 ]);
 
 let normalizeQueued = false;
@@ -14,15 +14,6 @@ let locationObserver = null;
 let dynamicObserver = null;
 let detailSheetObserver = null;
 let observedDetailSheet = null;
-
-function installStyles() {
-  if ($('link[data-ui-v12]')) return;
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = "./src/ui-v12.css";
-  link.dataset.uiV12 = "true";
-  document.head.append(link);
-}
 
 function finishBoot() {
   let finished = false;
@@ -229,31 +220,17 @@ function installGuideCarousel() {
   guide.innerHTML = `
     <div class="install-guide-carousel">
       <div class="install-guide-track" data-install-guide-track>
-        ${INSTALL_GUIDE_IMAGES.map((item, index) => `
+        ${INSTALL_GUIDE_STEPS.map((item, index) => `
           <article class="install-guide-slide" data-install-slide="${index}">
-            <div class="install-guide-media" data-install-media>
-              <img alt="${item.title}" loading="lazy" decoding="async">
-              <div class="install-guide-placeholder">画像を読み込んでいます<br>${item.title}</div>
+            <div class="install-guide-media" data-install-media aria-hidden="true">
+              <div class="install-guide-phone-frame"><div class="install-guide-phone-screen"></div></div>
             </div>
             <strong>${item.title}</strong>
             <p>${item.copy}</p>
           </article>`).join("")}
       </div>
-      <div class="install-guide-dots" aria-hidden="true">${INSTALL_GUIDE_IMAGES.map((_, index) => `<button type="button" class="install-guide-dot ${index === 0 ? "is-active" : ""}" data-install-dot="${index}" tabindex="-1"></button>`).join("")}</div>
+      <div class="install-guide-dots" aria-hidden="true">${INSTALL_GUIDE_STEPS.map((_, index) => `<button type="button" class="install-guide-dot ${index === 0 ? "is-active" : ""}" data-install-dot="${index}" tabindex="-1"></button>`).join("")}</div>
     </div>`;
-
-  INSTALL_GUIDE_IMAGES.forEach((item, index) => {
-    const slide = $(`[data-install-slide="${index}"]`, guide);
-    const media = $("[data-install-media]", slide);
-    const img = $("img", media);
-    if (!img || !media) return;
-    const probe = new Image();
-    probe.onload = () => {
-      img.src = item.src;
-      media.classList.add("has-image");
-    };
-    probe.src = item.src;
-  });
 
   const track = $("[data-install-guide-track]", guide);
   const dots = $$("[data-install-dot]", guide);
@@ -299,8 +276,6 @@ function observeDynamicUi() {
 }
 
 function init() {
-  document.body.classList.add("ui-v12");
-  installStyles();
   hideLegacyRefresh();
   bindLocationSource();
   normalizeUi();
