@@ -1,3 +1,5 @@
+import { ensureShareIdentity, shareLandingUrl } from "./share-identity.mjs";
+
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
@@ -97,9 +99,8 @@ function normalizeNextBusCue() {
 }
 
 function shareApp() {
-  const url = new URL(window.location.href);
-  url.hash = "";
-  const payload = { title: "阪大シャトル", text: "阪大の学内連絡バス、次の便がすぐわかる。", url: url.toString() };
+  ensureShareIdentity();
+  const payload = { title: "阪大シャトル", text: "阪大の学内連絡バス、次の便がすぐわかる。", url: shareLandingUrl() };
   if (navigator.share) return navigator.share(payload).catch((error) => {
     if (error?.name !== "AbortError") console.warn("Share failed", error);
   });
