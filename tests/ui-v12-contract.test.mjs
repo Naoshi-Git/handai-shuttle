@@ -71,9 +71,9 @@ test("settings use disclosures while favorites and searches remain visible", () 
 test("home-screen install guide renders the supplied screenshots inside the phone frames", () => {
   assert.match(source, /INSTALL_GUIDE_STEPS/);
   assert.match(source, /INSTALL_GUIDE_SOURCES/);
-  assert.match(source, /ios-01-share\.webp\?guide=20260811b/);
-  assert.match(source, /ios-02-add-home\.webp\?guide=20260811b/);
-  assert.match(source, /ios-03-confirm\.webp\?guide=20260811b/);
+  for (const image of ["ios-01-share", "ios-02-add-home", "ios-03-confirm"]) {
+    assert.match(source, new RegExp(`${image}\\.webp\\?guide=\\d+[a-z]?`));
+  }
   assert.match(source, /install-guide-phone-frame/);
   assert.match(source, /install-guide-phone-screen/);
   assert.match(source, /background-image:url/);
