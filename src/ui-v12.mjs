@@ -12,6 +12,8 @@ const INSTALL_GUIDE_IMAGES = Object.freeze([
 let normalizeQueued = false;
 let locationObserver = null;
 let dynamicObserver = null;
+let detailSheetObserver = null;
+let observedDetailSheet = null;
 
 function installStyles() {
   if ($('link[data-ui-v12]')) return;
@@ -140,6 +142,30 @@ function ensureDetailAd() {
   stops.insertAdjacentElement("afterend", slot);
 }
 
+function observeDetailSheet() {
+  const dialog = $("#tt-detail-sheet");
+  if (!dialog || dialog === observedDetailSheet) {
+    ensureDetailAd();
+    return;
+  }
+  detailSheetObserver?.disconnect();
+  observedDetailSheet = dialog;
+  detailSheetObserver = new MutationObserver((records) => {
+    if (records.some((record) => record.type === "childList")) ensureDetailAd();
+  });
+  detailSheetObserver.observe(dialog, { childList: true, subtree: true });
+  ensureDetailAd();
+}
+
+function bindDetailSheetLifecycle() {
+  observeDetailSheet();
+  document.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target.closest("#timetable-list [data-tt-trip]") : null;
+    if (!target) return;
+    window.setTimeout(observeDetailSheet, 0);
+  });
+}
+
 function settingsSectionMeta(card) {
   if (card.matches("[data-pwa-settings]")) return { title: "ホーム画面に追加", subtitle: "追加方法・最新版の確認" };
   if (card.id === "suita-stop-preferences-v9") return { title: "吹田のバス停", subtitle: "乗る停留所・着く停留所" };
@@ -258,14 +284,13 @@ function normalizeUi() {
   requestAnimationFrame(() => {
     normalizeQueued = false;
     normalizeNextBusCue();
-    ensureDetailAd();
     normalizeSettingsInformationArchitecture();
     installGuideCarousel();
   });
 }
 
 function observeDynamicUi() {
-  const roots = [$("#view-settings"), $("#timetable-list"), $("#tt-detail-sheet")].filter(Boolean);
+  const roots = [$("#view-settings"), $("#timetable-list")].filter(Boolean);
   if (!roots.length || dynamicObserver) return;
   dynamicObserver = new MutationObserver((records) => {
     if (records.some((record) => record.type === "childList" && (record.addedNodes.length || record.removedNodes.length))) normalizeUi();
@@ -280,6 +305,7 @@ function init() {
   bindLocationSource();
   normalizeUi();
   observeDynamicUi();
+  bindDetailSheetLifecycle();
   finishBoot();
   window.setTimeout(normalizeUi, 260);
 }
