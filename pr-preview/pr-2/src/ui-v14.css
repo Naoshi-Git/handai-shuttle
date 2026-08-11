@@ -24,14 +24,7 @@ html, body { background: var(--v14-canvas); }
 body.ui-v14 { color: var(--v14-ink); }
 body.ui-v14 .app-shell { background: var(--v14-canvas) !important; }
 
-/* Controls and navigation get the material layer; content remains an opaque standard surface. */
-body.ui-v14 .topbar {
-  background: rgba(249, 249, 251, .86) !important;
-  border-bottom: 0 !important;
-  box-shadow: 0 1px 0 rgba(36,36,41,.035) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(150%) !important;
-  backdrop-filter: blur(18px) saturate(150%) !important;
-}
+/* Navigation gets the material layer; Topbar ownership lives in ui-current. */
 body.ui-v14 .app-shell {
   padding-bottom: calc(var(--v14-nav-height) + 22px + env(safe-area-inset-bottom)) !important;
 }
@@ -321,7 +314,6 @@ body.ui-v14 .house-ad-creative img {
   body.ui-v14 .bottom-nav { bottom: 8px !important; }
 }
 @media (prefers-reduced-transparency: reduce) {
-  body.ui-v14 .topbar,
   body.ui-v14 .bottom-nav,
   body.ui-v14 .settings-subpage-header {
     background: #F8F8FA !important;

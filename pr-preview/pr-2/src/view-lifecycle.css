@@ -7,20 +7,12 @@ body.ui-view-lifecycle {
   --view-dissolve-in-ease: cubic-bezier(.2,.72,.24,1);
 }
 
-body.ui-view-lifecycle .view.is-active,
-body.ui-view-lifecycle.ui-current .view.is-active,
-body.ui-view-lifecycle.ui-v6 .view.is-active,
-body.ui-view-lifecycle.ui-v15 .view.is-active {
+body.ui-view-lifecycle .view.is-active {
   animation: none !important;
 }
 
 body.ui-view-lifecycle main {
   position: relative;
-}
-
-/* Keep the application chrome geometrically stable while title copy dissolves inside it. */
-body.ui-view-lifecycle .topbar {
-  min-height: 68px !important;
 }
 
 /*
