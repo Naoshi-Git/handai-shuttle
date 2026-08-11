@@ -94,24 +94,24 @@ body.ui-system .route-timetable-card[data-v4-compact="true"] { scroll-margin-top
   --ui-favorite: #A97916;
 }
 
-body.ui-v6 .search-sheet-head > div > span { display: none; }
-body.ui-v6 .search-sheet-head h3 { margin-top: 0; }
-body.ui-v6 .search-sheet,
-body.ui-v6 .tt-detail-sheet,
-body.ui-v6 .share-card-dialog { border-radius: var(--ui-sheet-radius) var(--ui-sheet-radius) 0 0; }
-body.ui-v6 .search-now-choice,
-body.ui-v6 .search-sheet-done,
-body.ui-v6 .primary-button,
-body.ui-v6 .secondary-button { border-radius: var(--ui-control-radius); }
+body.ui-system .search-sheet-head > div > span { display: none; }
+body.ui-system .search-sheet-head h3 { margin-top: 0; }
+body.ui-system .search-sheet,
+body.ui-system .tt-detail-sheet,
+body.ui-system .share-card-dialog { border-radius: var(--ui-sheet-radius) var(--ui-sheet-radius) 0 0; }
+body.ui-system .search-now-choice,
+body.ui-system .search-sheet-done,
+body.ui-system .primary-button,
+body.ui-system .secondary-button { border-radius: var(--ui-control-radius); }
 
-body.ui-v6 .pill-last {
+body.ui-system .pill-last {
   background: var(--ui-danger-bg) !important;
   border: 1px solid var(--ui-danger-border);
   color: var(--ui-danger-ink) !important;
 }
 
-body.ui-v6 .journey-card { transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease; }
-body.ui-v6 .journey-card.has-favorite-control .journey-route { padding-right: 70px; }
+body.ui-system .journey-card { transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease; }
+body.ui-system .journey-card.has-favorite-control .journey-route { padding-right: 70px; }
 .journey-favorite-button,
 .tt-favorite-button {
   box-sizing: border-box; display: grid; place-items: center; margin: 0; padding: 0;
@@ -126,13 +126,13 @@ body.ui-v6 .journey-card.has-favorite-control .journey-route { padding-right: 70
 .tt-favorite-button.is-saved { color: var(--ui-favorite); border-color: #E7D7AE; background: #FFFBF2; }
 .journey-favorite-button.is-saved .star-shape,
 .tt-favorite-button.is-saved .star-shape { fill: currentColor; }
-body.ui-v6 .journey-card.is-favorite-trip { border-color: #E4D3A8 !important; background: linear-gradient(180deg,#fff,#FFFCF5) !important; }
+body.ui-system .journey-card.is-favorite-trip { border-color: #E4D3A8 !important; background: linear-gradient(180deg,#fff,#FFFCF5) !important; }
 
-body.ui-v6 .tt-compact-row { grid-template-columns: max-content minmax(0,1fr) 30px 12px; }
-body.ui-v6 .tt-favorite-button { grid-column: 3; grid-row: 1; justify-self: end; }
-body.ui-v6 .tt-compact-chevron { grid-column: 4; grid-row: 1; }
+body.ui-system .tt-compact-row { grid-template-columns: max-content minmax(0,1fr) 30px 12px; }
+body.ui-system .tt-favorite-button { grid-column: 3; grid-row: 1; justify-self: end; }
+body.ui-system .tt-compact-chevron { grid-column: 4; grid-row: 1; }
 
-body.ui-v6 .legacy-saved-routes-card { display: none !important; }
+body.ui-system .legacy-saved-routes-card { display: none !important; }
 .compact-saved-card { padding: 14px !important; }
 .compact-settings-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
 .compact-settings-head h3 { margin: 0; font-size: 15px; }
@@ -151,10 +151,10 @@ body.ui-v6 .legacy-saved-routes-card { display: none !important; }
 .compact-empty { padding: 9px 2px 2px; color: var(--muted); font-size: 9.5px; }
 .favorite-saved-star { color: var(--ui-favorite); font-size: 13px; flex: 0 0 auto; }
 
-body.ui-v6 #favorite-current-button { min-width: 86px; }
+body.ui-system #favorite-current-button { min-width: 86px; }
 
 @media(max-width:380px) {
-  body.ui-v6 .tt-compact-row { grid-template-columns: max-content minmax(0,1fr) 28px 10px; gap: 5px; }
+  body.ui-system .tt-compact-row { grid-template-columns: max-content minmax(0,1fr) 28px 10px; gap: 5px; }
   .journey-favorite-button { right: 44px; }
   .journey-favorite-button,.tt-favorite-button { width: 28px; height: 28px; }
   .compact-saved-card { padding: 12px !important; }
