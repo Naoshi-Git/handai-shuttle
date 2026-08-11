@@ -171,14 +171,39 @@ function currentSearchContext() {
   };
 }
 
+function normalizeTripId(value = "") {
+  return String(value || "").trim().replace(/便$/, "");
+}
+
 function favoriteIdentity(item) {
-  return [item.tripId, item.departure, item.arrival].join("|");
+  return [normalizeTripId(item?.tripId), item?.departure || "", item?.arrival || ""].join("|");
+}
+
+function migrateFavoriteTrips() {
+  const current = loadList(STORAGE.favoriteTrips);
+  if (!current.length) return;
+  const normalized = [];
+  const seen = new Set();
+  let changed = false;
+  current.forEach((item) => {
+    const next = { ...item, tripId: normalizeTripId(item?.tripId) };
+    if (next.tripId !== item?.tripId) changed = true;
+    const key = favoriteIdentity(next);
+    if (!next.tripId || seen.has(key)) {
+      changed = true;
+      return;
+    }
+    seen.add(key);
+    normalized.push(next);
+  });
+  if (changed) saveList(STORAGE.favoriteTrips, normalized.slice(0, 30));
 }
 
 function favoriteFromJourneyCard(card) {
   const pair = timePair($(".journey-time strong", card)?.textContent || "");
   const names = routeNames(card);
-  const tripId = $$(".journey-details .pill", card).map((node) => node.textContent.trim()).find((value) => /^[EW]\d+便$/.test(value)) || "";
+  const tripLabel = $$(".journey-details .pill", card).map((node) => node.textContent.trim()).find((value) => /^[EW]\d+便$/.test(value)) || "";
+  const tripId = normalizeTripId(tripLabel);
   if (!pair || !tripId) return null;
   const routeType = $$(".journey-details .pill", card).map((node) => node.textContent.trim()).find((value) => value === "直行" || value === "箕面経由") || "運行便";
   const context = currentSearchContext();
@@ -198,7 +223,7 @@ function favoriteFromJourneyCard(card) {
 
 function favoriteFromTimetableCard(card) {
   const pair = timePair($(".tt-compact-time", card)?.textContent || "");
-  const tripId = card.dataset.ttTrip || "";
+  const tripId = normalizeTripId(card.dataset.ttTrip || "");
   if (!pair || !tripId) return null;
   const origin = $('[data-tt-origin].is-active')?.dataset.ttOrigin || "suita";
   const destination = $('[data-tt-destination].is-active')?.dataset.ttDestination || "toyonaka";
@@ -230,9 +255,10 @@ function isFavorite(item) {
 }
 
 function setFavorite(item, shouldSave) {
-  const key = favoriteIdentity(item);
+  const normalizedItem = { ...item, tripId: normalizeTripId(item?.tripId) };
+  const key = favoriteIdentity(normalizedItem);
   let list = loadList(STORAGE.favoriteTrips).filter((saved) => favoriteIdentity(saved) !== key);
-  if (shouldSave) list.unshift({ ...item, savedAt: new Date().toISOString() });
+  if (shouldSave) list.unshift({ ...normalizedItem, savedAt: new Date().toISOString() });
   saveList(STORAGE.favoriteTrips, list.slice(0, 30));
   syncFavoriteControls();
   renderSettingsCollections();
@@ -249,7 +275,7 @@ function favoriteButton(item, className) {
     const next = !isFavorite(item);
     setFavorite(item, next);
   });
-  button._favoriteItem = item;
+  button._favoriteItem = { ...item, tripId: normalizeTripId(item?.tripId) };
   return button;
 }
 
@@ -343,7 +369,8 @@ function renderSavedSearches() {
 }
 
 function openFavorite(item) {
-  if (!item?.tripId || !item.origin || !item.destination) {
+  const tripId = normalizeTripId(item?.tripId);
+  if (!tripId || !item?.origin || !item?.destination) {
     applySearchCondition(item || {}, { date: item?.date || nowParts().date, time: item?.departure || nowParts().time, submit: true });
     return;
   }
@@ -358,13 +385,13 @@ function openFavorite(item) {
         $("#tt-suita-stop").dispatchEvent(new Event("change", { bubbles: true }));
       }
       window.setTimeout(() => {
-        const card = $(`[data-tt-trip="${item.tripId}"]`);
+        const card = $(`[data-tt-trip="${tripId}"]`);
         if (!card) return;
         card.scrollIntoView({ behavior: "smooth", block: "center" });
         window.setTimeout(() => card.click(), 180);
-      }, 220);
-    }, 80);
-  }, 40);
+      }, 260);
+    }, 100);
+  }, 60);
 }
 
 function renderFavoriteTrips() {
@@ -377,7 +404,7 @@ function renderFavoriteTrips() {
       <div class="compact-saved-row favorite-saved-row">
         <button type="button" class="compact-saved-open" data-open-favorite="${index}">
           <span class="favorite-saved-star" aria-hidden="true">★</span>
-          <span><strong>${item.departure} → ${item.arrival} <em>${item.tripId}</em></strong><small>${item.originName} → ${item.destinationName}・${item.routeType}</small></span><span aria-hidden="true">›</span>
+          <span><strong>${item.departure} → ${item.arrival} <em>${normalizeTripId(item.tripId)}便</em></strong><small>${item.originName} → ${item.destinationName}・${item.routeType}</small></span><span aria-hidden="true">›</span>
         </button>
         <button type="button" class="compact-delete" data-delete-favorite="${index}" aria-label="このお気に入り便を削除">×</button>
       </div>`).join("") : '<div class="compact-empty">時刻表や検索結果の★から追加できます。</div>'}</div>`;
@@ -399,6 +426,7 @@ function renderSettingsCollections() {
 
 function setupSaveSemantics() {
   migrateLegacySavedRoutes();
+  migrateFavoriteTrips();
   const legacyCard = $("#saved-routes")?.closest(".settings-card");
   legacyCard?.classList.add("legacy-saved-routes-card");
   const button = $("#favorite-current-button");
@@ -433,6 +461,12 @@ function installBottomNavIcons() {
     button.dataset.v6Icon = "true";
     button.innerHTML = `${navIcon(name)}<span class="nav-label">${labels[name] || name}</span>`;
   });
+}
+
+function portalBottomNav() {
+  const nav = $(".bottom-nav");
+  if (!nav || nav.parentElement === document.body) return;
+  document.body.append(nav);
 }
 
 function resetScrollOnViewEntry() {
@@ -475,6 +509,7 @@ function observeDynamicPolish() {
 }
 
 function init() {
+  portalBottomNav();
   setupSaveSemantics();
   installBottomNavIcons();
   resetScrollOnViewEntry();
