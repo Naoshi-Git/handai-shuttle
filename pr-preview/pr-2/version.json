@@ -1,5 +1,5 @@
 {
-  "build": "8b4b8dd7954247fc85f93c4345f94641fd804997",
+  "build": "797ffe9246041d289f35a6886b9d477c8baf90dd",
   "assets": [
     "ads.css",
     "assets/ads/house-share-640x128.svg",
@@ -30,6 +30,7 @@
     "assets/help/install/ios-01-share.webp",
     "assets/help/install/ios-02-add-home.webp",
     "assets/help/install/ios-03-confirm.webp",
+    "assets/social/og-handai-shuttle.jpg",
     "data/class-periods-2026.mjs",
     "data/location-points.mjs",
     "data/timetable-2026.mjs",
