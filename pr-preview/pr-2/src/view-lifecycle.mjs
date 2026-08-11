@@ -179,6 +179,7 @@ function onClickAfter(event) {
 }
 
 function init() {
+  document.body.classList.add("ui-view-lifecycle");
   installStyles();
   ensureVeil();
   window.addEventListener("pointerdown", onPointerDown, { capture: true, passive: true });
