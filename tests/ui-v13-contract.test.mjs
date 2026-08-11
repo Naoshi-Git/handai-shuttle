@@ -32,6 +32,16 @@ test("settings configuration opens as a horizontal subpage with reliable swipe b
   assert.match(css, /settings-menu-v13[\s\S]*border-radius:\s*var\(--ui-radius-group\) !important/);
 });
 
+test("settings subpage is portaled to body and closes when leaving settings", () => {
+  assert.match(source, /document\.body\.append\(panel\)/);
+  assert.match(source, /function bindSettingsPanelNavigation/);
+  assert.match(source, /bottom-nav \[data-nav\]/);
+  assert.match(source, /target\.dataset\.nav === "settings"/);
+  assert.match(source, /handai:viewchange/);
+  assert.match(source, /active !== "settings"/);
+  assert.match(source, /closeSettingsPanel\(\)/);
+});
+
 test("v13 observes only the settings surface instead of the whole document", () => {
   assert.match(source, /settingsObserver\.observe\(settings, \{ childList: true, subtree: true \}\)/);
   assert.doesNotMatch(source, /observe\(document\.body/);
