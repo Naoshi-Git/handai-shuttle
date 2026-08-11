@@ -68,11 +68,17 @@ test("settings use disclosures while favorites and searches remain visible", () 
   assert.match(css, /\.settings-disclosure > summary/);
 });
 
-test("home-screen install guide uses empty phone frames instead of embedded screenshots", () => {
+test("home-screen install guide renders the supplied screenshots inside the phone frames", () => {
   assert.match(source, /INSTALL_GUIDE_STEPS/);
+  assert.match(source, /INSTALL_GUIDE_SOURCES/);
+  assert.match(source, /ios-01-share\.webp\?guide=20260811b/);
+  assert.match(source, /ios-02-add-home\.webp\?guide=20260811b/);
+  assert.match(source, /ios-03-confirm\.webp\?guide=20260811b/);
   assert.match(source, /install-guide-phone-frame/);
   assert.match(source, /install-guide-phone-screen/);
-  assert.doesNotMatch(source, /ios-01-share\.webp|ios-02-add-home\.webp|ios-03-confirm\.webp|new Image\(/);
+  assert.match(source, /background-image:url/);
+  assert.match(source, /background-size:contain/);
+  assert.doesNotMatch(source, /new Image\(/);
   assert.match(css, /scroll-snap-type:\s*x mandatory/);
   assert.match(pwa, /install-guide-media\{height:clamp\(238px,32dvh,300px\)!important/);
   assert.match(pwa, /install-guide-phone-frame/);
