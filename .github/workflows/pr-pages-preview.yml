@@ -53,9 +53,11 @@ jobs:
           node --check source/src/ui-current.mjs
           node --check source/src/pwa.mjs
           node --check source/src/crowding-prediction.mjs
+          node --check source/src/share-identity.mjs
           node --check source/src/share-card.mjs
           node --check source/src/ads.mjs
           node --check source/data/location-points.mjs
+          test -f source/share.html
           test -f source/ads.css
           test -f source/src/ui-system.css
           test -f source/src/view-lifecycle.css
@@ -71,6 +73,8 @@ jobs:
           test ! -e source/src/ui-current.css
           test -f source/docs/UI-ARCHITECTURE.md
           test -f source/assets/brand/app-icon.svg
+          test -f source/assets/brand/app-icon-32.png
+          test -f source/assets/brand/app-icon-180.png
           test -f source/assets/brand/brand-icon-rounded.svg
           test -f source/assets/brand/brand-symbol-white.svg
           test -f source/assets/brand/splash-white.webp
@@ -88,7 +92,7 @@ jobs:
         run: |
           rm -rf "pages/${PREVIEW_PATH}"
           mkdir -p "pages/${PREVIEW_PATH}"
-          cp source/index.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ads.css "pages/${PREVIEW_PATH}/"
+          cp source/index.html source/share.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ads.css "pages/${PREVIEW_PATH}/"
           cp -R source/assets source/data source/src source/lp "pages/${PREVIEW_PATH}/"
           touch pages/.nojekyll
       - name: Generate preview build manifest
