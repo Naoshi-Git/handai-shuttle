@@ -2,6 +2,8 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 const TIMING = Object.freeze({
+  // Yahoo!乗換案内の実機フレームをbenchmarkに、50/50の長いdouble exposureではなく
+  // outgoingを先に落としてincomingを少し遅らせる短いdissolveにする。
   crossfadeMs: 220,
   timetableMinimumMs: 220,
   timetableQuietMs: 110,
