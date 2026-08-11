@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 
 const entry = await readFile(new URL("../src/features-v3.mjs", import.meta.url), "utf8");
 const current = await readFile(new URL("../src/ui-current.mjs", import.meta.url), "utf8");
+const currentCss = await readFile(new URL("../src/ui-current.css", import.meta.url), "utf8");
 const css = await readFile(new URL("../src/ui-v11.css", import.meta.url), "utf8");
 
 await import("../src/ui-current.mjs");
@@ -20,8 +21,9 @@ test("app canvas is subtly off-white while content surfaces remain white", () =>
   assert.match(css, /\.app-shell[\s\S]*var\(--v11-canvas\)/);
 });
 
-test("routine typography is reduced from legacy extra-bold weights", () => {
-  assert.match(css, /\.brand-copy h1[\s\S]*font-weight:\s*700/);
+test("routine typography is reduced while app header typography belongs only to ui-current", () => {
+  assert.doesNotMatch(css, /\.brand-copy h1|body\.ui-v11 \.topbar/);
+  assert.match(currentCss, /body\.ui-current \.topbar \.brand-copy h1[\s\S]*font-weight:\s*700 !important/);
   assert.match(css, /\.search-summary-main strong[\s\S]*font-weight:\s*600/);
   assert.match(css, /\.pill,[\s\S]*font-weight:\s*600/);
 });
