@@ -20,6 +20,11 @@ test("saved search conditions and favorite trips use separate storage concepts",
   assert.match(source, /☆ 条件を保存/);
 });
 
+test("v6 behavior no longer creates a presentation runtime scope", () => {
+  assert.doesNotMatch(source, /classList\.add\("ui-v6"\)/);
+  assert.doesNotMatch(css, /body\.ui-v6/);
+});
+
 test("favorite controls stay behavior-owned while timetable surface highlighting stays semantic", () => {
   assert.match(source, /journey-favorite-button/);
   assert.match(source, /tt-favorite-button/);
