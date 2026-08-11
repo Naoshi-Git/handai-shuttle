@@ -31,9 +31,11 @@ jobs:
           node --check src/ui-current.mjs
           node --check src/pwa.mjs
           node --check src/crowding-prediction.mjs
+          node --check src/share-identity.mjs
           node --check src/share-card.mjs
           node --check src/ads.mjs
           node --check data/location-points.mjs
+          test -f share.html
           test -f ads.css
           test -f ui-v4.css
           test -f src/ui-system.css
@@ -50,6 +52,8 @@ jobs:
           test ! -e src/ui-current.css
           test -f docs/UI-ARCHITECTURE.md
           test -f assets/brand/app-icon.svg
+          test -f assets/brand/app-icon-32.png
+          test -f assets/brand/app-icon-180.png
           test -f assets/brand/brand-icon-rounded.svg
           test -f assets/brand/brand-symbol-white.svg
           test -f assets/brand/splash-white.webp
