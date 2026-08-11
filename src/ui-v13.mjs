@@ -46,7 +46,7 @@ function createSettingsPanel() {
   panel.className = "settings-subpage-v13";
   panel.setAttribute("aria-hidden", "true");
   panel.inert = true;
-  panel.style.bottom = "calc(var(--ui-nav-height, 60px) + 18px + env(safe-area-inset-bottom))";
+  panel.style.setProperty("bottom", "calc(var(--ui-nav-height, 60px) + 18px + env(safe-area-inset-bottom))", "important");
   panel.innerHTML = `
     <div class="settings-subpage-header">
       <button type="button" class="settings-subpage-back" aria-label="設定一覧に戻る">
