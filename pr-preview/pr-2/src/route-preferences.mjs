@@ -11,6 +11,9 @@ const VALID_CAMPUSES = new Set(["suita", "toyonaka", "minoh"]);
 const VALID_SUITA_ORIGINS = new Set(["suita_engineering", "suita_human_sciences"]);
 const VALID_SUITA_DESTINATIONS = new Set(["suita_convention", "suita_engineering"]);
 
+let preparedSyncFrame = 0;
+let homeDestinationObserver = null;
+
 function storageGet(key) {
   try { return localStorage.getItem(key); } catch { return null; }
 }
@@ -87,28 +90,6 @@ function ensureSuitaPreferencesCard() {
   if (arrivalSelect) arrivalSelect.value = preferredSuitaDestination();
 }
 
-function bindSuitaPreferences() {
-  const origin = $("#default-suita-stop");
-  const arrival = $("#default-suita-arrival-stop");
-  if (origin && origin.dataset.currentPrefsBound !== "true") {
-    origin.dataset.currentPrefsBound = "true";
-    origin.addEventListener("change", () => {
-      if (!VALID_SUITA_ORIGINS.has(origin.value)) return;
-      storageSet(KEYS.preferredSuitaOrigin, origin.value);
-      storageSet(KEYS.currentSuitaStop, origin.value);
-      if ($("#origin-campus")?.value === "suita") setSelectValue($("#origin-stop"), origin.value);
-    });
-  }
-  if (arrival && arrival.dataset.currentPrefsBound !== "true") {
-    arrival.dataset.currentPrefsBound = "true";
-    arrival.addEventListener("change", () => {
-      if (!VALID_SUITA_DESTINATIONS.has(arrival.value)) return;
-      storageSet(KEYS.preferredSuitaDestination, arrival.value);
-      if ($("#destination-campus")?.value === "suita") setSelectValue($("#destination-stop"), arrival.value);
-    });
-  }
-}
-
 function syncSearchDefaults() {
   const origin = currentCampus();
   const destination = cachedDestination(origin);
@@ -128,6 +109,41 @@ function syncTimetableDefaults() {
     if (destinationButton && !destinationButton.classList.contains("is-active")) destinationButton.click();
     if (origin === "suita") setSelectValue($("#tt-suita-stop"), preferredSuitaOrigin());
   });
+}
+
+function syncPreparedViews() {
+  preparedSyncFrame = 0;
+  syncSearchDefaults();
+  syncTimetableDefaults();
+}
+
+function schedulePreparedViews() {
+  if (preparedSyncFrame) return;
+  preparedSyncFrame = requestAnimationFrame(syncPreparedViews);
+}
+
+function bindSuitaPreferences() {
+  const origin = $("#default-suita-stop");
+  const arrival = $("#default-suita-arrival-stop");
+  if (origin && origin.dataset.currentPrefsBound !== "true") {
+    origin.dataset.currentPrefsBound = "true";
+    origin.addEventListener("change", () => {
+      if (!VALID_SUITA_ORIGINS.has(origin.value)) return;
+      storageSet(KEYS.preferredSuitaOrigin, origin.value);
+      storageSet(KEYS.currentSuitaStop, origin.value);
+      if ($("#origin-campus")?.value === "suita") setSelectValue($("#origin-stop"), origin.value);
+      schedulePreparedViews();
+    });
+  }
+  if (arrival && arrival.dataset.currentPrefsBound !== "true") {
+    arrival.dataset.currentPrefsBound = "true";
+    arrival.addEventListener("change", () => {
+      if (!VALID_SUITA_DESTINATIONS.has(arrival.value)) return;
+      storageSet(KEYS.preferredSuitaDestination, arrival.value);
+      if ($("#destination-campus")?.value === "suita") setSelectValue($("#destination-stop"), arrival.value);
+      schedulePreparedViews();
+    });
+  }
 }
 
 function normalizeLocateButton() {
@@ -179,22 +195,37 @@ function bindRoutePersistence() {
   document.addEventListener("click", (event) => {
     const target = event.target instanceof Element ? event.target : null;
     if (!target) return;
-    const home = target.closest("[data-home-destination]");
-    if (home?.dataset.homeDestination) storageSet(KEYS.lastDestination, home.dataset.homeDestination);
     const timetable = target.closest("[data-tt-destination]");
     if (timetable?.dataset.ttDestination) storageSet(KEYS.lastDestination, timetable.dataset.ttDestination);
   });
+
   $("#destination-campus")?.addEventListener("change", (event) => {
-    if (VALID_CAMPUSES.has(event.target.value)) storageSet(KEYS.lastDestination, event.target.value);
+    if (!VALID_CAMPUSES.has(event.target.value)) return;
+    storageSet(KEYS.lastDestination, event.target.value);
+    if (event.isTrusted) schedulePreparedViews();
   });
+
+  $("#default-campus")?.addEventListener("change", schedulePreparedViews);
 }
 
-function bindViewDefaults() {
-  window.addEventListener("handai:viewchange", (event) => {
-    const view = event.detail?.view;
-    if (view === "search") requestAnimationFrame(syncSearchDefaults);
-    if (view === "timetable") requestAnimationFrame(syncTimetableDefaults);
+function observeHomeDestination() {
+  const track = $("#home-destination-chips");
+  if (!track || homeDestinationObserver) return;
+  let queued = false;
+  const sync = () => {
+    queued = false;
+    const active = $("[data-home-destination].is-active", track)?.dataset.homeDestination;
+    if (!VALID_CAMPUSES.has(active)) return;
+    storageSet(KEYS.lastDestination, active);
+    schedulePreparedViews();
+  };
+  homeDestinationObserver = new MutationObserver(() => {
+    if (queued) return;
+    queued = true;
+    queueMicrotask(sync);
   });
+  homeDestinationObserver.observe(track, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+  sync();
 }
 
 function init() {
@@ -203,8 +234,9 @@ function init() {
   ensureSuitaPreferencesCard();
   bindSuitaPreferences();
   bindRoutePersistence();
-  bindViewDefaults();
+  observeHomeDestination();
   observeLocationButton();
+  schedulePreparedViews();
 }
 
 if (typeof document !== "undefined") {
