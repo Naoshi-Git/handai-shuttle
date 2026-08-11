@@ -7,9 +7,6 @@ body.ui-v5[data-active-view="search"] #view-search,
 body.ui-v5[data-active-view="timetable"] #view-timetable,
 body.ui-v5[data-active-view="settings"] #view-settings { padding-top: 10px; }
 
-body.ui-v5 .search-panel-compact { padding: 11px; }
-body.ui-v5 .search-panel-compact .route-editor { gap: 6px; }
-body.ui-v5 .search-panel-compact .route-line { min-height: 54px; }
 .search-summary-button {
   width: 100%; min-height: 48px; margin-top: 8px; padding: 7px 10px;
   border: 1px solid var(--line); border-radius: 13px; background: #fff; color: var(--ink);
@@ -23,7 +20,6 @@ body.ui-v5 .search-panel-compact .route-line { min-height: 54px; }
 .search-summary-main small { color: var(--muted); font-size: 8.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .search-summary-value { color: var(--ou-900); font-size: 11px; font-weight: 900; white-space: nowrap; }
 .search-summary-chevron { color: #aaa8bb; font-size: 20px; line-height: 1; }
-body.ui-v5 .search-submit { margin-top: 9px; }
 body.ui-v5 #search-form #service-banner.is-search-context { margin: 9px 0 0; border-radius: 12px; padding: 8px 10px; font-size: 10px; line-height: 1.45; }
 body.ui-v5 #search-form #service-banner.is-search-context::before { width: 6px; height: 6px; }
 
@@ -68,9 +64,6 @@ body.ui-v5 .route-timetable-card[data-v4-compact="true"] { scroll-margin-top: ca
 #search-results .journey-details-v5 > .route-type-pill-v5 { grid-column: 2; grid-row: 1; width: 70px; justify-self: start; white-space: nowrap; }
 #search-results .journey-details-v5 > .trip-id-pill-v5 { grid-column: 3; grid-row: 1; width: 68px; justify-self: start; white-space: nowrap; }
 #search-results .journey-details-v5 > .journey-date { grid-column: 4; grid-row: 1; margin-left: 0; justify-self: end; white-space: nowrap; }
-
-body.ui-v5[data-active-view="search"] #view-search .search-panel { margin-top: 0; }
-body.ui-v5[data-active-view="timetable"] #timetable-route-controls { margin-top: 0; }
 
 @media (max-width: 380px) {
   .search-summary-button { grid-template-columns: 26px minmax(0,1fr) auto 12px; gap: 6px; padding-inline: 8px; }
