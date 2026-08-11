@@ -40,13 +40,17 @@ test("current observers are targeted to stable UI surfaces", () => {
   assert.match(current, /favoriteObserver\.observe\(section/);
 });
 
-test("ordinary tab motion freezes outgoing viewport geometry and dissolves title with content", () => {
+test("ordinary tab motion freezes outgoing geometry and dissolves title in one topbar layout context", () => {
   assert.match(lifecycle, /freezeOutgoingView\(outgoing\)/);
   assert.match(lifecycle, /prepareHeaderTransition\(\)/);
   assert.match(lifecycle, /prepareServiceBannerTransition\(fromView, view\)/);
   assert.match(lifecycleCss, /view-crossfade-leaving[\s\S]*position:\s*fixed !important/);
   assert.match(lifecycleCss, /--view-crossfade-top/);
-  assert.match(lifecycleCss, /view-header-copy-ghost/);
+  assert.match(lifecycleCss, /view-header-title-ghost/);
+  assert.match(lifecycleCss, /view-header-title-entering/);
+  assert.doesNotMatch(lifecycleCss, /view-header-copy-ghost/);
+  assert.match(currentCss, /body\.ui-current \.topbar \.brand-copy[\s\S]*display:\s*grid !important/);
+  assert.match(currentCss, /body\.ui-current \.topbar \.brand-copy h1[\s\S]*grid-area:\s*1 \/ 1/);
   assert.match(lifecycleCss, /--view-dissolve-out:\s*145ms/);
   assert.match(lifecycleCss, /--view-dissolve-in:\s*185ms/);
   assert.match(lifecycleCss, /\.bottom-nav[\s\S]*z-index:\s*60 !important/);
