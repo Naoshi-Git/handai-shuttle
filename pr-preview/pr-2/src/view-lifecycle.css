@@ -1,4 +1,12 @@
-/* Tab lifecycle owner. Ordinary tabs crossfade preloaded views; Timetable alone may use a content loading surface. */
+/* Tab lifecycle owner. Ordinary tabs dissolve preloaded views; Timetable alone may use a content loading surface. */
+body.ui-view-lifecycle {
+  --view-dissolve-out: 145ms;
+  --view-dissolve-in: 185ms;
+  --view-dissolve-in-delay: 18ms;
+  --view-dissolve-out-ease: cubic-bezier(.4,0,.72,1);
+  --view-dissolve-in-ease: cubic-bezier(.2,.72,.24,1);
+}
+
 body.ui-view-lifecycle .view.is-active,
 body.ui-view-lifecycle.ui-current .view.is-active,
 body.ui-view-lifecycle.ui-v6 .view.is-active,
@@ -10,8 +18,18 @@ body.ui-view-lifecycle main {
   position: relative;
 }
 
-/* True content crossfade: incoming view is the layout owner, outgoing view is a temporary overlay.
-   Top chrome and the fixed Bottom Nav are never inside this transition layer. */
+/* Keep the application chrome geometrically stable while title copy dissolves inside it. */
+body.ui-view-lifecycle .topbar {
+  min-height: 68px !important;
+}
+
+/*
+  Stable dissolve model:
+  - incoming View owns the new document layout;
+  - outgoing View is frozen to the exact viewport rect captured before commitView();
+  - therefore body[data-active-view], service-banner reparenting, scroll reset, and hidden-view
+    normalization cannot move the pixels that are currently fading out.
+*/
 body.ui-view-lifecycle .view.view-crossfade-leaving,
 body.ui-view-lifecycle .view.view-crossfade-entering {
   display: block !important;
@@ -20,10 +38,12 @@ body.ui-view-lifecycle .view.view-crossfade-entering {
 }
 
 body.ui-view-lifecycle .view.view-crossfade-leaving {
-  position: absolute !important;
-  z-index: 2;
-  inset: 0 0 auto;
-  width: 100%;
+  position: fixed !important;
+  z-index: 18;
+  top: var(--view-crossfade-top, 0px) !important;
+  left: var(--view-crossfade-left, 0px) !important;
+  width: var(--view-crossfade-width, 100%) !important;
+  margin: 0 !important;
   opacity: 1;
 }
 
@@ -33,13 +53,100 @@ body.ui-view-lifecycle .view.view-crossfade-entering {
   opacity: 0;
 }
 
-body.ui-view-lifecycle .view.view-crossfade-leaving.view-crossfade-running,
-body.ui-view-lifecycle .view.view-crossfade-entering.view-crossfade-running {
-  transition: opacity 190ms cubic-bezier(.2,.68,.2,1) !important;
+/* ui-v5 historically keyed these geometries to body[data-active-view]. Freeze the outgoing
+   screen's own state so it cannot restyle itself after the new view becomes active. */
+body.ui-view-lifecycle .view.view-crossfade-leaving[data-view="search"],
+body.ui-view-lifecycle .view.view-crossfade-leaving[data-view="timetable"],
+body.ui-view-lifecycle .view.view-crossfade-leaving[data-view="settings"] {
+  padding-top: 10px !important;
 }
 
-body.ui-view-lifecycle .view.view-crossfade-leaving.view-crossfade-running { opacity: 0; }
-body.ui-view-lifecycle .view.view-crossfade-entering.view-crossfade-running { opacity: 1; }
+body.ui-view-lifecycle .view.view-crossfade-leaving[data-view="search"] > .page-heading,
+body.ui-view-lifecycle .view.view-crossfade-leaving[data-view="timetable"] > .page-heading,
+body.ui-view-lifecycle .view.view-crossfade-leaving[data-view="settings"] > .page-heading {
+  display: none !important;
+}
+
+body.ui-view-lifecycle .view.view-crossfade-leaving[data-view="search"] .search-panel {
+  margin-top: 0 !important;
+}
+
+/* Do not spend the middle of the transition at a 50/50 double exposure. The old screen exits
+   faster; the new screen rises just after it, matching the restrained dissolve seen in native transit apps. */
+body.ui-view-lifecycle .view.view-crossfade-leaving.view-crossfade-running {
+  opacity: 0;
+  transition: opacity var(--view-dissolve-out) var(--view-dissolve-out-ease) !important;
+}
+
+body.ui-view-lifecycle .view.view-crossfade-entering.view-crossfade-running {
+  opacity: 1;
+  transition: opacity var(--view-dissolve-in) var(--view-dissolve-in-ease) var(--view-dissolve-in-delay) !important;
+}
+
+/* Header chrome remains fixed, but its contextual title participates in the same dissolve. */
+.view-header-copy-ghost {
+  position: fixed !important;
+  z-index: 45;
+  top: var(--view-ghost-top, 0px) !important;
+  left: var(--view-ghost-left, 0px) !important;
+  width: var(--view-ghost-width, auto) !important;
+  height: var(--view-ghost-height, auto) !important;
+  margin: 0 !important;
+  opacity: 1;
+  pointer-events: none !important;
+  will-change: opacity;
+}
+
+body.ui-view-lifecycle .topbar .brand-copy.view-header-copy-entering {
+  opacity: 0;
+  will-change: opacity;
+}
+
+.view-header-copy-ghost.view-crossfade-running {
+  opacity: 0;
+  transition: opacity var(--view-dissolve-out) var(--view-dissolve-out-ease) !important;
+}
+
+body.ui-view-lifecycle .topbar .brand-copy.view-header-copy-entering.view-crossfade-running {
+  opacity: 1;
+  transition: opacity var(--view-dissolve-in) var(--view-dissolve-in-ease) var(--view-dissolve-in-delay) !important;
+}
+
+/* ui-v5 physically moves the shared service banner when crossing the Search boundary.
+   Preserve the outgoing pixels and, when leaving Search, preserve its old layout slot too. */
+.view-service-banner-ghost {
+  position: fixed !important;
+  z-index: 19;
+  top: var(--view-ghost-top, 0px) !important;
+  left: var(--view-ghost-left, 0px) !important;
+  width: var(--view-ghost-width, auto) !important;
+  height: var(--view-ghost-height, auto) !important;
+  margin: 0 !important;
+  opacity: 1;
+  pointer-events: none !important;
+  will-change: opacity;
+}
+
+.view-service-banner-ghost.view-crossfade-running {
+  opacity: 0;
+  transition: opacity var(--view-dissolve-out) var(--view-dissolve-out-ease) !important;
+}
+
+body.ui-view-lifecycle #service-banner.view-service-banner-entering {
+  opacity: 0;
+  will-change: opacity;
+}
+
+body.ui-view-lifecycle #service-banner.view-service-banner-entering.view-crossfade-running {
+  opacity: 1;
+  transition: opacity var(--view-dissolve-in) var(--view-dissolve-in-ease) var(--view-dissolve-in-delay) !important;
+}
+
+.service-banner-transition-placeholder {
+  display: block;
+  pointer-events: none;
+  visibility: hidden;
+}
 
 /* Bottom Nav is stable shell chrome. It must never be faded or covered by tab transitions. */
 body.ui-view-lifecycle .bottom-nav {
@@ -95,6 +202,10 @@ body.ui-view-lifecycle .bottom-nav {
 @media (prefers-reduced-motion: reduce) {
   body.ui-view-lifecycle .view.view-crossfade-leaving,
   body.ui-view-lifecycle .view.view-crossfade-entering,
+  body.ui-view-lifecycle .topbar .brand-copy.view-header-copy-entering,
+  body.ui-view-lifecycle #service-banner.view-service-banner-entering,
+  .view-header-copy-ghost,
+  .view-service-banner-ghost,
   .timetable-transition-loader,
   .timetable-transition-spinner {
     transition: none !important;
