@@ -35,6 +35,25 @@ test("favorite controls stay behavior-owned while presentation stays semantic", 
   assert.match(systemCss, /route-timetable-card\.favorite-flash[\s\S]*animation:\s*none !important/);
 });
 
+test("search and timetable favorites identify the same physical trip", () => {
+  const identity = source.match(/function favoriteIdentity\(item\) \{[\s\S]*?\n\}/)?.[0] || "";
+  assert.match(identity, /item\.tripId/);
+  assert.match(identity, /item\.departure/);
+  assert.match(identity, /item\.arrival/);
+  assert.doesNotMatch(identity, /originName|destinationName|source/);
+});
+
+test("opening a favorite routes to its matching timetable trip and opens detail", () => {
+  const block = source.match(/function openFavorite\(item\) \{[\s\S]*?\n\}\n\nfunction renderFavoriteTrips/)?.[0] || "";
+  assert.match(block, /data-nav="timetable"/);
+  assert.match(block, /data-tt-origin/);
+  assert.match(block, /data-tt-destination/);
+  assert.match(block, /data-tt-trip/);
+  assert.match(block, /scrollIntoView/);
+  assert.match(block, /card\.click\(\)/);
+  assert.doesNotMatch(block, /item\.source === "timetable"/);
+});
+
 test("app header removes decorative English from the DOM and bottom navigation uses consistent SVG icons", () => {
   assert.doesNotMatch(html, /<p class="eyebrow">/);
   assert.doesNotMatch(systemCss, /\.topbar \.eyebrow/);

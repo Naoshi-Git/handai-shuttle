@@ -32,8 +32,9 @@ test("search date-time and detailed conditions are moved into dedicated bottom s
   assert.match(systemCss, /\.search-sheet\s*\{/);
 });
 
-test("search page moves the service banner without post-hoc Japanese repair", () => {
-  assert.match(source, /submit\.insertAdjacentElement\("afterend", banner\)/);
+test("search keeps the service banner in the shared app slot instead of below the form", () => {
+  assert.match(source, /restoreServiceBanner\(\);/);
+  assert.doesNotMatch(source, /moveServiceBannerToSearch|insertAdjacentElement\("afterend", banner\)/);
   assert.doesNotMatch(source, /normalizeJapaneseText|normalizeStatusCopy/);
   assert.doesNotMatch(source, /土日には運行しません|運行しませんのため/);
 });

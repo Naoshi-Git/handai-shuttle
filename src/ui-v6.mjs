@@ -172,7 +172,7 @@ function currentSearchContext() {
 }
 
 function favoriteIdentity(item) {
-  return [item.tripId, item.departure, item.arrival, item.originName, item.destinationName].join("|");
+  return [item.tripId, item.departure, item.arrival].join("|");
 }
 
 function favoriteFromJourneyCard(card) {
@@ -343,27 +343,28 @@ function renderSavedSearches() {
 }
 
 function openFavorite(item) {
-  if (item.source === "timetable") {
-    $('[data-nav="timetable"]')?.click();
-    window.setTimeout(() => {
-      $(`[data-tt-origin="${item.origin}"]`)?.click();
-      window.setTimeout(() => {
-        $(`[data-tt-destination="${item.destination}"]`)?.click();
-        if (item.origin === "suita" && $("#tt-suita-stop") && item.originStop) {
-          $("#tt-suita-stop").value = item.originStop;
-          $("#tt-suita-stop").dispatchEvent(new Event("change", { bubbles: true }));
-        }
-        window.setTimeout(() => {
-          const card = $(`[data-tt-trip="${item.tripId}"]`);
-          card?.scrollIntoView({ behavior: "smooth", block: "center" });
-          card?.classList.add("favorite-flash");
-          window.setTimeout(() => card?.classList.remove("favorite-flash"), 1300);
-        }, 180);
-      }, 60);
-    }, 30);
+  if (!item?.tripId || !item.origin || !item.destination) {
+    applySearchCondition(item || {}, { date: item?.date || nowParts().date, time: item?.departure || nowParts().time, submit: true });
     return;
   }
-  applySearchCondition(item, { date: item.date || nowParts().date, time: item.departure, submit: true });
+
+  $('[data-nav="timetable"]')?.click();
+  window.setTimeout(() => {
+    $(`[data-tt-origin="${item.origin}"]`)?.click();
+    window.setTimeout(() => {
+      $(`[data-tt-destination="${item.destination}"]`)?.click();
+      if (item.origin === "suita" && $("#tt-suita-stop") && item.originStop) {
+        $("#tt-suita-stop").value = item.originStop;
+        $("#tt-suita-stop").dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      window.setTimeout(() => {
+        const card = $(`[data-tt-trip="${item.tripId}"]`);
+        if (!card) return;
+        card.scrollIntoView({ behavior: "smooth", block: "center" });
+        window.setTimeout(() => card.click(), 180);
+      }, 220);
+    }, 80);
+  }, 40);
 }
 
 function renderFavoriteTrips() {
