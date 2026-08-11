@@ -3,8 +3,14 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const source = await readFile(new URL("../src/ui-v5.mjs", import.meta.url), "utf8");
-const css = await readFile(new URL("../ui-v5.css", import.meta.url), "utf8");
+const css = await readFile(new URL("../src/ui-foundation.css", import.meta.url), "utf8");
+const shim = await readFile(new URL("../ui-v5.css", import.meta.url), "utf8");
 const systemCss = await readFile(new URL("../src/ui-system.css", import.meta.url), "utf8");
+
+test("legacy ui-v5 path is only a compatibility import", () => {
+  assert.match(shim, /@import url\("\.\/src\/ui-foundation\.css"\)/);
+  assert.doesNotMatch(shim, /\.search-sheet\s*\{|#timetable-route-controls|\.journey-card\.is-favorite-trip/);
+});
 
 test("contextual header uses one Japanese title line while duplicate page headings stay hidden", () => {
   assert.match(source, /home:\s*"阪大シャトル"/);
