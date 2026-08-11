@@ -126,3 +126,12 @@ test("lifecycle blocks legacy tab-entry listeners without click replay or stopIm
   assert.match(lifecycle, /event\.preventDefault\(\);\s*event\.stopPropagation\(\)/);
   assert.doesNotMatch(lifecycle, /stopImmediatePropagation|\.click\(\)/);
 });
+
+test("Home search entry uses the same lifecycle as Bottom Nav without swallowing search parameter setup", () => {
+  assert.match(lifecycle, /function searchEntryView/);
+  assert.match(lifecycle, /#search-now-button, #arrival-search-button, #open-search-button, \[data-route-origin\]/);
+  assert.match(lifecycle, /const searchView = searchEntryView\(event\.target\)/);
+  assert.match(lifecycle, /switchTab\(searchView\)/);
+  const searchEntryBranch = lifecycle.match(/const searchView = searchEntryView[\s\S]*?switchTab\(searchView\);/)?.[0] || "";
+  assert.doesNotMatch(searchEntryBranch, /preventDefault|stopPropagation/);
+});
