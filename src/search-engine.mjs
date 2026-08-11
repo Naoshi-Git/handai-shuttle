@@ -45,13 +45,20 @@ function isWithinRange(dateKey, start, end) {
   return dateKey >= start && dateKey <= end;
 }
 
+function normalizeClosureReason(label = "") {
+  return label
+    .replace(/による運休$/, "")
+    .replace(/のため運休$/, "")
+    .trim();
+}
+
 export function getServiceStatus(dateKey) {
   const date = fromDateKey(dateKey);
 
   if (dateKey < SERVICE_CALENDAR.startDate || dateKey > SERVICE_CALENDAR.endDate) {
     return {
       operating: false,
-      reason: "この年度の時刻表対象外です",
+      reason: "時刻表の対象期間外",
       code: "out-of-range"
     };
   }
@@ -68,7 +75,7 @@ export function getServiceStatus(dateKey) {
   if (!SERVICE_CALENDAR.weeklyServiceDays.includes(date.getDay())) {
     return {
       operating: false,
-      reason: "土日には運行しません",
+      reason: "土・日曜日",
       code: "weekend"
     };
   }
@@ -76,7 +83,7 @@ export function getServiceStatus(dateKey) {
   if (SERVICE_CALENDAR.nationalHolidays.includes(dateKey)) {
     return {
       operating: false,
-      reason: "祝日には運行しません",
+      reason: "祝日",
       code: "holiday"
     };
   }
@@ -88,7 +95,7 @@ export function getServiceStatus(dateKey) {
   if (closure) {
     return {
       operating: false,
-      reason: closure[2],
+      reason: normalizeClosureReason(closure[2]),
       code: "closure"
     };
   }
