@@ -11,9 +11,9 @@ const INSTALL_GUIDE_STEPS = Object.freeze([
   { title: "3. 追加を確定", copy: "表示名を確認して右上の「追加」をタップします。" }
 ]);
 const INSTALL_GUIDE_SOURCES = Object.freeze([
-  "./assets/help/install/ios-01-share.webp?guide=20260811b",
-  "./assets/help/install/ios-02-add-home.webp?guide=20260811b",
-  "./assets/help/install/ios-03-confirm.webp?guide=20260811b"
+  "./assets/help/install/ios-01-share.webp?guide=20260811d",
+  "./assets/help/install/ios-02-add-home.webp?guide=20260811d",
+  "./assets/help/install/ios-03-confirm.webp?guide=20260811d"
 ]);
 
 let normalizeQueued = false;
