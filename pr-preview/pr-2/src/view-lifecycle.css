@@ -135,20 +135,23 @@ body.ui-view-lifecycle #service-banner.view-service-banner-entering.view-crossfa
   visibility: hidden;
 }
 
-/* Bottom Nav is stable shell chrome. It must never be faded or covered by tab transitions. */
+/* Bottom Nav is stable shell chrome. It stays above Settings subpages and transition loaders. */
 body.ui-view-lifecycle .bottom-nav {
-  z-index: 60 !important;
+  z-index: 1200 !important;
 }
 
-/* Timetable may need last-moment route/default/scroll preparation. Cover only the content area,
-   keeping Topbar and Bottom Nav visible so the transition reads as in-app loading rather than page navigation. */
+/* Timetable may need last-moment route/default/scroll preparation. The loading material extends
+   behind Bottom Nav instead of ending at its top edge; padding keeps the spinner centered in the
+   usable content region while the persistent navigation remains visually above it. */
 .timetable-transition-loader {
   position: fixed;
   z-index: 30;
   top: var(--app-topbar-height, 70px);
-  bottom: calc(76px + env(safe-area-inset-bottom));
+  bottom: 0;
   left: 50%;
   width: min(100%, 540px);
+  box-sizing: border-box;
+  padding-bottom: calc(var(--ui-nav-height, 60px) + 24px + env(safe-area-inset-bottom));
   display: grid;
   place-items: center;
   transform: translateX(-50%);
@@ -181,8 +184,9 @@ body.ui-view-lifecycle .bottom-nav {
 @media (min-width: 760px) {
   .timetable-transition-loader {
     top: calc(28px + var(--app-topbar-height, 70px));
-    bottom: 104px;
-    border-radius: 0 0 28px 28px;
+    bottom: 0;
+    padding-bottom: 104px;
+    border-radius: 0;
   }
 }
 
