@@ -6,7 +6,7 @@ const SETTINGS_PANEL_ID = "settings-subpage-v13";
 const SWIPE_EDGE_MAX_PX = 96;
 const SWIPE_EDGE_RATIO = 0.24;
 const SWIPE_LOCK_PX = 8;
-const SWIPE_COMMIT_MIN_PX = 84;
+const SWIPE_COMMIT_CAP_PX = 84;
 const SWIPE_COMMIT_RATIO = 0.22;
 const SWIPE_FAST_VELOCITY = 0.52;
 const SWIPE_INTERACTIVE_SELECTOR = "button,a,input,select,textarea,[contenteditable='true'],[data-install-guide-track]";
@@ -168,7 +168,7 @@ function installSwipeBack(panel) {
     panel.releasePointerCapture?.(pointerId);
     const elapsed = Math.max(1, performance.now() - startTime);
     const velocity = dx / elapsed;
-    const threshold = Math.min(SWIPE_COMMIT_MIN_PX, panel.clientWidth * SWIPE_COMMIT_RATIO);
+    const threshold = Math.min(SWIPE_COMMIT_CAP_PX, panel.clientWidth * SWIPE_COMMIT_RATIO);
     const shouldClose = dragging && (dx >= threshold || (dx >= 36 && velocity >= SWIPE_FAST_VELOCITY));
 
     if (shouldClose) {
