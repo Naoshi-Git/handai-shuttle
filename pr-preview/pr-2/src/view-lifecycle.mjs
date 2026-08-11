@@ -14,7 +14,7 @@ const TIMING = Object.freeze({
 
 let loader = null;
 let transitionId = 0;
-let headerGhost = null;
+let headerTitleGhost = null;
 let serviceBannerGhost = null;
 let serviceBannerPlaceholder = null;
 
@@ -89,11 +89,14 @@ function clearViewTransitionClasses() {
   });
 }
 
+function currentHeaderTitle() {
+  return $(".topbar .brand-copy h1:not(.view-header-title-ghost)");
+}
+
 function clearHeaderTransition() {
-  headerGhost?.remove();
-  headerGhost = null;
-  const copy = $(".topbar .brand-copy");
-  copy?.classList.remove("view-header-copy-entering", "view-crossfade-running");
+  headerTitleGhost?.remove();
+  headerTitleGhost = null;
+  currentHeaderTitle()?.classList.remove("view-header-title-entering", "view-crossfade-running");
 }
 
 function clearServiceBannerTransition() {
@@ -107,15 +110,22 @@ function clearServiceBannerTransition() {
 
 function prepareHeaderTransition() {
   clearHeaderTransition();
-  const copy = $(".topbar .brand-copy");
-  if (!copy) return;
-  headerGhost = fixedGhost(copy, "view-header-copy-ghost");
-  if (headerGhost) copy.classList.add("view-header-copy-entering");
+  const title = currentHeaderTitle();
+  if (!title) return;
+
+  // Keep both titles inside the same Topbar layout context. A body-level fixed clone loses
+  // the current Topbar typography/layout selectors and can visibly resize from the top-left.
+  headerTitleGhost = title.cloneNode(true);
+  stripIds(headerTitleGhost);
+  headerTitleGhost.classList.add("view-header-title-ghost");
+  headerTitleGhost.setAttribute("aria-hidden", "true");
+  title.after(headerTitleGhost);
+  title.classList.add("view-header-title-entering");
 }
 
 function runHeaderTransition() {
-  headerGhost?.classList.add("view-crossfade-running");
-  $(".topbar .brand-copy.view-header-copy-entering")?.classList.add("view-crossfade-running");
+  headerTitleGhost?.classList.add("view-crossfade-running");
+  currentHeaderTitle()?.classList.add("view-crossfade-running");
 }
 
 function prepareServiceBannerTransition(fromView, toView) {
