@@ -7,11 +7,22 @@ const manifest = await readFile(new URL("../manifest.webmanifest", import.meta.u
 
 await import("../src/pwa.mjs");
 
-test("PWA settings explain home-screen installation and preview scope", () => {
+test("PWA settings keep the home-screen installation guide visible without preview/update clutter", () => {
   assert.match(source, /ホーム画面に追加/);
   assert.match(source, /Safariの共有ボタン/);
-  assert.match(source, /PR Preview/);
-  assert.match(source, /正式利用は本番URL公開後/);
+  assert.match(source, /pwa-install-guide is-open/);
+  assert.doesNotMatch(source, /現在はPR Preview|正式利用は本番URL公開後|最新版を確認/);
+});
+
+test("iOS Safari can show a dismissible install nudge outside standalone mode", () => {
+  assert.match(source, /shouldShowInstallNudge/);
+  assert.match(source, /isIosDevice/);
+  assert.match(source, /isSafariBrowser/);
+  assert.match(source, /INSTALL_NUDGE_DISMISS_KEY/);
+  assert.match(source, /data-pwa-install-nudge/);
+  assert.match(source, /data-pwa-install-open/);
+  assert.match(source, /data-pwa-install-dismiss/);
+  assert.match(source, /app-icon-180\.png/);
 });
 
 test("standalone app checks deploy version without relying on a service worker", () => {
