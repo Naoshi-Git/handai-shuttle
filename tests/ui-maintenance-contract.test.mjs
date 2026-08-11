@@ -4,10 +4,11 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-const [entry, html, systemCss, v5, ads, v12, v13, current] = await Promise.all([
+const [entry, html, systemCss, baseCss, v5, ads, v12, v13, current] = await Promise.all([
   read("src/features-v3.mjs"),
   read("index.html"),
   read("src/ui-system.css"),
+  read("style.css"),
   read("src/ui-v5.mjs"),
   read("src/ads.mjs"),
   read("src/ui-v12.mjs"),
@@ -27,6 +28,14 @@ test("presentation has one semantic authority instead of version stylesheet stac
   assert.match(entry, /classList\.add\("ui-system"\)/);
   assert.match(entry, /classList\.remove\(\.\.\.LEGACY_PRESENTATION_SCOPES\)/);
   assert.doesNotMatch(systemCss, /body\.ui-v\d+|body\.ui-current/);
+});
+
+test("base stylesheet does not retain superseded first-generation Search markup", () => {
+  for (const obsolete of ["eyebrow", "route-fields", "field-card", "detail-stop-row", "sub-field"]) {
+    assert.doesNotMatch(baseCss, new RegExp(`\\.${obsolete}(?![\\w-])`));
+  }
+  assert.match(html, /class="route-editor"/);
+  assert.match(html, /class="route-line"/);
 });
 
 test("presentation layers do not observe document.body or the whole app shell", () => {

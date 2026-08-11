@@ -63,9 +63,25 @@ legacy `ui-vN` / `ui-current` body scopes after module initialization.
 - Preserve the stable opaque Topbar during tab dissolves.
 - Run the contract tests after changing ownership boundaries.
 
+## Completed foundation cleanup
+
+The first foundation pass removed selectors from `style.css` that no longer correspond to
+active DOM or behavior:
+
+- legacy English `.eyebrow`
+- first-generation Search layout `.route-fields`
+- `.field-card`
+- `.detail-stop-row`
+- `.sub-field`
+
+The active Search editor is the `.route-editor` / `.route-line` structure. Contract tests
+prevent those superseded selectors from being reintroduced into the base stylesheet.
+
 ## Next safe cleanup boundary
 
 The remaining legacy CSS (`style.css`, `ui-v2.css`, `ui-v4.css`, `ui-v5.css`) is not treated
 as disposable version residue because it still contains structural/base rules used by the
-active app. Future consolidation should migrate it component-by-component with regression
-guards, not delete entire files by version number.
+active app. Continue migration component-by-component with regression guards. In
+particular, resolve remaining `ui-v5` / `ui-v6` body-scoped presentation only after their
+live geometry and utility rules have explicit semantic owners; do not disable those scopes
+just because their names are historical.
