@@ -9,6 +9,7 @@ const COMPACT_AD = Object.freeze({
 });
 
 let adNormalizationQueued = false;
+let adObserver = null;
 
 function installStyles() {
   if ($('link[data-ui-v10]')) return;
@@ -25,12 +26,7 @@ function normalizeHouseAd(slot) {
   const image = $(".house-ad-creative img", slot);
   if (!creative || !image) return;
 
-  // Keep the rendering path identical to the previously stable top banner.
-  // Mark the slot as handled so older raster/corner repair layers do not reprocess it.
-  slot.dataset.pngRasterized = "true";
-  slot.dataset.v9EdgeFixed = "true";
   slot.dataset.v10Compact = "true";
-
   creative.style.setProperty("--house-ad-ratio", COMPACT_AD.ratio);
   if (image.getAttribute("src") !== COMPACT_AD.src) image.setAttribute("src", COMPACT_AD.src);
   if (image.getAttribute("width") !== String(COMPACT_AD.width)) image.setAttribute("width", String(COMPACT_AD.width));
@@ -53,18 +49,16 @@ function queueAdNormalization() {
 
 function observeAds() {
   const roots = [$("#view-home"), $("#view-search"), $("#view-timetable")].filter(Boolean);
-  const observer = new MutationObserver(queueAdNormalization);
-  roots.forEach((root) => observer.observe(root, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ["src", "style", "class"]
-  }));
+  if (!roots.length || adObserver) {
+    queueAdNormalization();
+    return;
+  }
 
+  adObserver = new MutationObserver((records) => {
+    if (records.some((record) => record.type === "childList" && record.addedNodes.length)) queueAdNormalization();
+  });
+  roots.forEach((root) => adObserver.observe(root, { childList: true, subtree: true }));
   queueAdNormalization();
-  window.setTimeout(queueAdNormalization, 100);
-  window.setTimeout(queueAdNormalization, 350);
-  window.setTimeout(queueAdNormalization, 900);
 }
 
 function init() {
