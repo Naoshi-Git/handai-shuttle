@@ -85,7 +85,8 @@ test("dynamic observers use narrow mutation contracts", () => {
   assert.doesNotMatch(v5, /attributeFilter:\s*\["class"\]/);
   assert.doesNotMatch(ads, /attributes:\s*true/);
   assert.doesNotMatch(v12, /attributeFilter:\s*\["class",\s*"open"\]/);
-  assert.doesNotMatch(v13, /attributes:\s*true/);
+  assert.match(v13, /settingsObserver\.observe\(settings, \{ childList: true, subtree: true, attributes: true, attributeFilter: \["class"\] \}\)/);
+  assert.doesNotMatch(v13, /observe\(document\.body/);
 });
 
 test("lazy timetable detail integration is event driven instead of body watched", () => {
