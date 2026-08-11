@@ -112,11 +112,15 @@ body.ui-v13 .settings-subpage-v13 {
   transform: translateX(calc(-50% + 100%));
   background: var(--v13-canvas);
   transition: transform .22s cubic-bezier(.22,.72,.24,1);
+  will-change: transform;
   overflow: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
   pointer-events: none;
   border-top: 1px solid rgba(36,36,41,.05);
 }
 body.ui-v13 .settings-subpage-v13.is-open { transform: translateX(-50%); pointer-events: auto; }
+body.ui-v13 .settings-subpage-v13.is-swiping { transition: none !important; }
 body.ui-v13 .settings-subpage-header {
   height: 48px;
   padding: 0 10px;

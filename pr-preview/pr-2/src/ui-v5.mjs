@@ -9,7 +9,7 @@ const HEADER_COPY = Object.freeze({
 });
 
 let serviceBannerAnchor = null;
-let uiObserver = null;
+const surfaceObservers = [];
 
 function installStyles() {
   if ($('link[data-ui-v5]')) return;
@@ -269,29 +269,30 @@ function syncDynamicUi() {
   normalizeTimetableCardOrder();
 }
 
+function observeSurface(root, callback, options = { childList: true, subtree: true }) {
+  if (!root) return;
+  const observer = new MutationObserver(callback);
+  observer.observe(root, options);
+  surfaceObservers.push(observer);
+}
+
 function observeUi() {
-  const root = $(".app-shell");
-  if (!root || uiObserver) return;
-  let queued = false;
-  uiObserver = new MutationObserver(() => {
-    if (queued) return;
-    queued = true;
-    requestAnimationFrame(() => {
-      queued = false;
-      syncDynamicUi();
-    });
-  });
-  uiObserver.observe(root, {
+  observeSurface($("#search-results"), () => requestAnimationFrame(markSearchCardMetadata));
+  observeSurface($("#timetable-list"), () => requestAnimationFrame(() => {
+    normalizeTimetableCardOrder();
+    normalizeStatusCopy();
+    syncStickyMetrics();
+  }));
+  observeSurface($("#service-banner"), () => requestAnimationFrame(normalizeStatusCopy), {
     childList: true,
     subtree: true,
-    characterData: true,
-    attributes: true,
-    attributeFilter: ["class"]
+    characterData: true
   });
 }
 
 function bindNavigation() {
   $$(".bottom-nav [data-nav]").forEach((button) => button.addEventListener("click", () => requestAnimationFrame(syncDynamicUi)));
+  window.addEventListener("handai:viewchange", () => requestAnimationFrame(syncDynamicUi));
   window.addEventListener("resize", syncStickyMetrics, { passive: true });
 }
 
@@ -304,7 +305,6 @@ function init() {
   observeUi();
   requestAnimationFrame(syncDynamicUi);
   window.setTimeout(syncDynamicUi, 180);
-  window.setTimeout(syncDynamicUi, 700);
 }
 
 if (typeof document !== "undefined") {

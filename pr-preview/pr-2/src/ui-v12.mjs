@@ -11,6 +11,7 @@ const INSTALL_GUIDE_IMAGES = Object.freeze([
 
 let normalizeQueued = false;
 let locationObserver = null;
+let dynamicObserver = null;
 
 function installStyles() {
   if ($('link[data-ui-v12]')) return;
@@ -264,8 +265,12 @@ function normalizeUi() {
 }
 
 function observeDynamicUi() {
-  const observer = new MutationObserver(normalizeUi);
-  observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "open"] });
+  const roots = [$("#view-settings"), $("#timetable-list"), $("#tt-detail-sheet")].filter(Boolean);
+  if (!roots.length || dynamicObserver) return;
+  dynamicObserver = new MutationObserver((records) => {
+    if (records.some((record) => record.type === "childList" && (record.addedNodes.length || record.removedNodes.length))) normalizeUi();
+  });
+  roots.forEach((root) => dynamicObserver.observe(root, { childList: true, subtree: true }));
 }
 
 function init() {
@@ -276,8 +281,7 @@ function init() {
   normalizeUi();
   observeDynamicUi();
   finishBoot();
-  window.setTimeout(normalizeUi, 160);
-  window.setTimeout(normalizeUi, 520);
+  window.setTimeout(normalizeUi, 260);
 }
 
 if (typeof document !== "undefined") {
