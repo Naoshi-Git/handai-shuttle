@@ -10,6 +10,11 @@ const INSTALL_GUIDE_STEPS = Object.freeze([
   { title: "2. ホーム画面に追加", copy: "共有メニューから「ホーム画面に追加」を選びます。" },
   { title: "3. 追加を確定", copy: "表示名を確認して右上の「追加」をタップします。" }
 ]);
+const INSTALL_GUIDE_SOURCES = Object.freeze([
+  "./assets/help/install/ios-01-share.webp?guide=20260811b",
+  "./assets/help/install/ios-02-add-home.webp?guide=20260811b",
+  "./assets/help/install/ios-03-confirm.webp?guide=20260811b"
+]);
 
 let normalizeQueued = false;
 let locationObserver = null;
@@ -224,7 +229,9 @@ function installGuideCarousel() {
         ${INSTALL_GUIDE_STEPS.map((item, index) => `
           <article class="install-guide-slide" data-install-slide="${index}">
             <div class="install-guide-media" data-install-media aria-hidden="true">
-              <div class="install-guide-phone-frame"><div class="install-guide-phone-screen"></div></div>
+              <div class="install-guide-phone-frame">
+                <div class="install-guide-phone-screen" style="background-image:url('${INSTALL_GUIDE_SOURCES[index]}');background-size:contain;background-position:center;background-repeat:no-repeat"></div>
+              </div>
             </div>
             <strong>${item.title}</strong>
             <p>${item.copy}</p>
