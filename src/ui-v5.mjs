@@ -48,23 +48,6 @@ function moveServiceBannerToSearch() {
   banner.classList.add("is-search-context");
 }
 
-function normalizeJapaneseText(value = "") {
-  return value
-    .replace(/今日は土日には運行しませんのため、通常時刻表のみ表示しています。/g,
-      "本日は土・日曜日のため運休です。通常時刻表のみ表示しています。")
-    .replace(/は運休（土日には運行しません）。/g, "は土・日曜日のため運休です。")
-    .replace(/土日には運行しません/g, "土・日曜日は運休です");
-}
-
-function normalizeStatusCopy() {
-  ["#service-banner", ".tt-current-status"].forEach((selector) => {
-    $$(selector).forEach((node) => {
-      const next = normalizeJapaneseText(node.textContent || "");
-      if (next !== node.textContent) node.textContent = next;
-    });
-  });
-}
-
 function syncHeader() {
   const view = activeView();
   const titleCopy = HEADER_COPY[view] || HEADER_COPY.home;
@@ -75,7 +58,6 @@ function syncHeader() {
   if (view === "search") moveServiceBannerToSearch();
   else restoreServiceBanner();
 
-  normalizeStatusCopy();
   syncStickyMetrics();
 }
 
@@ -278,14 +260,8 @@ function observeUi() {
   observeSurface($("#search-results"), () => requestAnimationFrame(markSearchCardMetadata));
   observeSurface($("#timetable-list"), () => requestAnimationFrame(() => {
     normalizeTimetableCardOrder();
-    normalizeStatusCopy();
     syncStickyMetrics();
   }));
-  observeSurface($("#service-banner"), () => requestAnimationFrame(normalizeStatusCopy), {
-    childList: true,
-    subtree: true,
-    characterData: true
-  });
 }
 
 function bindNavigation() {
