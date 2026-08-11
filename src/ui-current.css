@@ -14,7 +14,7 @@
   --current-control-selected-ink: #111118;
 }
 
-/* Current layer owns interaction geometry; whole-screen tab motion is owned by view-lifecycle. */
+/* Current layer owns interaction geometry; tab transition lifecycle is owned by view-lifecycle. */
 body.ui-current .topbar {
   padding-left: var(--current-page-gutter) !important;
   padding-right: var(--current-page-gutter) !important;
@@ -109,7 +109,8 @@ body.ui-current .search-mode > button.is-active {
 body.ui-current #home-destination-chips > button:active,
 body.ui-current .search-mode > button:active { transform: none !important; }
 
-/* Timetable controls are recreated by the data layer, but both moving materials live on the stable parent. */
+/* Timetable selection materials live on the stable parent. The track must NOT create a z-index:0 stacking context:
+   doing so traps its buttons below the parent's z-index:1 white material and visually washes out selected text. */
 body.ui-current #timetable-route-controls {
   position: sticky !important;
   isolation: isolate !important;
@@ -144,7 +145,6 @@ body.ui-current #timetable-route-controls.current-tt-destination-ready::after { 
 body.ui-current .tt-campus-tabs,
 body.ui-current .tt-destination-buttons {
   position: relative !important;
-  z-index: 0 !important;
   overflow: hidden !important;
   display: grid !important;
   gap: 3px !important;
