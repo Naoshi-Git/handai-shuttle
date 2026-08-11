@@ -48,11 +48,14 @@ test("timetable next-bus cue is stronger without a selected blue frame", () => {
   assert.match(css, /\.is-next::before[\s\S]*width:\s*2px/);
 });
 
-test("timetable advertisements are integrated and detail sheet gets a footer ad", () => {
+test("timetable advertisements are integrated and lazy detail sheet gets a footer ad", () => {
   assert.match(css, /\.ad-slot-timetable-inline[\s\S]*margin:\s*0 !important/);
   assert.match(css, /\.ad-slot-timetable-header[\s\S]*margin:\s*0 !important/);
   assert.match(source, /ad-slot-timetable-detail/);
   assert.match(source, /ensureDetailAd/);
+  assert.match(source, /bindDetailSheetLifecycle/);
+  assert.match(source, /#timetable-list \[data-tt-trip\]/);
+  assert.match(source, /window\.setTimeout\(observeDetailSheet, 0\)/);
 });
 
 test("settings use disclosures while favorites and searches remain visible", () => {
@@ -72,8 +75,8 @@ test("home-screen install guide is built for real screenshot assets", () => {
 test("v12 observes only owned settings and timetable surfaces", () => {
   assert.match(source, /\$\("#view-settings"\)/);
   assert.match(source, /\$\("#timetable-list"\)/);
-  assert.match(source, /\$\("#tt-detail-sheet"\)/);
   assert.match(source, /dynamicObserver\.observe\(root, \{ childList: true, subtree: true \}\)/);
+  assert.match(source, /detailSheetObserver\.observe\(dialog, \{ childList: true, subtree: true \}\)/);
   assert.doesNotMatch(source, /observe\(document\.body/);
   assert.doesNotMatch(source, /attributeFilter:\s*\["class", "open"\]/);
 });
