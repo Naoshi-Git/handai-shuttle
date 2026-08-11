@@ -30,9 +30,7 @@ body.ui-system #search-form #service-banner.is-search-context::before { width: 6
   margin: auto auto 0; padding: 0; border: 0; border-radius: 24px 24px 0 0;
   background: #fff; color: var(--ink); box-shadow: 0 -18px 52px rgba(24,21,72,.22); overflow: hidden;
 }
-.search-sheet[open] { animation: search-sheet-in .18s ease-out; }
 .search-sheet::backdrop { background: rgba(18,17,37,.36); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
-@keyframes search-sheet-in { from { transform: translateY(24px); opacity: .55; } to { transform: translateY(0); opacity: 1; } }
 .search-sheet-shell { padding: 8px 16px calc(16px + env(safe-area-inset-bottom)); max-height: min(74dvh, 620px); overflow: auto; }
 .search-sheet-handle { width: 38px; height: 4px; margin: 2px auto 10px; border-radius: 999px; background: #d8d7e1; }
 .search-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
@@ -79,17 +77,11 @@ body.ui-system .route-timetable-card[data-v4-compact="true"] { scroll-margin-top
   #search-results .journey-details-v5 > .journey-date { font-size: 9px; }
 }
 
-/* Active utility interactions used by current behavior modules. */
+/* Structural utility tokens still consumed by this foundation. */
 :root {
-  --ui-card-radius: 16px;
-  --ui-panel-radius: 18px;
   --ui-control-radius: 12px;
   --ui-sheet-radius: 24px;
   --ui-border: #E2E2EA;
-  --ui-surface-soft: #F7F7FA;
-  --ui-warning-bg: #FFF7E7;
-  --ui-warning-border: #EBD9AA;
-  --ui-warning-ink: #72531E;
   --ui-danger-bg: #FFF1F2;
   --ui-danger-border: #EEC9CF;
   --ui-danger-ink: #9B4050;
