@@ -4,6 +4,8 @@ import { readFile } from "node:fs/promises";
 
 const source = await readFile(new URL("../src/ui-v6.mjs", import.meta.url), "utf8");
 const css = await readFile(new URL("../ui-v5.css", import.meta.url), "utf8");
+const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+const lifecycleCss = await readFile(new URL("../src/view-lifecycle.css", import.meta.url), "utf8");
 const adsSource = await readFile(new URL("../src/ads.mjs", import.meta.url), "utf8");
 const v10Css = await readFile(new URL("../src/ui-v10.css", import.meta.url), "utf8");
 await import("../src/ui-v6.mjs");
@@ -25,8 +27,9 @@ test("favorite controls are attached to search and timetable cards", () => {
   assert.match(css, /\.journey-card\.is-favorite-trip/);
 });
 
-test("utility headers remove decorative English and bottom navigation uses consistent SVG icons", () => {
-  assert.match(css, /data-active-view="search"[\s\S]*\.topbar \.eyebrow/);
+test("app header removes decorative English from the DOM and bottom navigation uses consistent SVG icons", () => {
+  assert.doesNotMatch(html, /<p class="eyebrow">/);
+  assert.doesNotMatch(css, /\.topbar \.eyebrow/);
   assert.match(source, /class="nav-icon"/);
   for (const label of ["ホーム", "ルート検索", "時刻表", "設定"]) assert.match(source, new RegExp(label));
 });
@@ -47,8 +50,9 @@ test("final ad layer uses the compact horizontal creative with one shared radius
   assert.match(v10Css, /\.house-ad-creative[\s\S]*aspect-ratio:\s*640 \/ 89 !important/);
 });
 
-test("view transitions are subtle and respect reduced motion", () => {
-  assert.match(css, /@keyframes v6-view-enter/);
-  assert.match(css, /prefers-reduced-motion/);
+test("tab transitions are owned by the current lifecycle and respect reduced motion", () => {
+  assert.doesNotMatch(css, /v6-view-enter/);
+  assert.match(lifecycleCss, /view-crossfade-leaving/);
+  assert.match(lifecycleCss, /prefers-reduced-motion/);
   assert.match(source, /window\.scrollTo\(\{ top: 0, behavior: "auto" \}\)/);
 });
