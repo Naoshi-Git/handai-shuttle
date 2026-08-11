@@ -25,7 +25,8 @@ test("timetable uses the current rounded grouped list instead of detached rows",
 test("settings subpage is portaled to body and restores content after the transition", () => {
   assert.match(source, /settings-subpage-v13/);
   assert.match(source, /document\.body\.append\(panel\)/);
-  assert.match(source, /style\.setProperty\("bottom", "calc\(var\(--ui-nav-height, 60px\) \+ 18px \+ env\(safe-area-inset-bottom\)\)", "important"\)/);
+  assert.match(source, /style\.setProperty\("bottom", "0", "important"\)/);
+  assert.match(source, /padding-bottom[\s\S]*--ui-nav-height/);
   assert.match(source, /transitionend/);
   assert.match(source, /SETTINGS_CLOSE_FALLBACK_MS = 340/);
   assert.match(source, /panel\.inert = true/);
@@ -40,6 +41,13 @@ test("settings subpage closes on the same window lifecycle used by bottom naviga
   assert.match(source, /document\.querySelector\("\[data-pwa-install-nudge\]"\)\?\.remove\(\)/);
 });
 
+test("settings panel uses viewport-safe open and closed transforms on desktop and mobile", () => {
+  assert.match(source, /SETTINGS_HIDDEN_TRANSFORM = "translate3d\(calc\(-50% \+ 100vw\),0,0\)"/);
+  assert.match(source, /SETTINGS_OPEN_TRANSFORM = "translate3d\(-50%,0,0\)"/);
+  assert.match(source, /setPanelTransform\(panel, SETTINGS_HIDDEN_TRANSFORM\)/);
+  assert.match(source, /setPanelTransform\(panel, SETTINGS_OPEN_TRANSFORM\)/);
+});
+
 test("settings edge swipe remains bounded and does not steal carousel or form gestures", () => {
   assert.match(source, /installSwipeBack/);
   assert.match(source, /SWIPE_EDGE_BASE_PX = 96/);
@@ -47,7 +55,6 @@ test("settings edge swipe remains bounded and does not steal carousel or form ge
   assert.match(source, /data-install-guide-track/);
   assert.match(source, /translate3d\(calc\(-50% \+ \$\{Math\.min\(dx, panel\.clientWidth\)\}px\),0,0\)/);
   assert.match(source, /SWIPE_FAST_VELOCITY/);
-  assert.match(css, /settings-subpage-v13[\s\S]*translateX\(calc\(-50% \+ 100%\)\)/);
   assert.match(css, /touch-action:\s*pan-y/);
   assert.match(css, /\.settings-subpage-v13\.is-swiping[\s\S]*transition:\s*none !important/);
 });
@@ -77,4 +84,5 @@ test("install guide renders supplied screenshots without image probing or crop l
   assert.doesNotMatch(v12, /new Image\(/);
   assert.match(pwa, /height:clamp\(238px,32dvh,300px\)!important/);
   assert.match(pwa, /aspect-ratio:9\/19\.5/);
+  assert.match(pwa, /settingsUiIsActive/);
 });
