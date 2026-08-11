@@ -28,6 +28,7 @@ test("settings configuration opens as a horizontal subpage with reliable swipe b
   assert.match(source, /settings-subpage-v13/);
   assert.match(source, /installSwipeBack/);
   assert.match(source, /SWIPE_EDGE_MAX_PX = 96/);
+  assert.match(source, /SWIPE_COMMIT_CAP_PX = 84/);
   assert.match(source, /translate3d\(calc\(-50% \+ \$\{Math\.min\(dx, panel\.clientWidth\)\}px\),0,0\)/);
   assert.match(source, /SWIPE_FAST_VELOCITY/);
   assert.match(css, /settings-subpage-v13[\s\S]*translateX\(calc\(-50% \+ 100%\)\)/);
