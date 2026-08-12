@@ -19,10 +19,9 @@ test("presentation is loaded from one semantic system stylesheet", () => {
   assert.doesNotMatch(css, /@import\s/);
 });
 
-test("runtime presentation scope is semantic instead of version stacked", () => {
-  assert.match(entry, /body\.classList\.add\("ui-system"\)/);
-  assert.match(entry, /LEGACY_PRESENTATION_SCOPES/);
-  assert.match(entry, /body\.classList\.remove\(\.\.\.LEGACY_PRESENTATION_SCOPES\)/);
+test("presentation scope is declared by markup instead of runtime normalization", () => {
+  assert.match(html, /<body class="app-booting ui-system">/);
+  assert.doesNotMatch(entry, /LEGACY_PRESENTATION_SCOPES|normalizePresentationScope|body\.classList\.add\("ui-system"\)|body\.classList\.remove/);
   assert.doesNotMatch(css, /body\.ui-v\d+|body\.ui-current/);
   assert.match(css, /body\.ui-system/);
 });
