@@ -43,15 +43,6 @@ function storageSet(key, value) {
   try { localStorage.setItem(key, value); } catch { /* storage unavailable */ }
 }
 
-function installStyles() {
-  if ($('link[data-ui-current]')) return;
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = "./src/ui-current.css";
-  link.dataset.uiCurrent = "true";
-  document.head.append(link);
-}
-
 function reducedMotion() {
   return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
 }
@@ -464,8 +455,6 @@ function observeSurfaces() {
 }
 
 function init() {
-  document.body.classList.add("ui-v11", "ui-v14", "ui-v15", "ui-current");
-  installStyles();
   installDialogMotion();
   bindBrandHome();
   observeFavorites();
