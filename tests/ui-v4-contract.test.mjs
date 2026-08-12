@@ -45,6 +45,15 @@ test("detail sheet motion is owned by the semantic system, not ui-v4", async () 
   assert.match(systemCss, /@keyframes ui-sheet-in/);
 });
 
+test("next-bus decoration is owned by the semantic system, not version CSS", async () => {
+  const v3Css = await read("ui-v3.css");
+  const v4Css = await read("ui-v4.css");
+  const systemCss = await read("src/ui-system.css");
+  assert.doesNotMatch(v3Css, /\.route-timetable-card\.is-next\s*\{/);
+  assert.doesNotMatch(v4Css, /\.route-timetable-card\[data-v4-compact="true"\]\.is-next\s*\{/);
+  assert.match(systemCss, /body\.ui-system #view-timetable \.route-timetable-card\[data-v4-compact="true"\]\.is-next/);
+});
+
 test("トップ・検索結果・時刻表では文字タグではなく人型混雑アイコンを使う", async () => {
   const source = await read("src/ui-v4.mjs");
   const css = await read("ui-v4.css");
