@@ -38,7 +38,7 @@
 /* Share affordance on result/upcoming cards. */
 .journey-card-shareable{position:relative}
 .journey-card-shareable .journey-route{padding-right:34px}
-.journey-share-button{position:absolute;top:11px;right:11px;width:30px;height:30px;border-radius:50%;border-color:var(--line);background:#fff;color:var(--ou-800);box-shadow:0 3px 10px rgba(35,31,102,.08)}
+.journey-share-button{position:absolute;top:11px;right:11px;width:30px;height:30px;border-radius:50%;color:var(--ou-800)}
 
 .tt-detail-sheet{box-sizing:border-box;width:min(100%,720px);max-width:720px;max-height:min(78dvh,680px);margin:auto auto 0;border:0;padding:0;background:#fff;color:var(--ink);box-shadow:0 -18px 50px rgba(24,21,72,.20);overflow:hidden}
 .tt-detail-sheet::backdrop{background:rgba(18,17,37,.36);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
