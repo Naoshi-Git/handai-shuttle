@@ -64,7 +64,7 @@
 .tt-sheet-dot{position:relative;z-index:2;box-sizing:border-box;width:14px;height:14px;justify-self:center;border:3px solid #fff;border-radius:50%;background:#aaa6d9;box-shadow:0 0 0 1.5px #c9c6e8}.tt-sheet-stop.is-origin .tt-sheet-dot,.tt-sheet-stop.is-destination .tt-sheet-dot{background:var(--ou-900);box-shadow:0 0 0 1.5px var(--ou-700)}
 .tt-sheet-stop-name{font-size:13px;font-weight:800;min-width:0}.tt-sheet-stop strong{font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}
 
-.crowding-info-card p{margin:0 0 11px;color:var(--muted);font-size:11px;line-height:1.65}.crowding-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 10px}.crowding-legend-item{display:flex;align-items:center;gap:7px;min-width:0}.crowding-legend-item span:last-child{font-size:10px;font-weight:800;color:var(--muted);white-space:nowrap}.crowding-legend-item .crowding-icon{margin:0}
+.crowding-info-card p{margin:0 0 11px;color:var(--muted);font-size:11px;line-height:1.65}.crowding-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 10px}.crowding-legend-item{display:flex;align-items:center;gap:7px;min-width:0}.crowding-legend-item > span:last-child{font-size:10px;font-weight:800;color:var(--muted);white-space:nowrap}.crowding-legend-item .crowding-icon{margin:0}
 
 /* Branded 4:5 share-card preview. The actual PNG is rendered on Canvas at 1080×1350. */
 .share-card-dialog{box-sizing:border-box;width:min(calc(100% - 18px),540px);max-width:540px;max-height:94dvh;margin:auto auto 0;border:0;border-radius:26px 26px 0 0;padding:0;background:#fff;color:var(--ink);box-shadow:0 -22px 60px rgba(24,21,72,.24);overflow:hidden}
