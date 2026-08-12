@@ -54,6 +54,15 @@ test("next-bus decoration is owned by the semantic system, not version CSS", asy
   assert.match(systemCss, /body\.ui-system #view-timetable \.route-timetable-card\[data-v4-compact="true"\]\.is-next/);
 });
 
+test("compact next badge visual styling is owned by the semantic system", async () => {
+  const css = await read("ui-v4.css");
+  const systemCss = await read("src/ui-system.css");
+  assert.doesNotMatch(css, /\.tt-next-mini\s*\{[^}]*background:/);
+  assert.doesNotMatch(css, /@media\(max-width:380px\)[\s\S]*\.tt-compact-badges \.pill,\.tt-next-mini/);
+  assert.match(systemCss, /body\.ui-system \.tt-next-mini\s*\{/);
+  assert.match(systemCss, /background:\s*rgba\(45,40,127,\.075\)\s*!important/);
+});
+
 test("トップ・検索結果・時刻表では文字タグではなく人型混雑アイコンを使う", async () => {
   const source = await read("src/ui-v4.mjs");
   const css = await read("ui-v4.css");
