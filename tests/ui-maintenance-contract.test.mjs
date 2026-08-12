@@ -40,6 +40,12 @@ test("structural compatibility rules are absorbed into ui-system", () => {
   assert.match(systemCss, /body\.ui-system \.journey-card\.is-favorite-trip/);
 });
 
+test("current behavior owner cannot reintroduce presentation shims", () => {
+  assert.doesNotMatch(current, /installStyles/);
+  assert.doesNotMatch(current, /ui-current\.css/);
+  assert.doesNotMatch(current, /classList\.add\([^\n)]*"ui-(?:v\d+|current)"/);
+});
+
 test("absorbed compatibility layer keeps only live utility tokens and delegates sheet motion to current owner", () => {
   for (const removed of ["--ui-card-radius", "--ui-panel-radius", "--ui-warning-bg", "--ui-warning-border", "--ui-warning-ink"]) {
     assert.doesNotMatch(systemCss, new RegExp(removed));
