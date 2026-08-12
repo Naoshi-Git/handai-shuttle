@@ -4,11 +4,13 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-const [entry, html, systemCss, baseCss, v5, ads, v12, v13, current] = await Promise.all([
+const [entry, html, systemCss, baseCss, v3Core, v4, v5, ads, v12, v13, current] = await Promise.all([
   read("src/features-v3.mjs"),
   read("index.html"),
   read("src/ui-system.css"),
   read("style.css"),
+  read("src/features-v3-core.mjs"),
+  read("src/ui-v4.mjs"),
   read("src/ui-v5.mjs"),
   read("src/ads.mjs"),
   read("src/ui-v12.mjs"),
@@ -30,6 +32,13 @@ test("presentation has one semantic scope instead of version body-class normaliz
   assert.doesNotMatch(html, /data-ui-v1[0-6]|data-ui-current/);
   assert.doesNotMatch(entry, /LEGACY_PRESENTATION_SCOPES|normalizePresentationScope|classList\.add\("ui-system"\)|classList\.remove\([^)]*ui-v/);
   assert.doesNotMatch(systemCss, /body\.ui-v\d+|body\.ui-current/);
+});
+
+test("version behavior modules cannot inject their own stylesheets", () => {
+  assert.doesNotMatch(v3Core, /installStyles|ui-v3\.css|data-ui-v3/);
+  assert.doesNotMatch(v4, /installStyles|ui-v4\.css|data-ui-v4/);
+  assert.match(html, /ui-v4\.css" data-ui-v4/);
+  assert.match(html, /ui-v3\.css" data-ui-v3/);
 });
 
 test("structural compatibility rules are absorbed into ui-system", () => {
