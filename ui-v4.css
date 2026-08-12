@@ -1,6 +1,5 @@
 /* v4 presentation refinements: compact timetable, detail bottom sheet, crowding estimate and sharing. */
-#timetable-list.timetable-list{gap:6px}
-.route-timetable-card[data-v4-compact="true"]{padding:0!important;min-height:0;border-radius:14px;overflow:hidden;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;scroll-margin-top:calc(190px + env(safe-area-inset-top))}
+.route-timetable-card[data-v4-compact="true"]{padding:0!important;min-height:0;overflow:hidden;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .route-timetable-card[data-v4-compact="true"]:active{transform:scale(.993)}
 .tt-compact-row{display:grid;grid-template-columns:max-content minmax(0,1fr) 12px;align-items:center;gap:8px;min-height:48px;padding:7px 10px}
 .tt-compact-time{display:flex;align-items:baseline;gap:5px;white-space:nowrap;font-variant-numeric:tabular-nums;min-width:0}
