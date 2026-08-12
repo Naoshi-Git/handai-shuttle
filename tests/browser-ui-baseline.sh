@@ -60,16 +60,18 @@ async function main() {
   frame.src = "./?ui-baseline=1";
   await loaded;
 
-  const win = frame.contentWindow;
   const doc = frame.contentDocument;
   await waitFor(() => doc.body?.classList.contains("app-ready"), "Opening did not reach app-ready");
   await waitFor(() => !doc.querySelector("#app-boot"), "Opening splash was not removed");
   await waitFor(() => doc.querySelector("link[data-ui-v3]"), "ui-v3 runtime stylesheet was not installed");
+  await waitFor(() => doc.querySelector("#ui-v4-polish"), "ui-v4 polish runtime repair was not installed");
+  await waitFor(() => doc.querySelector("#brand-assets-v2-style"), "brand runtime style was not installed");
   await waitFor(() => doc.querySelector("#timetable-route-controls"), "v3 timetable controls were not created");
   await waitFor(() => doc.querySelector("#result-stepper"), "search previous/next stepper was not created");
   await waitFor(() => doc.querySelector("#tt-detail-sheet"), "v4 timetable detail sheet was not created");
   await waitFor(() => doc.querySelector("#crowding-info-card"), "v4 crowding settings card was not created");
   await waitFor(() => doc.querySelector(".settings-disclosure"), "v12 settings information architecture was not created");
+  await waitFor(() => doc.querySelector("#settings-menu-v13 .settings-nav-row-v13"), "v13 settings menu was not created");
 
   const stylesheetHrefs = [...doc.querySelectorAll('link[rel="stylesheet"]')].map((link) => link.getAttribute("href") || "");
   for (const required of ["./style.css", "./ui-v2.css", "./ui-v4.css", "./src/ui-system.css", "./ui-v3.css"]) {
@@ -91,26 +93,58 @@ async function main() {
       `view did not activate: ${view}`,
       2500
     );
-    await sleep(120);
+    await sleep(140);
   }
 
   await openView("search");
   assert(doc.querySelector("#search-form"), "Search form missing");
   assert(doc.querySelector("#result-stepper"), "Search stepper disappeared");
+  const timingButton = doc.querySelector(".search-timing-button");
+  const conditionButton = doc.querySelector(".search-condition-button");
+  const timingSheet = doc.querySelector("#search-timing-sheet");
+  const conditionSheet = doc.querySelector("#search-condition-sheet");
+  assert(timingButton && conditionButton && timingSheet && conditionSheet, "v5 Search sheet controls missing");
+
+  timingButton.click();
+  await waitFor(() => timingSheet.open || timingSheet.hasAttribute("open"), "Search timing sheet did not open", 2500);
+  timingSheet.querySelector(".search-sheet-done")?.click();
+  await waitFor(() => !timingSheet.open && !timingSheet.hasAttribute("open"), "Search timing sheet did not close", 2500);
+
+  conditionButton.click();
+  await waitFor(() => conditionSheet.open || conditionSheet.hasAttribute("open"), "Search condition sheet did not open", 2500);
+  conditionSheet.querySelector(".search-sheet-done")?.click();
+  await waitFor(() => !conditionSheet.open && !conditionSheet.hasAttribute("open"), "Search condition sheet did not close", 2500);
 
   await openView("timetable");
   assert(doc.querySelector("#timetable-route-controls .tt-campus-tabs"), "Timetable campus tabs missing");
   await waitFor(() => doc.querySelector("#timetable-list .tt-compact-row"), "v4 compact timetable rows were not produced", 3500);
+  const compactCard = doc.querySelector("#timetable-list .route-timetable-card[data-tt-trip]");
+  const detailSheet = doc.querySelector("#tt-detail-sheet");
+  assert(compactCard && detailSheet, "Timetable detail interaction target missing");
+  compactCard.click();
+  await waitFor(() => detailSheet.open || detailSheet.hasAttribute("open"), "Timetable detail sheet did not open", 2500);
+  assert(detailSheet.querySelector("#tt-sheet-stops .tt-sheet-stop"), "Timetable detail stops were not rendered");
+  detailSheet.querySelector(".tt-sheet-close")?.click();
+  await waitFor(() => !detailSheet.open && !detailSheet.hasAttribute("open"), "Timetable detail sheet did not close", 2500);
 
   await openView("settings");
   assert(doc.querySelector("#debug-feedback-card"), "feedback card missing");
   assert(doc.querySelector("#crowding-info-card"), "crowding information card missing");
   assert(doc.querySelector(".settings-disclosure"), "settings disclosures missing");
+  const settingsRow = doc.querySelector("#settings-menu-v13 .settings-nav-row-v13");
+  assert(settingsRow, "Settings subpage row missing");
+  settingsRow.click();
+  await waitFor(() => doc.body.classList.contains("settings-subpage-open"), "Settings subpage did not open", 2500);
+  const settingsPanel = doc.querySelector("#settings-subpage-v13");
+  assert(settingsPanel?.getAttribute("aria-hidden") === "false", "Settings subpage remained hidden");
+  settingsPanel.querySelector(".settings-subpage-back")?.click();
+  await waitFor(() => !doc.body.classList.contains("settings-subpage-open"), "Settings subpage did not start closing", 2500);
+  await waitFor(() => settingsPanel.getAttribute("aria-hidden") === "true", "Settings subpage did not close", 2500);
 
   await openView("home");
   assert(doc.querySelector("#view-home.is-active"), "Home did not restore");
 
-  result.textContent = "PASS: boot + Home + Search + Timetable + Settings baseline";
+  result.textContent = "PASS: boot + Home + Search sheets + Timetable detail + Settings subpage baseline";
 }
 
 main().catch((error) => {
@@ -133,10 +167,10 @@ STDERR="$TMP/browser.stderr"
   --disable-dev-shm-usage \
   --disable-background-networking \
   --user-data-dir="$TMP/profile" \
-  --virtual-time-budget=10000 \
+  --virtual-time-budget=14000 \
   --dump-dom "http://127.0.0.1:${PORT}/.ui-baseline-fixture.html" >"$DOM" 2>"$STDERR"
 
-if ! grep -q "PASS: boot + Home + Search + Timetable + Settings baseline" "$DOM"; then
+if ! grep -q "PASS: boot + Home + Search sheets + Timetable detail + Settings subpage baseline" "$DOM"; then
   echo "Browser UI baseline failed" >&2
   grep -o "FAIL: [^<]*" "$DOM" >&2 || true
   cat "$STDERR" >&2 || true
