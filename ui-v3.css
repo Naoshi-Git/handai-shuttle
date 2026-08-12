@@ -13,7 +13,6 @@
 }
 #timetable-route-controls .tt-campus-tabs{margin:0}
 #timetable-route-controls .tt-current-status{margin-bottom:-2px}
-.route-timetable-card{scroll-margin-top:calc(190px + env(safe-area-inset-top))}
 
 /* iOS Safari: preserve pinch zoom globally but disable double-tap zoom on repeated controls. */
 .app-shell button,
