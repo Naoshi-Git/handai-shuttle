@@ -23,7 +23,6 @@ jobs:
           node --check src/brand-integration.mjs
           node --check src/brand-canvas.mjs
           node --check src/ui-v4.mjs
-          node --check src/ui-v4-polish.mjs
           node --check src/ui-v5.mjs
           node --check src/route-preferences.mjs
           node --check src/ui-v12.mjs
@@ -42,6 +41,7 @@ jobs:
           test -f src/view-lifecycle.css
           test ! -e ui-v5.css
           test ! -e src/ui-foundation.css
+          test ! -e src/ui-v4-polish.mjs
           test ! -e src/ui-v10.css
           test ! -e src/ui-v11.css
           test ! -e src/ui-v12.css
