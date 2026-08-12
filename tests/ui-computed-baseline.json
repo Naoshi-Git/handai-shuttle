@@ -101,6 +101,30 @@
         "position": "relative"
       },
       "geometry": { "width": 343, "height": 54, "tolerance": 2 }
+    },
+    "settings.#debug-feedback-card": {
+      "computed": {
+        "display": "block",
+        "background-color": "rgb(255, 255, 255)",
+        "color": "rgb(36, 36, 41)",
+        "padding-top": "2px",
+        "padding-right": "0px",
+        "padding-bottom": "14px",
+        "padding-left": "0px"
+      }
+    },
+    "settings.#debug-feedback-card .feedback-link": {
+      "computed": {
+        "display": "block",
+        "background-color": "rgba(0, 0, 0, 0)",
+        "color": "rgb(45, 40, 127)",
+        "font-size": "12px",
+        "font-weight": "900",
+        "padding-top": "12px",
+        "padding-right": "0px",
+        "padding-bottom": "12px",
+        "padding-left": "0px"
+      }
     }
   }
 }
