@@ -4,10 +4,19 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-const [enhancements, v12] = await Promise.all([
+const [html, enhancements, v12] = await Promise.all([
+  read("index.html"),
   read("src/enhancements.mjs"),
   read("src/ui-v12.mjs")
 ]);
+
+test("HTML has a module-independent fail-open watchdog", () => {
+  assert.match(html, /data\.bootFallback = "html-watchdog"/);
+  assert.match(html, /classList\.remove\("app-booting"\)/);
+  assert.match(html, /classList\.add\("app-ready"\)/);
+  assert.match(html, /maximumMs \+ 800/);
+  assert.match(html, /enhancements\.mjs\?boot=20260812-1/);
+});
 
 test("enhancement bootstrap cannot leave the splash screen stuck", () => {
   assert.match(enhancements, /function releaseBoot\(/);
