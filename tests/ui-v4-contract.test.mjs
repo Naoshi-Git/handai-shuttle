@@ -66,6 +66,19 @@ test("timetable tracks and compact scroll offset are owned by the semantic syste
   assert.match(systemCss, /body\.ui-system \.route-timetable-card\[data-v4-compact="true"\]\s*\{\s*scroll-margin-top:/);
 });
 
+test("compact timetable delegates final columns and typography to the semantic system", async () => {
+  const css = await read("ui-v4.css");
+  const systemCss = await read("src/ui-system.css");
+  assert.match(css, /\.route-timetable-card\[data-v4-compact="true"\]\s*\{[^}]*padding-block:0!important/);
+  assert.doesNotMatch(css, /\.tt-compact-row\s*\{[^}]*grid-template-columns/);
+  assert.doesNotMatch(css, /\.tt-compact-time strong\s*\{[^}]*font-weight/);
+  assert.doesNotMatch(css, /\.tt-compact-chevron\s*\{[^}]*font-size/);
+  assert.match(systemCss, /body\.ui-system #view-timetable \.route-timetable-card\[data-v4-compact="true"\]\s*\{\s*padding-inline:\s*14px\s*!important/);
+  assert.match(systemCss, /body\.ui-system \.tt-compact-row\s*\{\s*grid-template-columns:\s*max-content minmax\(0,1fr\) 30px 12px/);
+  assert.match(systemCss, /body\.ui-system \.tt-compact-time strong,[\s\S]*font-weight:\s*700\s*!important/);
+  assert.match(systemCss, /body\.ui-system \.tt-compact-chevron\s*\{[\s\S]*font-size:\s*0\s*!important/);
+});
+
 test("detail sheet motion is owned by the semantic system, not ui-v4", async () => {
   const css = await read("ui-v4.css");
   const systemCss = await read("src/ui-system.css");
