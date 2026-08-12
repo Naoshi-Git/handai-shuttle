@@ -51,8 +51,11 @@ test("トップ・検索結果・時刻表では文字タグではなく人型�
   assert.match(css, /\.next-meta \.crowding-person/);
 });
 
-test("混雑凡例の5人目だけlegacy last-child色になる回帰を補正する", async () => {
+test("混雑凡例のlabel selectorは人型アイコン内部へ波及しない", async () => {
+  const css = await read("ui-v4.css");
   const polish = await read("src/ui-v4-polish.mjs");
+  assert.match(css, /\.crowding-legend-item\s*>\s*span:last-child/);
+  assert.doesNotMatch(css, /\.crowding-legend-item\s+span:last-child/);
   assert.match(polish, /crowding-legend-item \.crowding-person/);
   assert.match(polish, /crowding-person\.is-active/);
   assert.match(polish, /var\(--crowd-color\)/);
