@@ -78,6 +78,10 @@ jobs:
           test -f source/lp/index.html
           test -f source/lp/lp.css
           node --test source/tests/*.test.mjs
+      - name: Browser UI baseline
+        run: bash source/tests/browser-ui-baseline.sh source
+      - name: Browser computed style inventory
+        run: bash source/tests/browser-style-inventory.sh source
       - name: Sync production while preserving PR previews
         run: |
           rm -rf pages/assets pages/data pages/src pages/lp
