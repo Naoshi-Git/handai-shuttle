@@ -71,6 +71,18 @@ test("compact next badge visual styling is owned by the semantic system", async 
   assert.match(systemCss, /background:\s*rgba\(45,40,127,\.075\)\s*!important/);
 });
 
+test("share action surfaces are owned by the semantic system while v4 keeps geometry", async () => {
+  const css = await read("ui-v4.css");
+  const systemCss = await read("src/ui-system.css");
+  assert.doesNotMatch(css, /\.journey-share-button\s*\{[^}]*background:/);
+  assert.doesNotMatch(css, /\.journey-share-button\s*\{[^}]*box-shadow:/);
+  assert.doesNotMatch(css, /\.share-card-primary\s*\{[^}]*background:/);
+  assert.doesNotMatch(css, /\.share-card-primary\s*\{[^}]*box-shadow:/);
+  assert.match(css, /\.journey-share-button\s*\{[^}]*position:absolute/);
+  assert.match(systemCss, /body\.ui-system \.journey-share-button,[\s\S]*body\.ui-system \.tt-sheet-share\s*\{[\s\S]*background:\s*#F4F4F6\s*!important/);
+  assert.match(systemCss, /body\.ui-system \.share-card-primary\s*\{[\s\S]*background:\s*var\(--ou-900\)\s*!important/);
+});
+
 test("トップ・検索結果・時刻表では文字タグではなく人型混雑アイコンを使う", async () => {
   const source = await read("src/ui-v4.mjs");
   const css = await read("ui-v4.css");
