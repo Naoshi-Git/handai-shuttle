@@ -69,7 +69,7 @@ function showLocationAssist(message, { suitOnly = false } = {}) {
   $$('[data-location-campus]', box).forEach((button) => {
     button.addEventListener("click", () => {
       if (button.dataset.locationCampus === "suita") {
-        showLocationAssist("吹田キャンパスまでは判定できましたが、位置精度だけでは乗り場を確定できません。", { suitOnly: true });
+        showLocationAssist("吹田キャンパスでは、実際に乗る停留所を選んでください。", { suitOnly: true });
         return;
       }
       const target = LOCATION_POINTS.find((point) => point.campusId === button.dataset.locationCampus);
