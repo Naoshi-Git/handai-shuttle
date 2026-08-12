@@ -3,10 +3,10 @@
 .route-timetable-card[data-v4-compact="true"]:active{transform:scale(.993)}
 .tt-compact-row{display:grid;align-items:center;gap:8px;min-height:48px;padding:7px 10px}
 .tt-compact-time{display:flex;align-items:baseline;gap:5px;white-space:nowrap;font-variant-numeric:tabular-nums;min-width:0}
-.tt-compact-time strong{font-size:17px;line-height:1;font-weight:900;color:var(--ink)}
+.tt-compact-time strong{font-size:17px;line-height:1;color:var(--ink)}
 .tt-compact-time span{font-size:11px;color:var(--muted)}
 .tt-compact-badges{min-width:0;display:flex;align-items:center;justify-content:flex-start;gap:5px;white-space:nowrap;overflow:hidden}
-.tt-compact-chevron{font-size:21px;line-height:1;color:#aaa8bb;justify-self:end}
+.tt-compact-chevron{line-height:1;color:#aaa8bb;justify-self:end}
 
 /* Home next-card metadata stays on a single clean baseline. Route type is already shown above. */
 .next-card-actions{display:flex;align-items:center;gap:7px;position:relative;z-index:2}
