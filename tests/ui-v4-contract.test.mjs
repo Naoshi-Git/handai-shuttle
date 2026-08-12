@@ -51,11 +51,10 @@ test("トップ・検索結果・時刻表では文字タグではなく人型�
   assert.match(css, /\.next-meta \.crowding-person/);
 });
 
-test("混雑凡例の5人目だけlegacy last-child色になる回帰を補正する", async () => {
-  const polish = await read("src/ui-v4-polish.mjs");
-  assert.match(polish, /crowding-legend-item \.crowding-person/);
-  assert.match(polish, /crowding-person\.is-active/);
-  assert.match(polish, /var\(--crowd-color\)/);
+test("混雑凡例のlabel selectorは人型iconまで巻き込まない", async () => {
+  const css = await read("ui-v4.css");
+  assert.match(css, /\.crowding-legend-item\s*>\s*span:last-child/);
+  assert.doesNotMatch(css, /\.crowding-legend-item\s+span:last-child/);
 });
 
 test("Bottom Sheetの経路線は全停留所共通の1本軸で描画する", async () => {
