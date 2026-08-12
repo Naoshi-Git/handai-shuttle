@@ -4,11 +4,12 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-const [entry, html, systemCss, baseCss, v5, ads, v12, v13, current] = await Promise.all([
+const [entry, html, systemCss, baseCss, v4, v5, ads, v12, v13, current] = await Promise.all([
   read("src/features-v3.mjs"),
   read("index.html"),
   read("src/ui-system.css"),
   read("style.css"),
+  read("src/ui-v4.mjs"),
   read("src/ui-v5.mjs"),
   read("src/ads.mjs"),
   read("src/ui-v12.mjs"),
@@ -38,6 +39,11 @@ test("structural compatibility rules are absorbed into ui-system", () => {
   assert.match(systemCss, /body\.ui-system #search-form #service-banner\.is-search-context/);
   assert.match(systemCss, /body\.ui-system #timetable-route-controls/);
   assert.match(systemCss, /body\.ui-system \.journey-card\.is-favorite-trip/);
+});
+
+test("ui-v4 behavior relies on the static stylesheet instead of runtime injection", () => {
+  assert.match(html, /<link rel="stylesheet" href="\.\/ui-v4\.css" data-ui-v4>/);
+  assert.doesNotMatch(v4, /function installStyles|document\.createElement\("link"\)|ui-v4\.css/);
 });
 
 test("current behavior owner cannot reintroduce presentation shims", () => {
