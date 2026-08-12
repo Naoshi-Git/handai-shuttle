@@ -1,4 +1,3 @@
-import "./ui-v4-polish.mjs";
 import { drawBrandMark } from "./brand-canvas.mjs";
 import { ensureShareIdentity, shareLandingUrl } from "./share-identity.mjs";
 
