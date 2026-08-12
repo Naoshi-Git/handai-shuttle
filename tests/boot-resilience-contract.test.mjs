@@ -11,7 +11,7 @@ const [html, enhancements, v12] = await Promise.all([
 ]);
 
 test("HTML has a module-independent fail-open watchdog", () => {
-  assert.match(html, /data\.bootFallback = "html-watchdog"/);
+  assert.match(html, /document\.documentElement\.dataset\.bootFallback = "html-watchdog"/);
   assert.match(html, /classList\.remove\("app-booting"\)/);
   assert.match(html, /classList\.add\("app-ready"\)/);
   assert.match(html, /maximumMs \+ 800/);
