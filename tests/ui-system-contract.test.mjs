@@ -12,10 +12,9 @@ const [html, entry, css] = await Promise.all([
 
 test("presentation is loaded from one semantic system stylesheet", () => {
   assert.match(html, /src\/ui-system\.css/);
+  assert.match(html, /data-ui-system/);
   assert.match(html, /<body class="app-booting ui-system">/);
-  for (const marker of ["data-ui-v10", "data-ui-v11", "data-ui-v12", "data-ui-v13", "data-ui-v14", "data-ui-v15", "data-ui-current"]) {
-    assert.match(html, new RegExp(marker));
-  }
+  assert.doesNotMatch(html, /data-ui-v1[0-6]|data-ui-current/);
   assert.doesNotMatch(html, /src\/ui-v1[0-6]\.css|src\/ui-current\.css/);
   assert.doesNotMatch(css, /@import\s/);
 });
