@@ -22,15 +22,13 @@ test("removed compatibility behavior owners cannot silently re-enter the active 
   }
 });
 
-test("presentation has one semantic authority instead of version stylesheet stacking", () => {
+test("presentation has one semantic scope instead of version body-class normalization", () => {
   assert.match(html, /src\/ui-system\.css/);
   assert.match(html, /data-ui-system/);
+  assert.match(html, /<body class="app-booting ui-system">/);
   assert.doesNotMatch(html, /ui-v5\.css|ui-foundation\.css|src\/ui-v1[0-6]\.css|src\/ui-current\.css/);
   assert.doesNotMatch(html, /data-ui-v1[0-6]|data-ui-current/);
-  assert.match(entry, /classList\.add\("ui-system"\)/);
-  assert.match(entry, /classList\.remove\(\.\.\.LEGACY_PRESENTATION_SCOPES\)/);
-  assert.match(entry, /"ui-v5"/);
-  assert.match(entry, /"ui-v6"/);
+  assert.doesNotMatch(entry, /LEGACY_PRESENTATION_SCOPES|normalizePresentationScope|classList\.add\("ui-system"\)|classList\.remove\([^)]*ui-v/);
   assert.doesNotMatch(systemCss, /body\.ui-v\d+|body\.ui-current/);
 });
 
