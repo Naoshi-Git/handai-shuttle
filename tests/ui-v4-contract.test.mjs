@@ -51,14 +51,15 @@ test("トップ・検索結果・時刻表では文字タグではなく人型�
   assert.match(css, /\.next-meta \.crowding-person/);
 });
 
-test("混雑凡例のlabel selectorは人型アイコン内部へ波及しない", async () => {
+test("混雑凡例のlabel selectorはsource CSSで閉じ、polish pathは副作用なしで互換保持する", async () => {
   const css = await read("ui-v4.css");
   const polish = await read("src/ui-v4-polish.mjs");
   assert.match(css, /\.crowding-legend-item\s*>\s*span:last-child/);
   assert.doesNotMatch(css, /\.crowding-legend-item\s+span:last-child/);
-  assert.match(polish, /crowding-legend-item \.crowding-person/);
-  assert.match(polish, /crowding-person\.is-active/);
-  assert.match(polish, /var\(--crowd-color\)/);
+  assert.match(polish, /UI_V4_POLISH_COMPAT/);
+  assert.doesNotMatch(polish, /createElement\(["']style["']\)/);
+  assert.doesNotMatch(polish, /style\.textContent/);
+  assert.doesNotMatch(polish, /document\.head\.append/);
 });
 
 test("Bottom Sheetの経路線は全停留所共通の1本軸で描画する", async () => {
