@@ -4,11 +4,12 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-const [entry, html, systemCss, baseCss, v4, v5, ads, v12, v13, current] = await Promise.all([
+const [entry, html, systemCss, baseCss, v3Core, v4, v5, ads, v12, v13, current] = await Promise.all([
   read("src/features-v3.mjs"),
   read("index.html"),
   read("src/ui-system.css"),
   read("style.css"),
+  read("src/features-v3-core.mjs"),
   read("src/ui-v4.mjs"),
   read("src/ui-v5.mjs"),
   read("src/ads.mjs"),
@@ -41,9 +42,14 @@ test("structural compatibility rules are absorbed into ui-system", () => {
   assert.match(systemCss, /body\.ui-system \.journey-card\.is-favorite-trip/);
 });
 
-test("ui-v4 behavior relies on the static stylesheet instead of runtime injection", () => {
+test("v3 and v4 behavior rely on static stylesheets instead of runtime injection", () => {
   assert.match(html, /<link rel="stylesheet" href="\.\/ui-v4\.css" data-ui-v4>/);
-  assert.doesNotMatch(v4, /function installStyles|document\.createElement\("link"\)|ui-v4\.css/);
+  assert.match(html, /<link rel="stylesheet" href="\.\/ui-v3\.css" data-ui-v3>/);
+  for (const source of [v3Core, v4]) {
+    assert.doesNotMatch(source, /function installStyles|document\.createElement\("link"\)/);
+  }
+  assert.doesNotMatch(v3Core, /ui-v3\.css/);
+  assert.doesNotMatch(v4, /ui-v4\.css/);
 });
 
 test("current behavior owner cannot reintroduce presentation shims", () => {
