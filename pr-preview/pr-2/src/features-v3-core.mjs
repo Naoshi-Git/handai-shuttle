@@ -17,15 +17,6 @@ const CAMPUS_KEY = "ou-bus:default-campus";
 const SUITA_STOP_KEY = "ou-bus:suita-origin-stop";
 const NORMAL_TIMETABLE_DATE = "2026-06-01";
 
-function installStyles() {
-  if ($('link[data-ui-v3]')) return;
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = "./ui-v3.css";
-  link.dataset.uiV3 = "true";
-  document.head.append(link);
-}
-
 function currentCampus() {
   return localStorage.getItem(CAMPUS_KEY) || "suita";
 }
@@ -78,7 +69,7 @@ function showLocationAssist(message, { suitOnly = false } = {}) {
   $$('[data-location-campus]', box).forEach((button) => {
     button.addEventListener("click", () => {
       if (button.dataset.locationCampus === "suita") {
-        showLocationAssist("吹田キャンパスでは、実際に乗る停留所を選んでください。", { suitOnly: true });
+        showLocationAssist("吹田キャンパスまでは判定できましたが、位置精度だけでは乗り場を確定できません。", { suitOnly: true });
         return;
       }
       const target = LOCATION_POINTS.find((point) => point.campusId === button.dataset.locationCampus);
@@ -499,7 +490,6 @@ function addDebugFormLink() {
   sourceCard.before(section);
 }
 
-installStyles();
 ensureLocationAssist();
 setupStayOptions();
 ensureResultStepper();
