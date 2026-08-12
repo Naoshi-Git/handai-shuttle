@@ -50,6 +50,32 @@ async function waitFor(predicate, message, timeout = 6000) {
 }
 
 async function main() {
+  localStorage.clear();
+  localStorage.setItem("ou-bus:saved-routes", JSON.stringify([
+    { origin: "suita", destination: "toyonaka", directOnly: true, savedAt: "2026-08-12T00:00:00.000Z" }
+  ]));
+  localStorage.setItem("ou-bus:favorite-trips", JSON.stringify([
+    {
+      source: "timetable",
+      tripId: "E1便",
+      departure: "08:00",
+      arrival: "08:30",
+      originName: "吹田",
+      destinationName: "豊中",
+      routeType: "直行",
+      origin: "suita",
+      destination: "toyonaka",
+      originStop: "suita_engineering",
+      destinationStop: "",
+      directOnly: true,
+      roundTrip: false,
+      stayMinutes: 60,
+      mode: "depart",
+      date: "2026-06-01",
+      savedAt: "2026-08-12T00:00:00.000Z"
+    }
+  ]));
+
   const frame = document.createElement("iframe");
   frame.id = "app-frame";
   frame.style.width = "390px";
@@ -72,6 +98,15 @@ async function main() {
   await waitFor(() => doc.querySelector("#crowding-info-card"), "v4 crowding settings card was not created");
   await waitFor(() => doc.querySelector(".settings-disclosure"), "v12 settings information architecture was not created");
   await waitFor(() => doc.querySelector("#settings-menu-v13 .settings-nav-row-v13"), "v13 settings menu was not created");
+  await waitFor(() => doc.querySelector("#saved-searches-v6 [data-open-search-save]"), "legacy saved route did not migrate to saved search");
+  await waitFor(() => doc.querySelector("#favorite-trips-v6 [data-open-favorite]"), "favorite trip collection did not render");
+
+  const migratedSearches = JSON.parse(localStorage.getItem("ou-bus:saved-searches") || "[]");
+  const migratedFavorites = JSON.parse(localStorage.getItem("ou-bus:favorite-trips") || "[]");
+  assert(migratedSearches.length === 1, "saved route migration did not persist one search");
+  assert(migratedSearches[0].originStop === "suita_engineering", "saved route migration lost Suita origin stop default");
+  assert(migratedFavorites[0]?.tripId === "E1", "favorite trip migration did not normalize tripId");
+  assert(!doc.querySelector("#favorite-trips-v6")?.textContent.includes("便便"), "favorite trip label duplicated the 便 suffix");
 
   const stylesheetHrefs = [...doc.querySelectorAll('link[rel="stylesheet"]')].map((link) => link.getAttribute("href") || "");
   for (const required of ["./style.css", "./ui-v2.css", "./ui-v4.css", "./src/ui-system.css", "./ui-v3.css"]) {
@@ -131,6 +166,14 @@ async function main() {
   assert(doc.querySelector("#debug-feedback-card"), "feedback card missing");
   assert(doc.querySelector("#crowding-info-card"), "crowding information card missing");
   assert(doc.querySelector(".settings-disclosure"), "settings disclosures missing");
+  assert(doc.querySelector("#saved-searches-v6 [data-open-search-save]"), "saved search row missing in Settings");
+  assert(doc.querySelector("#favorite-trips-v6 [data-open-favorite]"), "favorite row missing in Settings");
+
+  doc.querySelector("#saved-searches-v6 [data-open-search-save]")?.click();
+  await waitFor(() => doc.querySelector('#view-search.is-active'), "saved search did not reopen Search", 2500);
+  await waitFor(() => doc.querySelector("#origin-campus")?.value === "suita" && doc.querySelector("#destination-campus")?.value === "toyonaka", "saved search did not restore route", 2500);
+
+  await openView("settings");
   const settingsRow = doc.querySelector("#settings-menu-v13 .settings-nav-row-v13");
   assert(settingsRow, "Settings subpage row missing");
   settingsRow.click();
@@ -144,7 +187,7 @@ async function main() {
   await openView("home");
   assert(doc.querySelector("#view-home.is-active"), "Home did not restore");
 
-  result.textContent = "PASS: boot + Home + Search sheets + Timetable detail + Settings subpage baseline";
+  result.textContent = "PASS: boot + enhanced views + saved/favorite migration baseline";
 }
 
 main().catch((error) => {
@@ -167,10 +210,10 @@ STDERR="$TMP/browser.stderr"
   --disable-dev-shm-usage \
   --disable-background-networking \
   --user-data-dir="$TMP/profile" \
-  --virtual-time-budget=14000 \
+  --virtual-time-budget=16000 \
   --dump-dom "http://127.0.0.1:${PORT}/.ui-baseline-fixture.html" >"$DOM" 2>"$STDERR"
 
-if ! grep -q "PASS: boot + Home + Search sheets + Timetable detail + Settings subpage baseline" "$DOM"; then
+if ! grep -q "PASS: boot + enhanced views + saved/favorite migration baseline" "$DOM"; then
   echo "Browser UI baseline failed" >&2
   grep -o "FAIL: [^<]*" "$DOM" >&2 || true
   cat "$STDERR" >&2 || true
