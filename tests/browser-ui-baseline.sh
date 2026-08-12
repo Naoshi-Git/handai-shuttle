@@ -90,7 +90,6 @@ async function main() {
   await waitFor(() => doc.body?.classList.contains("app-ready"), "Opening did not reach app-ready");
   await waitFor(() => !doc.querySelector("#app-boot"), "Opening splash was not removed");
   await waitFor(() => doc.querySelector("link[data-ui-v3]"), "ui-v3 runtime stylesheet was not installed");
-  await waitFor(() => doc.querySelector("#ui-v4-polish"), "ui-v4 polish runtime repair was not installed");
   await waitFor(() => doc.querySelector("#brand-assets-v2-style"), "brand runtime style was not installed");
   await waitFor(() => doc.querySelector("#timetable-route-controls"), "v3 timetable controls were not created");
   await waitFor(() => doc.querySelector("#result-stepper"), "search previous/next stepper was not created");
@@ -100,6 +99,7 @@ async function main() {
   await waitFor(() => doc.querySelector("#settings-menu-v13 .settings-nav-row-v13"), "v13 settings menu was not created");
   await waitFor(() => doc.querySelector("#saved-searches-v6 [data-open-search-save]"), "legacy saved route did not migrate to saved search");
   await waitFor(() => doc.querySelector("#favorite-trips-v6 [data-open-favorite]"), "favorite trip collection did not render");
+  assert(!doc.querySelector("#ui-v4-polish"), "ui-v4 compatibility module must not inject runtime presentation styles");
 
   const migratedSearches = JSON.parse(localStorage.getItem("ou-bus:saved-searches") || "[]");
   const migratedFavorites = JSON.parse(localStorage.getItem("ou-bus:favorite-trips") || "[]");
@@ -168,6 +168,11 @@ async function main() {
   assert(doc.querySelector(".settings-disclosure"), "settings disclosures missing");
   assert(doc.querySelector("#saved-searches-v6 [data-open-search-save]"), "saved search row missing in Settings");
   assert(doc.querySelector("#favorite-trips-v6 [data-open-favorite]"), "favorite row missing in Settings");
+
+  const firstLegend = doc.querySelector("#crowding-info-card .crowding-legend-item");
+  const legendPeople = firstLegend ? [...firstLegend.querySelectorAll(".crowding-person")] : [];
+  assert(legendPeople.length === 5, "crowding legend lost person icons");
+  assert(getComputedStyle(legendPeople[4]).color === "rgb(215, 216, 223)", "fifth crowding person inherited the label color again");
 
   doc.querySelector("#saved-searches-v6 [data-open-search-save]")?.click();
   await waitFor(() => doc.querySelector('#view-search.is-active'), "saved search did not reopen Search", 2500);
