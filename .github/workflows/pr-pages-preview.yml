@@ -88,6 +88,8 @@ jobs:
           test -f source/lp/index.html
           test -f source/lp/lp.css
           node --test source/tests/*.test.mjs
+      - name: Browser UI baseline
+        run: bash source/tests/browser-ui-baseline.sh source
       - name: Prepare preview
         run: |
           rm -rf "pages/${PREVIEW_PATH}"
