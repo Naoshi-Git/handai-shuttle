@@ -4,8 +4,6 @@
 #timetable-route-controls{
   display:grid;
   gap:9px;
-  position:-webkit-sticky;
-  position:sticky;
   padding:8px 16px 10px;
   -webkit-backdrop-filter:blur(16px);
   backdrop-filter:blur(16px);
@@ -27,6 +25,6 @@
   -webkit-touch-callout:none;
   -webkit-tap-highlight-color:transparent;
 }
-.result-stepper button:active,#timetable-route-controls button:active{transform:scale(.985)}
+.result-stepper button:active{transform:scale(.985)}
 
-@media(max-width:380px){.location-assist{margin-left:14px;margin-right:14px}.result-stepper{gap:6px}.result-stepper button{padding:0 9px}#timetable-route-controls{margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px}}
+@media(max-width:380px){.location-assist{margin-left:14px;margin-right:14px}.result-stepper{gap:6px}.result-stepper button{padding:0 9px}#timetable-route-controls{padding-left:14px;padding-right:14px}}
