@@ -9,7 +9,6 @@
   backdrop-filter:blur(16px);
   border-bottom:1px solid rgba(225,225,234,.92);
 }
-#timetable-route-controls .tt-campus-tabs{margin:0}
 #timetable-route-controls .tt-current-status{margin-bottom:-2px}
 
 /* iOS Safari: preserve pinch zoom globally but disable double-tap zoom on repeated controls. */
