@@ -37,6 +37,17 @@ test("時刻表はcompact rowとdetail sheetを備える", async () => {
   assert.match(css, /touch-action:manipulation/);
 });
 
+test("pre-compact timetable staging DOM carries data, not version presentation", async () => {
+  const v3Css = await read("ui-v3.css");
+  const source = await read("src/ui-v4.mjs");
+  assert.doesNotMatch(v3Css, /\.next-marker\s*\{/);
+  assert.doesNotMatch(v3Css, /\.tt-route-caption\s*\{/);
+  assert.doesNotMatch(v3Css, /\.route-timetable-card \.stop-time\s*\{/);
+  assert.match(source, /\.tt-route-caption/);
+  assert.match(source, /\.stop-time/);
+  assert.match(source, /card\.innerHTML = `[\s\S]*tt-compact-row/);
+});
+
 test("detail sheet motion is owned by the semantic system, not ui-v4", async () => {
   const css = await read("ui-v4.css");
   const systemCss = await read("src/ui-system.css");
