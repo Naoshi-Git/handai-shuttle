@@ -65,3 +65,5 @@ jobs:
           test -f assets/help/install/ios-02-add-home.webp
           test -f assets/help/install/ios-03-confirm.webp
           node --test tests/*.test.mjs
+      - name: Browser boot smoke
+        run: bash tests/browser-boot-smoke.sh .
