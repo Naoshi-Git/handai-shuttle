@@ -45,7 +45,6 @@ jobs:
           node --check source/src/brand-integration.mjs
           node --check source/src/brand-canvas.mjs
           node --check source/src/ui-v4.mjs
-          node --check source/src/ui-v4-polish.mjs
           node --check source/src/ui-v5.mjs
           node --check source/src/route-preferences.mjs
           node --check source/src/ui-v12.mjs
@@ -63,6 +62,7 @@ jobs:
           test -f source/src/view-lifecycle.css
           test ! -e source/ui-v5.css
           test ! -e source/src/ui-foundation.css
+          test ! -e source/src/ui-v4-polish.mjs
           test ! -e source/src/ui-v10.css
           test ! -e source/src/ui-v11.css
           test ! -e source/src/ui-v12.css
