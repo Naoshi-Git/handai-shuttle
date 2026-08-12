@@ -45,6 +45,14 @@ test("detail sheet motion is owned by the semantic system, not ui-v4", async () 
   assert.match(systemCss, /@keyframes ui-sheet-in/);
 });
 
+test("sheet and share dialog radii are owned by the semantic system", async () => {
+  const css = await read("ui-v4.css");
+  const systemCss = await read("src/ui-system.css");
+  assert.doesNotMatch(css, /\.tt-detail-sheet\s*\{[^}]*border-radius/);
+  assert.doesNotMatch(css, /\.share-card-dialog\s*\{[^}]*border-radius/);
+  assert.match(systemCss, /body\.ui-system \.search-sheet,[\s\S]*body\.ui-system \.tt-detail-sheet,[\s\S]*body\.ui-system \.share-card-dialog\s*\{\s*border-radius:/);
+});
+
 test("next-bus decoration is owned by the semantic system, not version CSS", async () => {
   const v3Css = await read("ui-v3.css");
   const v4Css = await read("ui-v4.css");
