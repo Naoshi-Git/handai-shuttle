@@ -37,6 +37,14 @@ test("時刻表はcompact rowとdetail sheetを備える", async () => {
   assert.match(css, /touch-action:manipulation/);
 });
 
+test("detail sheet motion is owned by the semantic system, not ui-v4", async () => {
+  const css = await read("ui-v4.css");
+  const systemCss = await read("src/ui-system.css");
+  assert.doesNotMatch(css, /tt-sheet-in|\.tt-detail-sheet\[open\]\s*\{\s*animation/);
+  assert.match(systemCss, /body\.ui-system \.tt-detail-sheet\[open\]/);
+  assert.match(systemCss, /@keyframes ui-sheet-in/);
+});
+
 test("トップ・検索結果・時刻表では文字タグではなく人型混雑アイコンを使う", async () => {
   const source = await read("src/ui-v4.mjs");
   const css = await read("ui-v4.css");
