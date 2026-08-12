@@ -4,6 +4,15 @@ import { openSharePreview } from "./share-card.mjs";
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
+function installStyles() {
+  if ($('link[data-ui-v4]')) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "./ui-v4.css";
+  link.dataset.uiV4 = "true";
+  document.head.append(link);
+}
+
 function timePair(text = "") {
   const matches = text.match(/\d{1,2}:\d{2}/g);
   return matches?.length >= 2 ? matches.slice(0, 2) : null;
@@ -382,6 +391,7 @@ function ensureCrowdingInfo() {
   sourceCard.before(section);
 }
 
+installStyles();
 observeDynamicSurfaces();
 observeTimetable();
 ensureDetailSheet();

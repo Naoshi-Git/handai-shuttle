@@ -5,36 +5,9 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const SUITA_STOP_KEY = "ou-bus:suita-origin-stop";
 const CAMPUS_KEY = "ou-bus:default-campus";
-const VALID_CAMPUSES = new Set(Object.keys(CAMPUSES));
-const VALID_SUITA_STOPS = new Set(["suita_engineering", "suita_human_sciences"]);
 
-function releaseBoot(reason = "enhancement-fallback") {
-  if (!document.body?.classList.contains("app-booting")) return;
-  document.documentElement.dataset.bootFallback = reason;
-  document.body.classList.remove("app-booting");
-  document.body.classList.add("app-ready");
-  window.setTimeout(() => $("#app-boot")?.remove(), 300);
-}
-
-const bootFallbackMs = Number(document.documentElement.dataset.bootMaxMs || 1400) + 800;
-window.setTimeout(() => releaseBoot("watchdog-timeout"), bootFallbackMs);
-
-function currentCampus() {
-  try {
-    const stored = localStorage.getItem(CAMPUS_KEY);
-    return VALID_CAMPUSES.has(stored) ? stored : "suita";
-  } catch {
-    return "suita";
-  }
-}
-function suitaStop() {
-  try {
-    const stored = localStorage.getItem(SUITA_STOP_KEY);
-    return VALID_SUITA_STOPS.has(stored) ? stored : "suita_engineering";
-  } catch {
-    return "suita_engineering";
-  }
-}
+function currentCampus() { return localStorage.getItem(CAMPUS_KEY) || "suita"; }
+function suitaStop() { return localStorage.getItem(SUITA_STOP_KEY) || "suita_engineering"; }
 function homeOriginKey() { return currentCampus() === "suita" ? suitaStop() : currentCampus(); }
 function homeDestination() {
   return $("#home-destination-chips .chip.is-active")?.dataset.homeDestination || (currentCampus() === "suita" ? "toyonaka" : "suita");
@@ -252,21 +225,11 @@ function observeHomeRerenders() {
   targets.forEach((target) => observer.observe(target, { childList: true, subtree: true }));
 }
 
-const featureBundle = import("./features-v3.mjs");
+bindEnhancements();
+syncSuitaControls();
+renderHomeEnhancements();
+updateSearchSummary();
+normalizeLabels();
+observeHomeRerenders();
 
-try {
-  bindEnhancements();
-  syncSuitaControls();
-  renderHomeEnhancements();
-  updateSearchSummary();
-  normalizeLabels();
-  observeHomeRerenders();
-} catch (error) {
-  console.error("Handai Shuttle enhancement bootstrap failed", error);
-  releaseBoot("enhancement-bootstrap-error");
-}
-
-void featureBundle.catch((error) => {
-  console.error("Handai Shuttle feature bundle failed to load", error);
-  releaseBoot("feature-bundle-error");
-});
+void import("./features-v3.mjs");
