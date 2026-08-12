@@ -81,6 +81,7 @@ async function main() {
   inventory.settings[".settings-nav-row-v13"] = snapshot(doc, ".settings-nav-row-v13");
   inventory.settings["#crowding-info-card"] = snapshot(doc, "#crowding-info-card");
   inventory.settings["#debug-feedback-card"] = snapshot(doc, "#debug-feedback-card");
+  inventory.settings["#debug-feedback-card p"] = snapshot(doc, "#debug-feedback-card p");
   inventory.settings["#debug-feedback-card .feedback-link"] = snapshot(doc, "#debug-feedback-card .feedback-link");
 
   result.textContent = `STYLE_INVENTORY:${JSON.stringify(inventory)}`;
