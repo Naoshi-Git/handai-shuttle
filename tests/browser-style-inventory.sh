@@ -32,34 +32,14 @@ async function waitFor(fn, timeout = 6000) {
   while (performance.now() - start < timeout) { if (fn()) return; await sleep(50); }
   throw new Error("style inventory timed out");
 }
-function sheetName(sheet) {
-  if (sheet.href) return new URL(sheet.href).pathname.split("/").slice(-2).join("/");
-  return sheet.ownerNode?.id ? `runtime:#${sheet.ownerNode.id}` : "runtime:<style>";
-}
-function matchingOwners(doc, element) {
-  const owners = new Set();
-  function walk(rules, owner) {
-    for (const rule of [...rules]) {
-      if (rule.cssRules) { try { walk(rule.cssRules, owner); } catch {} continue; }
-      if (!rule.selectorText) continue;
-      try { if (element.matches(rule.selectorText)) owners.add(owner); } catch {}
-    }
-  }
-  for (const sheet of [...doc.styleSheets]) {
-    try { walk(sheet.cssRules, sheetName(sheet)); } catch {}
-  }
-  return [...owners];
-}
 function snapshot(doc, selector) {
   const el = doc.querySelector(selector);
   if (!el) return { missing: true };
-  const cs = getComputedStyle(el);
+  const cs = doc.defaultView.getComputedStyle(el);
   const rect = el.getBoundingClientRect();
   const props = ["display","position","font-size","font-weight","line-height","color","background-color","border-radius","box-shadow","padding-top","padding-right","padding-bottom","padding-left","gap","min-height","overflow","z-index"];
-  const computed = Object.fromEntries(props.map((p) => [p, cs.getPropertyValue(p)]));
   return {
-    owners: matchingOwners(doc, el),
-    computed,
+    computed: Object.fromEntries(props.map((p) => [p, cs.getPropertyValue(p)])),
     geometry: { width: Math.round(rect.width), height: Math.round(rect.height) }
   };
 }
@@ -113,9 +93,11 @@ sleep 0.6
 DOM="$TMP/inventory.html"
 "$BROWSER" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --disable-background-networking --user-data-dir="$TMP/profile" --virtual-time-budget=10000 --dump-dom "http://127.0.0.1:${PORT}/.style-inventory-fixture.html" >"$DOM" 2>"$TMP/browser.stderr"
 
-python3 - "$DOM" <<'PY'
+python3 - "$DOM" "$ROOT/tests/ui-computed-baseline.json" <<'PY'
 import html, json, re, sys
-text = open(sys.argv[1], encoding="utf-8").read()
+
+dom_path, baseline_path = sys.argv[1:3]
+text = open(dom_path, encoding="utf-8").read()
 match = re.search(r'<pre id="result">(.*?)</pre>', text, re.S)
 if not match:
     raise SystemExit("style inventory result missing")
@@ -124,6 +106,38 @@ if payload.startswith("STYLE_INVENTORY_ERROR:"):
     raise SystemExit(payload)
 if not payload.startswith("STYLE_INVENTORY:"):
     raise SystemExit("unexpected style inventory result")
-data = json.loads(payload.split(":", 1)[1])
-print("STYLE_INVENTORY_JSON=" + json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+actual = json.loads(payload.split(":", 1)[1])
+expected = json.load(open(baseline_path, encoding="utf-8"))
+
+if actual.get("viewport") != expected.get("viewport"):
+    raise SystemExit(f"viewport baseline changed: {actual.get('viewport')} != {expected.get('viewport')}")
+
+errors = []
+for key, spec in expected["targets"].items():
+    section, selector = key.split(".", 1)
+    observed = actual.get(section, {}).get(selector)
+    if not observed or observed.get("missing"):
+        errors.append(f"{key}: element missing")
+        continue
+    for prop, value in spec.get("computed", {}).items():
+        got = observed.get("computed", {}).get(prop)
+        if got != value:
+            errors.append(f"{key}: {prop} {got!r} != {value!r}")
+    geometry = spec.get("geometry", {})
+    tolerance = geometry.get("tolerance", 0)
+    for dimension in ("width", "height"):
+        if dimension not in geometry:
+            continue
+        got = observed.get("geometry", {}).get(dimension)
+        wanted = geometry[dimension]
+        if got is None or abs(got - wanted) > tolerance:
+            errors.append(f"{key}: {dimension} {got!r} outside {wanted}±{tolerance}")
+
+print("STYLE_INVENTORY_JSON=" + json.dumps(actual, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+if errors:
+    print("Computed UI baseline mismatch:", file=sys.stderr)
+    for error in errors:
+        print(" - " + error, file=sys.stderr)
+    raise SystemExit(1)
+print("Computed UI baseline passed")
 PY
