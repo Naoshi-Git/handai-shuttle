@@ -17,15 +17,6 @@ const CAMPUS_KEY = "ou-bus:default-campus";
 const SUITA_STOP_KEY = "ou-bus:suita-origin-stop";
 const NORMAL_TIMETABLE_DATE = "2026-06-01";
 
-function installStyles() {
-  if ($('link[data-ui-v3]')) return;
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = "./ui-v3.css";
-  link.dataset.uiV3 = "true";
-  document.head.append(link);
-}
-
 function currentCampus() {
   return localStorage.getItem(CAMPUS_KEY) || "suita";
 }
@@ -499,7 +490,6 @@ function addDebugFormLink() {
   sourceCard.before(section);
 }
 
-installStyles();
 ensureLocationAssist();
 setupStayOptions();
 ensureResultStepper();
