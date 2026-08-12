@@ -67,3 +67,5 @@ jobs:
           node --test tests/*.test.mjs
       - name: Browser UI baseline
         run: bash tests/browser-ui-baseline.sh .
+      - name: Browser computed style inventory
+        run: bash tests/browser-style-inventory.sh .
