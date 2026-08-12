@@ -2,7 +2,6 @@
 #timetable-list.timetable-list{gap:6px}
 .route-timetable-card[data-v4-compact="true"]{padding:0!important;min-height:0;border-radius:14px;overflow:hidden;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;scroll-margin-top:calc(190px + env(safe-area-inset-top))}
 .route-timetable-card[data-v4-compact="true"]:active{transform:scale(.993)}
-.route-timetable-card[data-v4-compact="true"].is-next{border:1.5px solid var(--ou-700);background:linear-gradient(180deg,#fff,var(--ou-50));box-shadow:0 6px 16px rgba(45,40,127,.09)}
 .tt-compact-row{display:grid;grid-template-columns:max-content minmax(0,1fr) 12px;align-items:center;gap:8px;min-height:48px;padding:7px 10px}
 .tt-compact-time{display:flex;align-items:baseline;gap:5px;white-space:nowrap;font-variant-numeric:tabular-nums;min-width:0}
 .tt-compact-time strong{font-size:17px;line-height:1;font-weight:900;color:var(--ink)}
