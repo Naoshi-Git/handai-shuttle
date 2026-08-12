@@ -48,6 +48,24 @@ test("pre-compact timetable staging DOM carries data, not version presentation",
   assert.match(source, /card\.innerHTML = `[\s\S]*tt-compact-row/);
 });
 
+test("timetable tracks and compact scroll offset are owned by the semantic system", async () => {
+  const v3Css = await read("ui-v3.css");
+  const systemCss = await read("src/ui-system.css");
+  for (const obsolete of [
+    /\.tt-campus-tabs\s*\{/,
+    /\.tt-campus-tabs button\s*\{/,
+    /\.tt-campus-tabs button\.is-active\s*\{/,
+    /\.tt-destination-buttons\s*\{/,
+    /\.tt-destination-buttons button\s*\{/,
+    /\.tt-destination-buttons button\.is-active\s*\{/,
+    /\.route-timetable-card\s*\{[^}]*scroll-margin-top/
+  ]) assert.doesNotMatch(v3Css, obsolete);
+  assert.match(systemCss, /body\.ui-system \.tt-campus-tabs,[\s\S]*body\.ui-system \.tt-destination-buttons\s*\{[\s\S]*display:\s*grid\s*!important/);
+  assert.match(systemCss, /body\.ui-system \.tt-campus-tabs\s*\{\s*grid-template-columns:\s*repeat\(3,minmax\(0,1fr\)\)\s*!important/);
+  assert.match(systemCss, /body\.ui-system \.tt-destination-buttons\s*\{\s*grid-template-columns:\s*repeat\(2,minmax\(0,1fr\)\)\s*!important/);
+  assert.match(systemCss, /body\.ui-system \.route-timetable-card\[data-v4-compact="true"\]\s*\{\s*scroll-margin-top:/);
+});
+
 test("detail sheet motion is owned by the semantic system, not ui-v4", async () => {
   const css = await read("ui-v4.css");
   const systemCss = await read("src/ui-system.css");
