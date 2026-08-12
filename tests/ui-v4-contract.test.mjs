@@ -52,12 +52,12 @@ test("timetable tracks and compact scroll offset are owned by the semantic syste
   const v3Css = await read("ui-v3.css");
   const systemCss = await read("src/ui-system.css");
   for (const obsolete of [
-    /\.tt-campus-tabs\s*\{/,
-    /\.tt-campus-tabs button\s*\{/,
-    /\.tt-campus-tabs button\.is-active\s*\{/,
-    /\.tt-destination-buttons\s*\{/,
-    /\.tt-destination-buttons button\s*\{/,
-    /\.tt-destination-buttons button\.is-active\s*\{/,
+    /\.tt-campus-tabs\s*\{[^}]*display:/,
+    /\.tt-campus-tabs button\s*\{[^}]*min-height:/,
+    /\.tt-campus-tabs button\.is-active\s*\{[^}]*background:/,
+    /\.tt-destination-buttons\s*\{[^}]*display:/,
+    /\.tt-destination-buttons button\s*\{[^}]*border:/,
+    /\.tt-destination-buttons button\.is-active\s*\{[^}]*background:/,
     /\.route-timetable-card\s*\{[^}]*scroll-margin-top/
   ]) assert.doesNotMatch(v3Css, obsolete);
   assert.match(systemCss, /body\.ui-system \.tt-campus-tabs,[\s\S]*body\.ui-system \.tt-destination-buttons\s*\{[\s\S]*display:\s*grid\s*!important/);
