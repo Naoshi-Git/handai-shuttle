@@ -143,7 +143,19 @@
       <label class="dialog-stop-field" id="dialog-suita-stop-wrap"><span>吹田の乗り場</span><select id="dialog-suita-stop"><option value="suita_engineering">工学部前</option><option value="suita_human_sciences">人間科学部前</option></select></label>
     </form>
   </dialog>
+  <script>
+    (() => {
+      const maximumMs = Number(document.documentElement.dataset.bootMaxMs || 1400);
+      window.setTimeout(() => {
+        if (!document.body.classList.contains("app-booting")) return;
+        document.documentElement.dataset.bootFallback = "html-watchdog";
+        document.body.classList.remove("app-booting");
+        document.body.classList.add("app-ready");
+        document.getElementById("app-boot")?.remove();
+      }, maximumMs + 800);
+    })();
+  </script>
   <script type="module" src="./src/app.mjs"></script>
-  <script type="module" src="./src/enhancements.mjs"></script>
+  <script type="module" src="./src/enhancements.mjs?boot=20260812-1"></script>
 </body>
 </html>
