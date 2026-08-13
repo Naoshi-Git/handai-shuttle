@@ -124,31 +124,23 @@ test("Bottom Sheetの経路線は全停留所共通の1本軸で描画する", a
   assert.match(css, /justify-self:center/);
 });
 
-test("選択便をブランド付きPNG共有カードとして共有できる", async () => {
+test("共有は別デザインを再描画せず表示中UIをPNG化する", async () => {
   const source = await read("src/ui-v4.mjs");
   const share = await read("src/share-card.mjs");
+  const snapshot = await read("src/dom-snapshot.mjs");
   const identity = await read("src/share-identity.mjs");
   const css = await read("src/ui-system.css");
-  assert.match(source, /openSharePreview/);
-  assert.match(source, /next-share-button/);
-  assert.match(source, /journey-share-button/);
-  assert.match(source, /tt-sheet-share/);
-  assert.match(share, /CARD_WIDTH = 1080/);
-  assert.match(share, /CARD_HEIGHT = 1350/);
-  assert.match(share, /阪大シャトル/);
+
+  assert.match(source, /openSharePreview\(data, \$\("#next-card"\)\)/);
+  assert.match(source, /openSharePreview\(latest, card\)/);
+  assert.match(source, /openSharePreview\(timetableShareData\(detail\), \$\("\.tt-sheet-shell", dialog\)\)/);
+  assert.match(share, /snapshotElementToPng/);
   assert.match(share, /navigator\.share/);
   assert.match(share, /new File/);
-  assert.match(share, /naoshi-git\.github\.io\/handai-shuttle/);
   assert.match(share, /shareTargetUrl/);
   assert.match(share, /shareLandingUrl/);
-  assert.match(share, /混雑目安/);
-  assert.match(share, /豊中・箕面・吹田のバス時刻を、すぐ確認。/);
-  assert.match(share, /次の便/);
-  assert.match(share, /最終便/);
-  assert.match(share, /drawDirectionalArrow/);
-  assert.doesNotMatch(share, /選択した便/);
-  assert.doesNotMatch(share, /阪大シャトルを開く/);
-  assert.doesNotMatch(share, /時間割ベースの推定/);
+  assert.doesNotMatch(share, /drawBrandMark|fillText|createElement\(["']canvas["']\)/);
+  assert.match(snapshot, /@zumer\/snapdom@2\.8\.0/);
   assert.match(identity, /share\.html/);
   assert.match(identity, /new URL\("share\.html", base\)/);
   assert.match(css, /share-card-dialog/);
