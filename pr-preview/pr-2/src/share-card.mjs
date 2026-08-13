@@ -100,58 +100,57 @@ function drawShareCard(data) {
   ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
   ctx.textBaseline = "middle";
 
-  // Brand is intentionally compact: the selected journey, not the logo, is the visual protagonist.
-  drawBrandMark(ctx, 72, 72, 76);
+  drawBrandMark(ctx, 72, 70, 82);
   ctx.fillStyle = "#2d287f";
   font(ctx, 700, 18);
-  ctx.fillText("HANDAI SHUTTLE", 172, 95);
-  font(ctx, 800, 38);
-  ctx.fillText("阪大シャトル", 172, 132);
-  ctx.fillStyle = "#6f6e7c";
+  ctx.fillText("HANDAI SHUTTLE", 178, 94);
+  font(ctx, 800, 39);
+  ctx.fillText("阪大シャトル", 178, 132);
+  ctx.fillStyle = "#737280";
   font(ctx, 500, 17);
-  ctx.fillText("大阪大学 学内連絡バス 非公式Webアプリ", 172, 166);
+  ctx.fillText("大阪大学 学内連絡バス 非公式Webアプリ", 178, 166);
 
-  const panelY = 224;
-  const panelHeight = 500;
+  const panelY = 218;
+  const panelHeight = 638;
   const panel = ctx.createLinearGradient(72, panelY, 1008, panelY + panelHeight);
-  panel.addColorStop(0, "#2a2674");
-  panel.addColorStop(.58, "#39318e");
-  panel.addColorStop(1, "#5c51ba");
+  panel.addColorStop(0, "#292477");
+  panel.addColorStop(.58, "#38318d");
+  panel.addColorStop(1, "#6055bd");
   ctx.save();
-  ctx.shadowColor = "rgba(36,31,103,.18)";
-  ctx.shadowBlur = 26;
+  ctx.shadowColor = "rgba(36,31,103,.16)";
+  ctx.shadowBlur = 24;
   ctx.shadowOffsetY = 12;
-  fillRoundRect(ctx, 72, panelY, 936, panelHeight, 50, panel);
+  fillRoundRect(ctx, 72, panelY, 936, panelHeight, 54, panel);
   ctx.restore();
 
   ctx.save();
-  roundRectPath(ctx, 72, panelY, 936, panelHeight, 50);
+  roundRectPath(ctx, 72, panelY, 936, panelHeight, 54);
   ctx.clip();
-  ctx.strokeStyle = "rgba(255,255,255,.065)";
-  ctx.lineWidth = 38;
+  ctx.strokeStyle = "rgba(255,255,255,.07)";
+  ctx.lineWidth = 48;
   ctx.beginPath();
-  ctx.arc(868, 556, 220, 0, Math.PI * 2);
+  ctx.arc(870, 630, 244, 0, Math.PI * 2);
   ctx.stroke();
-  ctx.strokeStyle = "rgba(255,255,255,.11)";
+  ctx.strokeStyle = "rgba(255,255,255,.10)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.arc(868, 556, 152, 0, Math.PI * 2);
+  ctx.arc(870, 630, 158, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
 
-  drawPill(ctx, safeText(data.sourceLabel, "選択した便"), 124, 262, {
+  drawPill(ctx, safeText(data.sourceLabel, "選択した便"), 124, 258, {
     fill: "rgba(255,255,255,.13)", color: "rgba(255,255,255,.86)", height: 40, padX: 17, size: 17
   });
 
   const route = `${safeText(data.origin, "出発")}  →  ${safeText(data.destination, "到着")}`;
-  const routeSize = fitFont(ctx, route, 790, 50, 34, 800);
+  const routeSize = fitFont(ctx, route, 800, 52, 36, 800);
   font(ctx, 800, routeSize);
   ctx.fillStyle = "#fff";
-  ctx.fillText(route, 124, 344);
+  ctx.fillText(route, 124, 350);
 
   const departure = safeText(data.departure, "--:--");
   const arrival = safeText(data.arrival, "--:--");
-  let timeSize = 94;
+  let timeSize = 98;
   let departureWidth = 0;
   let arrivalWidth = 0;
   let departureUnitWidth = 0;
@@ -159,7 +158,7 @@ function drawShareCard(data) {
   let arrowWidth = 0;
   let unitSize = 0;
   let arrowSize = 0;
-  while (timeSize >= 68) {
+  while (timeSize >= 70) {
     unitSize = Math.max(18, Math.round(timeSize * .22));
     arrowSize = Math.max(25, Math.round(timeSize * .32));
     font(ctx, 900, timeSize);
@@ -170,12 +169,12 @@ function drawShareCard(data) {
     arrivalUnitWidth = ctx.measureText("着").width;
     font(ctx, 700, arrowSize);
     arrowWidth = ctx.measureText("→").width;
-    if (departureWidth + departureUnitWidth + arrivalWidth + arrivalUnitWidth + arrowWidth + 86 <= 790) break;
+    if (departureWidth + departureUnitWidth + arrivalWidth + arrivalUnitWidth + arrowWidth + 86 <= 800) break;
     timeSize -= 2;
   }
 
   let timeX = 124;
-  const timeY = 452;
+  const timeY = 474;
   ctx.fillStyle = "#fff";
   font(ctx, 900, timeSize);
   ctx.fillText(departure, timeX, timeY);
@@ -197,81 +196,74 @@ function drawShareCard(data) {
   ctx.fillText("着", timeX, timeY + Math.round(timeSize * .12));
 
   let pillX = 124;
+  const pillY = 562;
   const routeType = safeText(data.routeType, "運行便");
-  pillX += drawPill(ctx, routeType, pillX, 514, { height: 46, padX: 18, size: 19 }) + 10;
-  if (data.duration) pillX += drawPill(ctx, safeText(data.duration), pillX, 532, { height: 46, padX: 18, size: 19 }) + 10;
-  if (data.tripId) drawPill(ctx, `${safeText(data.tripId).replace(/便$/, "")}便`, pillX, 532, { height: 46, padX: 18, size: 19 });
+  pillX += drawPill(ctx, routeType, pillX, pillY, { height: 46, padX: 18, size: 19 }) + 10;
+  if (data.duration) pillX += drawPill(ctx, safeText(data.duration), pillX, pillY, { height: 46, padX: 18, size: 19 }) + 10;
+  if (data.tripId) drawPill(ctx, `${safeText(data.tripId).replace(/便$/, "")}便`, pillX, pillY, { height: 46, padX: 18, size: 19 });
 
   ctx.strokeStyle = "rgba(255,255,255,.16)";
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(124, 582);
-  ctx.lineTo(956, 582);
+  ctx.moveTo(124, 640);
+  ctx.lineTo(956, 640);
   ctx.stroke();
 
-  ctx.fillStyle = "rgba(255,255,255,.74)";
+  ctx.fillStyle = "rgba(255,255,255,.76)";
   font(ctx, 700, 19);
-  ctx.fillText("混雑目安", 124, 630);
-  drawCrowding(ctx, 246, 600, Number(data.crowdingLevel) || 1);
-  ctx.fillStyle = "rgba(255,255,255,.54)";
+  ctx.fillText("混雑目安", 124, 690);
+  drawCrowding(ctx, 246, 660, Number(data.crowdingLevel) || 1);
+  ctx.fillStyle = "rgba(255,255,255,.55)";
   font(ctx, 500, 16);
-  ctx.fillText("時間割ベースの推定", 390, 630);
+  ctx.fillText("時間割ベースの推定", 390, 690);
 
   const stopLine = [safeText(data.originDetail), safeText(data.destinationDetail)].filter(Boolean).join("  →  ");
   if (stopLine) {
-    const stopSize = fitFont(ctx, stopLine, 600, 22, 18, 600);
+    const stopSize = fitFont(ctx, stopLine, 620, 22, 18, 600);
     font(ctx, 600, stopSize);
-    ctx.fillStyle = "rgba(255,255,255,.83)";
-    ctx.fillText(stopLine, 124, 690);
+    ctx.fillStyle = "rgba(255,255,255,.84)";
+    ctx.fillText(stopLine, 124, 770);
   }
   if (data.date) {
     ctx.fillStyle = "rgba(255,255,255,.66)";
     font(ctx, 600, 18);
     ctx.textAlign = "right";
-    ctx.fillText(safeText(data.date), 956, 690);
+    ctx.fillText(safeText(data.date), 956, 770);
     ctx.textAlign = "left";
   }
 
-  const introY = 786;
-  const introHeight = 332;
+  const introY = 922;
+  const introHeight = 278;
   ctx.save();
-  ctx.shadowColor = "rgba(31,28,75,.08)";
-  ctx.shadowBlur = 22;
-  ctx.shadowOffsetY = 9;
-  fillRoundRect(ctx, 72, introY, 936, introHeight, 44, "#fff");
+  ctx.shadowColor = "rgba(31,28,75,.07)";
+  ctx.shadowBlur = 20;
+  ctx.shadowOffsetY = 8;
+  fillRoundRect(ctx, 72, introY, 936, introHeight, 42, "#fff");
   ctx.restore();
-  fillRoundRect(ctx, 72, introY, 936, introHeight, 44, "#fff");
+  fillRoundRect(ctx, 72, introY, 936, introHeight, 42, "#fff");
 
   ctx.fillStyle = "#2d287f";
-  font(ctx, 700, 26);
-  ctx.fillText("移動前に、阪大シャトル。", 124, 846);
-  ctx.fillStyle = "#19172e";
-  font(ctx, 800, 36);
-  ctx.fillText("次の便が、すぐわかる。", 124, 892);
-  ctx.fillStyle = "#77768a";
-  font(ctx, 500, 18);
-  ctx.fillText("豊中・箕面・吹田の時刻検索 / 最終便 / 混雑目安", 124, 936);
+  font(ctx, 800, 31);
+  ctx.fillText("阪大シャトル", 124, 976);
+  ctx.fillStyle = "#242334";
+  font(ctx, 700, 25);
+  ctx.fillText("豊中・箕面・吹田のバス時刻を、すぐ確認。", 124, 1020);
 
   let featureX = 124;
-  featureX += drawPill(ctx, "次の便", featureX, 974, { fill: "#f0effa", color: "#2d287f", height: 42, padX: 17, size: 18 }) + 9;
-  featureX += drawPill(ctx, "最終便", featureX, 974, { fill: "#f0effa", color: "#2d287f", height: 42, padX: 17, size: 18 }) + 9;
-  drawPill(ctx, "混雑目安", featureX, 974, { fill: "#f0effa", color: "#2d287f", height: 42, padX: 17, size: 18 });
+  featureX += drawPill(ctx, "次の便", featureX, 1054, { fill: "#f0effa", color: "#2d287f", height: 40, padX: 16, size: 17 }) + 9;
+  featureX += drawPill(ctx, "最終便", featureX, 1054, { fill: "#f0effa", color: "#2d287f", height: 40, padX: 16, size: 17 }) + 9;
+  drawPill(ctx, "混雑目安", featureX, 1054, { fill: "#f0effa", color: "#2d287f", height: 40, padX: 16, size: 17 });
 
-  fillRoundRect(ctx, 124, 1042, 832, 50, 25, "#2d287f");
-  ctx.fillStyle = "#fff";
-  font(ctx, 700, 19);
-  ctx.fillText("阪大シャトルを開く", 154, 1067);
-  ctx.fillStyle = "rgba(255,255,255,.78)";
-  font(ctx, 500, 17);
-  ctx.textAlign = "right";
-  ctx.fillText(DISPLAY_URL, 928, 1067);
-  ctx.textAlign = "left";
+  ctx.fillStyle = "#6f6e7c";
+  font(ctx, 600, 18);
+  ctx.fillText(DISPLAY_URL, 124, 1143);
 
   ctx.fillStyle = "#8a8999";
   font(ctx, 500, 16);
   ctx.fillText("※ 大阪大学公式サービスではありません。運行情報は公式案内もご確認ください。", 80, 1284);
   return canvas;
 }
+
 function canvasBlob(canvas) {
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("画像を生成できませんでした")), "image/png", 1);
@@ -295,10 +287,10 @@ function ensureDialog() {
         <button type="button" class="share-card-close" aria-label="共有画面を閉じる">×</button>
       </header>
       <div class="share-card-preview"><img id="share-card-image" alt="阪大シャトルの共有カード"></div>
-      <p class="share-card-copy">便の情報と一緒に、阪大シャトルを紹介できます。</p>
+      <p class="share-card-copy">便情報を画像で共有できます。</p>
       <div class="share-card-actions">
-        <button type="button" class="share-card-primary" id="share-card-native">共有する</button>
-        <button type="button" class="share-card-secondary" id="share-card-copy">リンクをコピー</button>
+        <button type="button" class="share-card-primary" id="share-card-native">画像を共有</button>
+        <button type="button" class="share-card-secondary" id="share-card-copy">リンクだけコピー</button>
       </div>
       <p class="share-card-status" id="share-card-status" role="status"></p>
     </div>`;
