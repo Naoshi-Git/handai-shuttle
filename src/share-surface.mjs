@@ -5,6 +5,19 @@ function text(value, fallback = "") {
   return String(value || fallback).replace(/\s+/g, " ").trim();
 }
 
+function durationLabel(departure, arrival) {
+  const parse = (value) => {
+    const match = text(value).match(/^(\d{1,2}):(\d{2})$/);
+    if (!match) return null;
+    return Number(match[1]) * 60 + Number(match[2]);
+  };
+  const start = parse(departure);
+  const end = parse(arrival);
+  if (start === null || end === null) return "";
+  const minutes = end >= start ? end - start : end + 24 * 60 - start;
+  return minutes > 0 ? `${minutes}分` : "";
+}
+
 function crowdingIcon(level) {
   const numericLevel = Math.min(5, Math.max(1, Number(level) || 1));
   const icon = document.createElement("span");
@@ -21,6 +34,7 @@ function crowdingIcon(level) {
 }
 
 function setNextCardData(card, data) {
+  const liveDateOrCountdown = text(card.querySelector("#next-card-content .next-meta > span")?.textContent);
   card.querySelector("#next-share-button")?.remove();
   card.querySelector("#remaining-summary")?.remove();
 
@@ -38,6 +52,10 @@ function setNextCardData(card, data) {
   const destination = text(data?.destination, "到着");
   const departure = text(data?.departure, "--:--");
   const arrival = text(data?.arrival, "--:--");
+  const duration = text(data?.duration) || durationLabel(departure, arrival);
+  const date = data?.sourceLabel === "次の便" && liveDateOrCountdown
+    ? liveDateOrCountdown
+    : text(data?.date);
 
   content.innerHTML = `
     <div class="next-route">
@@ -54,8 +72,8 @@ function setNextCardData(card, data) {
 
   const meta = content.querySelector(".next-meta");
   const metaValues = [
-    text(data?.date),
-    text(data?.duration),
+    date,
+    duration,
     text(data?.originDetail) ? `${text(data.originDetail).replace(/から$/, "")}から` : ""
   ].filter(Boolean);
 
