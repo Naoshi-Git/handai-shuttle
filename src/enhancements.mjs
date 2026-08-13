@@ -233,4 +233,4 @@ normalizeLabels();
 observeHomeRerenders();
 
 // Keep behavioral modules aligned with the cache-busted semantic stylesheet after a share-card update.
-void import("./features-v3.mjs?share-card-compact-20260813");
+void import("./features-v3.mjs?share-card-final-layout-20260813");
