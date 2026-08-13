@@ -18,10 +18,10 @@ test("v12 remains a functional layer before v13 and ui-current", () => {
 
 test("semantic presentation CSS is linked in head before modules run", () => {
   assert.match(html, /ads\.css" data-ads-ui/);
-  assert.match(html, /ui-system\.css" data-ui-system/);
+  assert.match(html, /ui-system\.css(?:\?[^\"]*)?" data-ui-system/);
   assert.doesNotMatch(html, /ui-v[0-9]+\.css|data-ui-v[0-9]+|data-ui-current/);
   assert.doesNotMatch(html, /src\/ui-v10\.css|src\/ui-v11\.css|src\/ui-v12\.css|src\/ui-v13\.css|src\/ui-v14\.css|src\/ui-v15\.css|src\/ui-current\.css/);
-  assert.match(html, /ui-system\.css" data-ui-system[\s\S]*<\/head>[\s\S]*<script type="module" src="\.\/src\/app\.mjs"/);
+  assert.match(html, /ui-system\.css(?:\?[^\"]*)?" data-ui-system[\s\S]*<\/head>[\s\S]*<script type="module" src="\.\/src\/app\.mjs"/);
   assert.match(html, /class="app-boot"/);
   assert.match(html, /brand-icon-rounded\.svg/);
 });

@@ -109,7 +109,7 @@ async function main() {
 
   const stylesheetHrefs = [...doc.querySelectorAll('link[rel="stylesheet"]')].map((link) => link.getAttribute("href") || "");
   for (const required of ["./style.css", "./ads.css", "./src/ui-system.css"]) {
-    assert(stylesheetHrefs.includes(required), `required presentation layer missing: ${required}`);
+    assert(stylesheetHrefs.some((href) => href === required || href.startsWith(`${required}?`)), `required presentation layer missing: ${required}`);
   }
 
   assert(!doc.body.classList.contains("app-booting"), "body remained app-booting");

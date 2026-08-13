@@ -50,7 +50,9 @@ test("every relative module import resolves to an existing file", async () => {
     const absoluteFile = path.join(ROOT, relativeFile);
     const source = await readFile(absoluteFile, "utf8");
     for (const specifier of localSpecifiers(source)) {
-      const target = path.resolve(path.dirname(absoluteFile), specifier);
+      // Runtime cache-busting query strings do not change the local module file that must resolve.
+      const modulePath = specifier.split(/[?#]/, 1)[0];
+      const target = path.resolve(path.dirname(absoluteFile), modulePath);
       if (!await exists(target)) {
         missing.push(`${relativeFile} -> ${specifier}`);
       }
