@@ -2,7 +2,7 @@
 // Functional modules keep their behavior ownership; presentation is declared by the semantic ui-system scope in index.html.
 import "./features-v3-core.mjs";
 import "./brand-integration.mjs";
-import "./ui-v4.mjs?share-card-rich-20260813";
+import "./ui-v4.mjs?share-card-polish-20260813";
 import "./ads.mjs";
 import "./ui-v5.mjs";
 import "./pwa.mjs";
