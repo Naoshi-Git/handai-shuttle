@@ -1,5 +1,5 @@
 import { crowdingBadgeText, predictCrowding } from "./crowding-prediction.mjs";
-import { openSharePreview } from "./share-card.mjs?share-card-final-layout-20260813";
+import { openSharePreview } from "./share-card.mjs?share-card-rhythm-20260813";
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
