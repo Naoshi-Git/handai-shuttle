@@ -21,13 +21,35 @@ test("sharing normalizes every source into the Home next-card UI before snapshot
   assert.doesNotMatch(share, /fillText\(/);
 });
 
-test("share surface protects short metadata from ellipsis and keeps promo subordinate", async () => {
+test("share surface has one canonical width across Home, Search and Timetable", async () => {
   const surface = await read("src/share-surface.mjs");
 
-  assert.match(surface, /item\.style\.flexShrink = "0"/);
+  assert.match(surface, /const SHARE_CARD_WIDTH = 343/);
+  assert.match(surface, /width:\$\{SHARE_CARD_WIDTH \+ SHARE_STAGE_PADDING \* 2\}px/);
+  assert.match(surface, /card\.style\.width = `\$\{SHARE_CARD_WIDTH\}px`/);
+  assert.match(surface, /card\.style\.minWidth = `\$\{SHARE_CARD_WIDTH\}px`/);
+  assert.match(surface, /card\.style\.maxWidth = `\$\{SHARE_CARD_WIDTH\}px`/);
+  assert.doesNotMatch(surface, /getBoundingClientRect\(\)\.width/);
+  assert.doesNotMatch(surface, /offsetWidth/);
+});
+
+test("short metadata never ellipsizes and stop detail may shrink without stretching", async () => {
+  const surface = await read("src/share-surface.mjs");
+
+  assert.match(surface, /item\.style\.flex = "0 0 auto"/);
   assert.match(surface, /item\.style\.textOverflow = "clip"/);
-  assert.match(surface, /次の便・最終便・混雑目安を、すぐ確認。/);
-  assert.match(surface, /大阪大学 非公式Webアプリ/);
+  assert.match(surface, /originItem\.style\.flex = "0 1 auto"/);
+  assert.match(surface, /originItem\.style\.maxWidth = "112px"/);
+  assert.doesNotMatch(surface, /originItem\.style\.flex = "1 1 auto"/);
+});
+
+test("promo copy uses explicit stable lines instead of incidental wrapping", async () => {
+  const surface = await read("src/share-surface.mjs");
+
+  assert.match(surface, /tagline\.textContent = "次の便・最終便・混雑目安を、すぐ確認。"/);
+  assert.match(surface, /url\.textContent = DISPLAY_URL/);
+  assert.match(surface, /disclaimer\.textContent = "大阪大学 非公式Webアプリ"/);
+  assert.match(surface, /white-space:nowrap/);
   assert.match(surface, /brand-icon-rounded\.svg/);
   assert.doesNotMatch(surface, /阪大シャトルを開く/);
 });
