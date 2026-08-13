@@ -1,5 +1,5 @@
 import { crowdingBadgeText, predictCrowding } from "./crowding-prediction.mjs";
-import { openSharePreview } from "./share-card.mjs?share-card-rhythm-20260813";
+import { openSharePreview } from "./share-card.mjs?live-ui-snapshot-20260813";
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -111,7 +111,7 @@ function ensureNextShareButton() {
       event.preventDefault();
       event.stopPropagation();
       const data = nextShareData();
-      if (data) await openSharePreview(data);
+      if (data) await openSharePreview(data, $("#next-card"));
     });
     group.append(button);
   }
@@ -166,7 +166,7 @@ function decorateJourneyShare(card) {
     event.preventDefault();
     event.stopPropagation();
     const latest = journeyShareData(card, sourceLabel);
-    if (latest) await openSharePreview(latest);
+    if (latest) await openSharePreview(latest, card);
   });
   card.append(button);
 }
@@ -259,7 +259,7 @@ function ensureDetailSheet() {
   $(".tt-sheet-close", dialog)?.addEventListener("click", () => dialog.close());
   $(".tt-sheet-share", dialog)?.addEventListener("click", async () => {
     const detail = timetableDetails.get(dialog.dataset.tripId);
-    if (detail) await openSharePreview(timetableShareData(detail));
+    if (detail) await openSharePreview(timetableShareData(detail), $(".tt-sheet-shell", dialog));
   });
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
