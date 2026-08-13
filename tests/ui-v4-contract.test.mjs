@@ -141,12 +141,14 @@ test("選択便をブランド付きPNG共有カードとして共有できる",
   assert.match(share, /naoshi-git\.github\.io\/handai-shuttle/);
   assert.match(share, /shareTargetUrl/);
   assert.match(share, /shareLandingUrl/);
-  assert.match(share, /選択した便/);
   assert.match(share, /混雑目安/);
   assert.match(share, /豊中・箕面・吹田のバス時刻を、すぐ確認。/);
   assert.match(share, /次の便/);
   assert.match(share, /最終便/);
+  assert.match(share, /drawDirectionalArrow/);
+  assert.doesNotMatch(share, /選択した便/);
   assert.doesNotMatch(share, /阪大シャトルを開く/);
+  assert.doesNotMatch(share, /時間割ベースの推定/);
   assert.match(identity, /share\.html/);
   assert.match(identity, /new URL\("share\.html", base\)/);
   assert.match(css, /share-card-dialog/);
