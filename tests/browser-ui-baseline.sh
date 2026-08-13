@@ -133,6 +133,9 @@ async function main() {
   await openView("search");
   assert(doc.querySelector("#search-form"), "Search form missing");
   assert(doc.querySelector("#result-stepper"), "Search stepper disappeared");
+  assert(doc.querySelector("#location-assist")?.classList.contains("is-hidden"), "location fallback should not displace Search content");
+  assert(doc.querySelector("#search-message .search-guidance"), "unsubmitted Search should explain the next action");
+  assert(doc.querySelector("#favorite-current-button")?.hidden, "unsubmitted Search should not expose stale save controls");
   const timingButton = doc.querySelector(".search-timing-button");
   const conditionButton = doc.querySelector(".search-condition-button");
   const timingSheet = doc.querySelector("#search-timing-sheet");
@@ -150,6 +153,7 @@ async function main() {
   await waitFor(() => !conditionSheet.open && !conditionSheet.hasAttribute("open"), "Search condition sheet did not close", 2500);
 
   await openView("timetable");
+  assert(doc.querySelector("#location-assist")?.classList.contains("is-hidden"), "location fallback should not displace Timetable content");
   assert(doc.querySelector("#timetable-route-controls .tt-campus-tabs"), "Timetable campus tabs missing");
   await waitFor(() => doc.querySelector("#timetable-list .tt-compact-row"), "v4 compact timetable rows were not produced", 3500);
   const compactCard = doc.querySelector("#timetable-list .route-timetable-card[data-tt-trip]");
@@ -162,6 +166,7 @@ async function main() {
   await waitFor(() => !detailSheet.open && !detailSheet.hasAttribute("open"), "Timetable detail sheet did not close", 2500);
 
   await openView("settings");
+  assert(doc.querySelector("#location-assist")?.classList.contains("is-hidden"), "location fallback should not displace Settings content");
   assert(doc.querySelector("#debug-feedback-card"), "feedback card missing");
   assert(doc.querySelector("#crowding-info-card"), "crowding information card missing");
   assert(doc.querySelector(".settings-disclosure"), "settings disclosures missing");

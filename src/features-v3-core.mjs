@@ -25,6 +25,19 @@ function currentSuitaStop() {
   return localStorage.getItem(SUITA_STOP_KEY) || "suita_engineering";
 }
 
+function isHomeViewActive() {
+  return $("#view-home")?.classList.contains("is-active") === true;
+}
+
+function syncSuitaStopInputs(stopId) {
+  ["#default-suita-stop", "#dialog-suita-stop", "#origin-stop"].forEach((selector) => {
+    const select = $(selector);
+    if (!select) return;
+    select.value = stopId;
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+}
+
 function nowParts() {
   const now = new Date();
   return {
@@ -48,6 +61,10 @@ function hideLocationAssist() {
 }
 
 function showLocationAssist(message, { suitOnly = false } = {}) {
+  // The manual fallback is useful while choosing a journey from Home, but it must
+  // not displace Search, Timetable, or Settings content after the user navigates away.
+  if (!isHomeViewActive()) return;
+
   const box = ensureLocationAssist();
   const choices = suitOnly
     ? `
@@ -59,13 +76,17 @@ function showLocationAssist(message, { suitOnly = false } = {}) {
       <button type="button" data-location-campus="suita">吹田</button>`;
 
   box.innerHTML = `
-    <div class="location-assist-copy">
-      <strong>現在地を確認してください</strong>
-      <span>${message}</span>
+    <div class="location-assist-head">
+      <div class="location-assist-copy">
+        <strong>現在地を確認してください</strong>
+        <span>${message}</span>
+      </div>
+      <button class="location-assist-dismiss" type="button" data-location-assist-dismiss aria-label="現在地の手動選択を閉じる">閉じる</button>
     </div>
     <div class="location-assist-actions">${choices}</div>`;
   box.classList.remove("is-hidden");
 
+  $("[data-location-assist-dismiss]", box)?.addEventListener("click", hideLocationAssist);
   $$('[data-location-campus]', box).forEach((button) => {
     button.addEventListener("click", () => {
       if (button.dataset.locationCampus === "suita") {
@@ -98,12 +119,7 @@ function applyLocation(target, source = "位置情報") {
   }
 
   if (target.campusId === "suita" && target.stopId) {
-    ["#default-suita-stop", "#dialog-suita-stop", "#origin-stop"].forEach((selector) => {
-      const select = $(selector);
-      if (!select) return;
-      select.value = target.stopId;
-      select.dispatchEvent(new Event("change", { bubbles: true }));
-    });
+    syncSuitaStopInputs(target.stopId);
   }
 
   hideLocationAssist();
@@ -181,6 +197,10 @@ function requestEnhancedLocation({ automatic = false } = {}) {
 }
 
 function bindEnhancedLocation() {
+  window.addEventListener("handai:viewchange", (event) => {
+    if (event.detail?.view !== "home") hideLocationAssist();
+  });
+
   const locate = $("#locate-button");
   if (locate) {
     locate.addEventListener("click", (event) => {
@@ -382,10 +402,7 @@ function renderTimetableControls() {
   });
   $("#tt-suita-stop")?.addEventListener("change", (event) => {
     localStorage.setItem(SUITA_STOP_KEY, event.target.value);
-    ["#default-suita-stop", "#dialog-suita-stop", "#origin-stop"].forEach((selector) => {
-      const select = $(selector);
-      if (select) select.value = event.target.value;
-    });
+    syncSuitaStopInputs(event.target.value);
     renderRouteTimetable({ autoScroll: true });
   });
 }
