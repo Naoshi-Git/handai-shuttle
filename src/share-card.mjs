@@ -111,8 +111,8 @@ function drawShareCard(data) {
   font(ctx, 500, 17);
   ctx.fillText("大阪大学 学内連絡バス 非公式Webアプリ", 172, 166);
 
-  const panelY = 218;
-  const panelHeight = 550;
+  const panelY = 224;
+  const panelHeight = 500;
   const panel = ctx.createLinearGradient(72, panelY, 1008, panelY + panelHeight);
   panel.addColorStop(0, "#2a2674");
   panel.addColorStop(.58, "#39318e");
@@ -130,16 +130,16 @@ function drawShareCard(data) {
   ctx.strokeStyle = "rgba(255,255,255,.065)";
   ctx.lineWidth = 38;
   ctx.beginPath();
-  ctx.arc(868, 578, 232, 0, Math.PI * 2);
+  ctx.arc(868, 556, 220, 0, Math.PI * 2);
   ctx.stroke();
   ctx.strokeStyle = "rgba(255,255,255,.11)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.arc(868, 578, 162, 0, Math.PI * 2);
+  ctx.arc(868, 556, 152, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
 
-  drawPill(ctx, safeText(data.sourceLabel, "選択した便"), 124, 258, {
+  drawPill(ctx, safeText(data.sourceLabel, "選択した便"), 124, 262, {
     fill: "rgba(255,255,255,.13)", color: "rgba(255,255,255,.86)", height: 40, padX: 17, size: 17
   });
 
@@ -147,7 +147,7 @@ function drawShareCard(data) {
   const routeSize = fitFont(ctx, route, 790, 50, 34, 800);
   font(ctx, 800, routeSize);
   ctx.fillStyle = "#fff";
-  ctx.fillText(route, 124, 352);
+  ctx.fillText(route, 124, 344);
 
   const departure = safeText(data.departure, "--:--");
   const arrival = safeText(data.arrival, "--:--");
@@ -175,7 +175,7 @@ function drawShareCard(data) {
   }
 
   let timeX = 124;
-  const timeY = 468;
+  const timeY = 452;
   ctx.fillStyle = "#fff";
   font(ctx, 900, timeSize);
   ctx.fillText(departure, timeX, timeY);
@@ -198,42 +198,42 @@ function drawShareCard(data) {
 
   let pillX = 124;
   const routeType = safeText(data.routeType, "運行便");
-  pillX += drawPill(ctx, routeType, pillX, 532, { height: 46, padX: 18, size: 19 }) + 10;
+  pillX += drawPill(ctx, routeType, pillX, 514, { height: 46, padX: 18, size: 19 }) + 10;
   if (data.duration) pillX += drawPill(ctx, safeText(data.duration), pillX, 532, { height: 46, padX: 18, size: 19 }) + 10;
   if (data.tripId) drawPill(ctx, `${safeText(data.tripId).replace(/便$/, "")}便`, pillX, 532, { height: 46, padX: 18, size: 19 });
 
   ctx.strokeStyle = "rgba(255,255,255,.16)";
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(124, 604);
-  ctx.lineTo(956, 604);
+  ctx.moveTo(124, 582);
+  ctx.lineTo(956, 582);
   ctx.stroke();
 
   ctx.fillStyle = "rgba(255,255,255,.74)";
   font(ctx, 700, 19);
-  ctx.fillText("混雑目安", 124, 652);
-  drawCrowding(ctx, 246, 622, Number(data.crowdingLevel) || 1);
+  ctx.fillText("混雑目安", 124, 630);
+  drawCrowding(ctx, 246, 600, Number(data.crowdingLevel) || 1);
   ctx.fillStyle = "rgba(255,255,255,.54)";
   font(ctx, 500, 16);
-  ctx.fillText("時間割ベースの推定", 390, 652);
+  ctx.fillText("時間割ベースの推定", 390, 630);
 
   const stopLine = [safeText(data.originDetail), safeText(data.destinationDetail)].filter(Boolean).join("  →  ");
   if (stopLine) {
     const stopSize = fitFont(ctx, stopLine, 600, 22, 18, 600);
     font(ctx, 600, stopSize);
     ctx.fillStyle = "rgba(255,255,255,.83)";
-    ctx.fillText(stopLine, 124, 716);
+    ctx.fillText(stopLine, 124, 690);
   }
   if (data.date) {
     ctx.fillStyle = "rgba(255,255,255,.66)";
     font(ctx, 600, 18);
     ctx.textAlign = "right";
-    ctx.fillText(safeText(data.date), 956, 716);
+    ctx.fillText(safeText(data.date), 956, 690);
     ctx.textAlign = "left";
   }
 
-  const introY = 822;
-  const introHeight = 342;
+  const introY = 786;
+  const introHeight = 332;
   ctx.save();
   ctx.shadowColor = "rgba(31,28,75,.08)";
   ctx.shadowBlur = 22;
@@ -244,27 +244,27 @@ function drawShareCard(data) {
 
   ctx.fillStyle = "#2d287f";
   font(ctx, 700, 26);
-  ctx.fillText("移動前に、阪大シャトル。", 124, 884);
+  ctx.fillText("移動前に、阪大シャトル。", 124, 846);
   ctx.fillStyle = "#19172e";
   font(ctx, 800, 36);
-  ctx.fillText("次の便が、すぐわかる。", 124, 934);
+  ctx.fillText("次の便が、すぐわかる。", 124, 892);
   ctx.fillStyle = "#77768a";
   font(ctx, 500, 18);
-  ctx.fillText("豊中・箕面・吹田の時刻検索 / 最終便 / 混雑目安", 124, 978);
+  ctx.fillText("豊中・箕面・吹田の時刻検索 / 最終便 / 混雑目安", 124, 936);
 
   let featureX = 124;
-  featureX += drawPill(ctx, "次の便", featureX, 1018, { fill: "#f0effa", color: "#2d287f", height: 42, padX: 17, size: 18 }) + 9;
+  featureX += drawPill(ctx, "次の便", featureX, 974, { fill: "#f0effa", color: "#2d287f", height: 42, padX: 17, size: 18 }) + 9;
   featureX += drawPill(ctx, "最終便", featureX, 1018, { fill: "#f0effa", color: "#2d287f", height: 42, padX: 17, size: 18 }) + 9;
   drawPill(ctx, "混雑目安", featureX, 1018, { fill: "#f0effa", color: "#2d287f", height: 42, padX: 17, size: 18 });
 
-  fillRoundRect(ctx, 124, 1088, 832, 50, 25, "#2d287f");
+  fillRoundRect(ctx, 124, 1042, 832, 50, 25, "#2d287f");
   ctx.fillStyle = "#fff";
   font(ctx, 700, 19);
-  ctx.fillText("阪大シャトルを開く", 154, 1113);
+  ctx.fillText("阪大シャトルを開く", 154, 1067);
   ctx.fillStyle = "rgba(255,255,255,.78)";
   font(ctx, 500, 17);
   ctx.textAlign = "right";
-  ctx.fillText(DISPLAY_URL, 928, 1113);
+  ctx.fillText(DISPLAY_URL, 928, 1067);
   ctx.textAlign = "left";
 
   ctx.fillStyle = "#8a8999";
