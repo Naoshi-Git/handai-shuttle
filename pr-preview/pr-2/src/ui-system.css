@@ -1,3 +1,182 @@
+/* Handai Shuttle presentation system.
+
+   Presentation is centralized here so a visual change has one clear owner.
+   Sections are ordered to preserve the established computed cascade while
+   keeping historical filenames out of the runtime presentation graph. */
+
+/* ---------- Migrated presentation foundations ---------- */
+
+:root {
+  --ou-950:#1f1b63; --ou-900:#2d287f; --ou-800:#393393; --ou-700:#4a43a8;
+  --ou-200:#d9d7f2; --ou-100:#ecebfa; --ou-50:#f6f5fc;
+  --green-950:var(--ou-950); --green-900:var(--ou-900); --green-800:var(--ou-900); --green-700:var(--ou-700);
+  --green-100:var(--ou-100); --green-50:var(--ou-50);
+  --ink:#171727; --muted:#69697a; --line:#e1e1ea; --canvas:#f4f4f8;
+  --shadow:0 12px 34px rgba(45,40,127,.09);
+}
+html{background:var(--canvas)}
+body{background:radial-gradient(circle at 50% -10%,rgba(45,40,127,.10),transparent 32rem),var(--canvas)}
+.brand-mark{background:linear-gradient(145deg,var(--ou-700),var(--ou-950));box-shadow:0 8px 18px rgba(45,40,127,.22)}
+.eyebrow,.section-kicker{color:var(--ou-900)}
+.icon-button{color:var(--ou-900)}
+.service-banner{background:#edf8f3;color:#176245;border-color:#d3ede2}
+.service-banner.is-closed{background:#fff6df;color:#755017;border-color:#f1dfb8}
+.view{padding:18px 16px 28px}
+.location-head{margin-bottom:13px}
+.location-copy{min-width:0}
+.location-button{color:var(--ink)!important;-webkit-text-fill-color:var(--ink);-webkit-appearance:none;appearance:none;max-width:100%}
+#home-origin-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:250px}
+.location-dot{background:var(--ou-900);box-shadow:0 0 0 4px var(--ou-100)}
+.next-card{padding:18px;min-height:220px;background:radial-gradient(circle at 90% 10%,rgba(255,255,255,.25),transparent 29%),linear-gradient(135deg,var(--ou-950),var(--ou-700));box-shadow:0 18px 38px rgba(45,40,127,.23)}
+.next-route{margin-top:20px;font-size:21px}.next-times{font-size:clamp(31px,9.2vw,38px);white-space:nowrap}.next-meta{margin-top:18px}
+.remaining-summary{position:relative;z-index:1;margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.18);font-size:11px;font-weight:800;display:flex;align-items:center;gap:7px}.remaining-summary strong{font-size:13px}
+.pill-soft{background:var(--ou-50);color:var(--ou-900)}.pill-last{background:#fff0ee;color:#9b3029}.pill-warning{background:#fff6df;color:#8a5b11}
+.chip.is-active{border-color:var(--ou-900);background:var(--ou-900)}
+.primary-button{background:linear-gradient(135deg,var(--ou-900),var(--ou-950));box-shadow:0 8px 18px rgba(45,40,127,.18)}
+.secondary-button,.text-button{color:var(--ou-900)}
+.journey-card{box-shadow:0 6px 17px rgba(45,40,127,.045)}.journey-card.is-highlighted{border-color:#bbb7e5;box-shadow:0 9px 22px rgba(45,40,127,.10)}.journey-card.is-last{border-color:#e6b8b3;background:linear-gradient(180deg,#fff,#fff9f8)}
+.journey-route .arrow{color:var(--ou-700)}
+.page-heading{margin:0 0 16px}.compact-heading h2{margin:4px 0 3px;font-size:27px}.compact-heading p:last-child{font-size:12px}
+.search-panel-compact{padding:12px;border-radius:21px}
+.route-editor{position:relative;display:grid;gap:7px}
+.route-line{min-height:58px;display:grid;grid-template-columns:62px minmax(70px,.72fr) minmax(0,1.28fr);align-items:center;gap:8px;border-radius:15px;background:#f4f4f7;padding:6px 46px 6px 6px}
+.route-line:has(.inline-stop.is-hidden){grid-template-columns:62px minmax(0,1fr)}
+.route-role{height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:900;font-size:14px}.route-role.is-origin{background:var(--ou-900)}.route-role.is-destination{background:var(--ou-700)}
+.route-campus-select,.inline-stop select{width:100%;min-width:0;border:0;background:transparent;color:var(--ink);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.route-campus-select{font-size:17px}.inline-stop{min-width:0;padding-left:8px;border-left:1px solid #d7d7e0}.inline-stop select{font-size:13px;font-weight:800}
+.swap-button{position:absolute;right:11px;top:50%;transform:translateY(-50%);z-index:2;width:34px;height:34px;border-color:#dad9e7;color:var(--ou-900);box-shadow:0 4px 12px rgba(45,40,127,.10)}
+.search-mode{margin-top:10px}.segmented{border-radius:13px;padding:3px;gap:3px;background:#f5f5f8}.segmented button{min-height:36px}.segmented button.is-active{color:var(--ou-950);box-shadow:0 3px 10px rgba(45,40,127,.08)}
+.date-time-row{grid-template-columns:minmax(0,1.18fr) minmax(0,.82fr);gap:8px;margin-top:9px}.input-field{min-width:0}.input-field input,.input-field select,.dialog-stop-field select{width:100%;min-width:0;padding:9px 10px;min-height:43px;font-size:16px;line-height:1.2}.stable-inputs input[type=date],.stable-inputs input[type=time]{display:block;min-width:0;max-width:100%}.stable-inputs input::-webkit-date-and-time-value{text-align:left;min-height:1.2em}
+.search-options{margin-top:10px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff}.search-options summary{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 12px;font-size:12px;font-weight:900;list-style:none;cursor:pointer}.search-options summary::-webkit-details-marker{display:none}.search-options summary::after{content:'⌄';color:var(--ou-900)}.search-options[open] summary::after{transform:rotate(180deg)}.summary-hint{color:var(--muted);font-size:10px;font-weight:700;margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.search-options .option-list{margin:0;border-top:1px solid var(--line);padding:0 12px 8px;gap:0}.search-options .toggle-row{padding:10px 0}.search-submit{margin-top:10px;min-height:48px}
+.three-way{grid-template-columns:repeat(3,minmax(0,1fr))}.three-way button{font-size:10px;padding:0 4px}.timetable-direction{margin-bottom:13px}.timetable-card-head strong{color:var(--ou-900)}.minoh-card{border-color:#c9c6ea;background:var(--ou-50)}.stop-time.is-focus{background:var(--ou-200);color:var(--ou-950)}
+.bottom-nav button.is-active{color:var(--ou-900);background:var(--ou-50)}
+.campus-dialog{color:var(--ink);box-shadow:0 24px 80px rgba(31,27,99,.25)}.campus-dialog::backdrop{background:rgba(20,19,44,.42)}
+.campus-option{color:var(--ink)!important;-webkit-text-fill-color:var(--ink);-webkit-appearance:none;appearance:none;min-height:68px}.campus-option strong{color:var(--ink)!important;-webkit-text-fill-color:var(--ink)}.campus-option small{color:var(--muted)!important;-webkit-text-fill-color:var(--muted)}.campus-option.is-current{border-color:var(--ou-700);background:var(--ou-50)}
+.dialog-stop-field{display:grid;gap:6px;margin-top:10px;padding:12px;border-radius:14px;background:var(--ou-50)}.dialog-stop-field>span{color:var(--muted);font-size:10px;font-weight:900}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#default-suita-stop-wrap{margin-top:10px}
+@media(max-width:400px){.view{padding-left:14px;padding-right:14px}.route-line{grid-template-columns:58px minmax(64px,.68fr) minmax(0,1.32fr);gap:6px;padding-right:43px}.route-line:has(.inline-stop.is-hidden){grid-template-columns:58px minmax(0,1fr)}.route-role{font-size:13px}.route-campus-select{font-size:16px}.inline-stop select{font-size:12px}.date-time-row{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:6px}.input-field input{padding-left:8px;padding-right:8px;font-size:16px}}
+@media(max-width:350px){.route-line{grid-template-columns:54px minmax(58px,.62fr) minmax(0,1.38fr)}.inline-stop select{font-size:11px}.next-times{font-size:29px}.quick-actions{grid-template-columns:1fr}}
+
+/* iOS Safari: keep native date/time controls inside the allocated grid cells. */
+.date-time-row.stable-inputs{
+  grid-template-columns:minmax(0,1.28fr) minmax(0,.72fr);
+  gap:8px;
+}
+.date-time-row.stable-inputs>.input-field{
+  min-width:0;
+  overflow:hidden;
+}
+.date-time-row.stable-inputs input[type="date"],
+.date-time-row.stable-inputs input[type="time"]{
+  display:block;
+  box-sizing:border-box;
+  inline-size:100%;
+  width:100%;
+  min-inline-size:0;
+  min-width:0;
+  max-inline-size:100%;
+  max-width:100%;
+  margin:0;
+  overflow:hidden;
+  text-overflow:clip;
+  white-space:nowrap;
+}
+@supports (-webkit-touch-callout:none){
+  .date-time-row.stable-inputs input[type="date"],
+  .date-time-row.stable-inputs input[type="time"]{
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .date-time-row.stable-inputs input::-webkit-date-and-time-value{
+    display:block;
+    width:100%;
+    min-width:0;
+    text-align:left;
+    padding:0;
+  }
+}
+@media(max-width:400px){
+  .date-time-row.stable-inputs{
+    grid-template-columns:minmax(0,1.34fr) minmax(0,.66fr);
+    gap:6px;
+  }
+}
+
+/* ---------- Migrated timetable, sharing, and crowding components ---------- */
+
+.route-timetable-card[data-v4-compact="true"]{padding-block:0!important;min-height:0;overflow:hidden;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.route-timetable-card[data-v4-compact="true"]:active{transform:scale(.993)}
+.tt-compact-row{display:grid;align-items:center;gap:8px;min-height:48px;padding:7px 10px}
+.tt-compact-time{display:flex;align-items:baseline;gap:5px;white-space:nowrap;font-variant-numeric:tabular-nums;min-width:0}
+.tt-compact-time strong{font-size:17px;line-height:1;color:var(--ink)}
+.tt-compact-time span{font-size:11px;color:var(--muted)}
+.tt-compact-badges{min-width:0;display:flex;align-items:center;justify-content:flex-start;gap:5px;white-space:nowrap;overflow:hidden}
+.tt-compact-chevron{line-height:1;color:#aaa8bb;justify-self:end}
+
+/* Home next-card metadata stays on a single clean baseline. Route type is already shown above. */
+.next-card-actions{display:flex;align-items:center;gap:7px;position:relative;z-index:2}
+.next-share-button,.journey-share-button,.tt-sheet-share{display:inline-grid;place-items:center;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.14);color:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.next-share-button{width:34px;height:34px;border-radius:50%;color:#fff}
+.next-share-button svg,.journey-share-button svg,.tt-sheet-share svg{width:18px;height:18px;display:block}
+.next-share-button:disabled{opacity:.4}
+.next-meta.next-meta-v4{display:flex;align-items:center;flex-wrap:nowrap!important;gap:6px!important;overflow:hidden;white-space:nowrap;margin-top:18px}
+.next-meta.next-meta-v4>span:not(.crowding-icon){box-sizing:border-box;flex:0 1 auto;min-width:0;padding:6px 8px!important;font-size:10.5px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next-meta.next-meta-v4>span:nth-child(3):not(.crowding-icon){max-width:120px}
+
+/* Keep every compact metadata item on the same 22px visual baseline. */
+.tt-compact-badges .pill,.tt-next-mini,.tt-sheet-meta .pill,.tt-sheet-next{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;height:22px;min-height:22px;line-height:1;margin:0;white-space:nowrap;flex:0 0 auto}
+.tt-compact-badges .pill{font-size:8px;padding:0 6px}
+
+/* Yahoo!-style compact crowding cue: only the number of coloured people is shown in normal UI. */
+.crowding-icon{--crowd-color:#2f8e72;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:1.5px;height:22px;min-height:22px;min-width:39px;padding:0 2px;line-height:1;vertical-align:middle;white-space:nowrap;flex:0 0 auto}
+.crowding-person{position:relative;display:inline-block;width:6px;height:15px;color:#d7d8df;flex:0 0 6px}
+.crowding-person::before{content:"";position:absolute;top:1px;left:1px;width:4px;height:4px;border-radius:50%;background:currentColor}
+.crowding-person::after{content:"";position:absolute;left:0;bottom:1px;width:6px;height:8px;border-radius:3px 3px 1.5px 1.5px;background:currentColor}
+.crowding-person.is-active{color:var(--crowd-color)}
+.crowding-lv1{--crowd-color:#2c9a78}.crowding-lv2{--crowd-color:#3c9b62}.crowding-lv3{--crowd-color:#c99524}.crowding-lv4{--crowd-color:#df762d}.crowding-lv5{--crowd-color:#d24b5d}
+/* style.css applies .next-meta span to every nested span, so reset that legacy rule for the icon. */
+.next-meta .crowding-icon{margin-left:0;padding:0 4px!important;border-radius:999px!important;background:rgba(255,255,255,.92)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;flex:0 0 45px!important}
+.next-meta .crowding-person{padding:0!important;border-radius:0!important;background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.journey-details .crowding-icon{margin-left:auto}
+.crowding-round-row{display:flex;align-items:center;margin-top:6px}
+
+/* Share affordance on result/upcoming cards. */
+.journey-card-shareable{position:relative}
+.journey-card-shareable .journey-route{padding-right:34px}
+.journey-share-button{position:absolute;top:11px;right:11px;width:30px;height:30px;border-radius:50%;color:var(--ou-800)}
+
+.tt-detail-sheet{box-sizing:border-box;width:min(100%,720px);max-width:720px;max-height:min(78dvh,680px);margin:auto auto 0;border:0;padding:0;background:#fff;color:var(--ink);box-shadow:0 -18px 50px rgba(24,21,72,.20);overflow:hidden}
+.tt-detail-sheet::backdrop{background:rgba(18,17,37,.36);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.tt-sheet-shell{padding:8px 18px calc(20px + env(safe-area-inset-bottom));overflow:auto;max-height:min(78dvh,680px)}
+.tt-sheet-handle{width:38px;height:4px;border-radius:999px;background:#d7d6df;margin:2px auto 11px}
+.tt-sheet-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start}
+.tt-sheet-title-wrap{min-width:0}.tt-sheet-kicker{display:block;color:var(--ou-900);font-size:9px;font-weight:900;letter-spacing:.12em}.tt-sheet-title-wrap h3{margin:3px 0 3px;font-size:25px;font-variant-numeric:tabular-nums}.tt-sheet-title-wrap p{margin:0;color:var(--muted);font-size:10px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt-sheet-head-actions{display:flex;align-items:center;gap:7px}
+.tt-sheet-close,.tt-sheet-share{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;background:#fff;color:var(--ou-900);touch-action:manipulation}
+.tt-sheet-close{font-size:23px}.tt-sheet-share{display:grid}
+.tt-sheet-meta{display:flex;align-items:center;gap:6px;margin:13px 0 5px;flex-wrap:wrap}.tt-sheet-meta .pill{font-size:9px;padding:0 8px}.tt-sheet-next{border-radius:999px;background:var(--ou-900);color:#fff;padding:0 8px;font-size:9px;font-weight:900}#tt-sheet-crowding{display:inline-flex;align-items:center;height:22px}
+.tt-sheet-crowding-reason{margin:0 0 8px;color:var(--muted);font-size:9px;line-height:1.5}
+
+/* One shared axis for the whole route: line and dots use the exact same x coordinate. */
+.tt-sheet-stops{--tt-axis-x:15px;position:relative;display:grid;padding:2px 0}
+.tt-sheet-stops::before{content:"";position:absolute;z-index:0;left:var(--tt-axis-x);top:25px;bottom:25px;width:2px;transform:translateX(-50%);border-radius:999px;background:#dcd9ef}
+.tt-sheet-stop{position:relative;z-index:1;display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:9px;min-height:50px;padding:0}
+.tt-sheet-dot{position:relative;z-index:2;box-sizing:border-box;width:14px;height:14px;justify-self:center;border:3px solid #fff;border-radius:50%;background:#aaa6d9;box-shadow:0 0 0 1.5px #c9c6e8}.tt-sheet-stop.is-origin .tt-sheet-dot,.tt-sheet-stop.is-destination .tt-sheet-dot{background:var(--ou-900);box-shadow:0 0 0 1.5px var(--ou-700)}
+.tt-sheet-stop-name{font-size:13px;font-weight:800;min-width:0}.tt-sheet-stop strong{font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}
+
+.crowding-info-card p{margin:0 0 11px;color:var(--muted);font-size:11px;line-height:1.65}.crowding-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 10px}.crowding-legend-item{display:flex;align-items:center;gap:7px;min-width:0}.crowding-legend-item > span:last-child{font-size:10px;font-weight:800;color:var(--muted);white-space:nowrap}.crowding-legend-item .crowding-icon{margin:0}
+
+/* Branded 4:5 share-card preview. The actual PNG is rendered on Canvas at 1080×1350. */
+.share-card-dialog{box-sizing:border-box;width:min(calc(100% - 18px),540px);max-width:540px;max-height:94dvh;margin:auto auto 0;border:0;padding:0;background:#fff;color:var(--ink);box-shadow:0 -22px 60px rgba(24,21,72,.24);overflow:hidden}
+.share-card-dialog::backdrop{background:rgba(19,18,38,.46);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.share-card-shell{padding:12px 16px calc(18px + env(safe-area-inset-bottom));overflow:auto;max-height:94dvh}
+.share-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.share-card-head span{display:block;color:var(--ou-800);font-size:9px;font-weight:900;letter-spacing:.14em}.share-card-head h3{margin:2px 0 0;font-size:20px}.share-card-close{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ou-900);font-size:22px;touch-action:manipulation}
+.share-card-preview{display:grid;place-items:center;border-radius:18px;padding:8px;background:#f1f1f8;border:1px solid #e4e3ed;overflow:hidden}.share-card-preview img{display:block;width:100%;max-height:57dvh;aspect-ratio:4/5;object-fit:contain;border-radius:12px;box-shadow:0 8px 26px rgba(31,27,88,.16)}
+.share-card-copy{margin:10px 2px;color:var(--muted);font-size:10px;line-height:1.55}.share-card-actions{display:grid;grid-template-columns:1.3fr 1fr;gap:8px}.share-card-actions button{min-height:44px;border-radius:13px;font-weight:900;font-size:12px;touch-action:manipulation}.share-card-primary{border:0;color:#fff}.share-card-secondary{border:1px solid var(--line);background:#fff;color:var(--ou-900)}.share-card-status{min-height:16px;margin:7px 2px 0;color:var(--muted);font-size:9px;text-align:center}
+
+@media(max-width:380px){.tt-compact-row{padding-left:9px;padding-right:9px}.tt-compact-time{gap:4px}.tt-compact-time strong{font-size:16px}.tt-compact-badges .pill{font-size:7px;padding-left:5px;padding-right:5px}.crowding-icon{min-width:36px;gap:1px}.crowding-person{width:5.5px;flex-basis:5.5px}.crowding-person::after{width:5.5px}.next-meta.next-meta-v4{gap:4px!important}.next-meta.next-meta-v4>span:not(.crowding-icon){font-size:9.5px;padding-left:6px!important;padding-right:6px!important}.next-meta.next-meta-v4>span:nth-child(3):not(.crowding-icon){max-width:98px}.next-meta .crowding-icon{flex-basis:40px!important;min-width:40px}.tt-sheet-shell{padding-left:16px;padding-right:16px}.crowding-legend{grid-template-columns:1fr}.share-card-dialog{width:100%}.share-card-shell{padding-left:13px;padding-right:13px}}
+
+/* ---------- Current semantic presentation ---------- */
+
 /* Handai Shuttle structural compatibility layer.
    These active structural rules are intentionally declared before the final semantic
    presentation below so existing computed values and cascade order remain unchanged. */
@@ -1371,3 +1550,35 @@ body.ui-system dialog.current-closing::backdrop {
     transition: none !important;
   }
 }
+
+/* ---------- Migrated enhanced controls and feedback ---------- */
+
+.location-assist{margin:10px 16px 0;padding:12px;border:1px solid #d7d5ef;border-radius:14px;background:#f7f6fd;display:grid;gap:10px}.location-assist-copy{display:grid;gap:3px}.location-assist-copy strong{font-size:12px;color:var(--ou-950)}.location-assist-copy span{font-size:10px;line-height:1.5;color:var(--muted)}.location-assist-actions{display:flex;gap:7px;flex-wrap:wrap}.location-assist-actions button{border:1px solid #cfcced;background:#fff;color:var(--ou-900);border-radius:999px;padding:7px 11px;font-size:11px;font-weight:800}.stay-custom-input{margin-top:7px;width:100%;min-height:42px;border:1px solid var(--line);border-radius:11px;padding:8px 10px;font-size:16px;color:var(--ink);background:#fff}.result-stepper{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;margin:0 0 10px}.result-stepper button{min-height:44px;border:1px solid #d7d5ea;background:#fff;color:var(--ou-900);border-radius:11px;padding:0 11px;font-size:12px;font-weight:900}.result-stepper span{text-align:center;color:var(--muted);font-size:10px;font-weight:700}.tt-destination-row{display:flex;align-items:center;gap:8px}.tt-destination-row>span{color:var(--muted);font-size:10px;font-weight:800;flex:0 0 auto}.tt-suita-stop{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px}.tt-suita-stop span{font-size:10px;font-weight:800;color:var(--muted)}.tt-suita-stop select{min-width:0;width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);padding:8px 10px;font-size:13px;font-weight:800}.tt-current-status{min-height:16px;color:var(--muted);font-size:10px;line-height:1.45}.feedback-card p{margin:0 0 10px;color:var(--muted);font-size:11px;line-height:1.6}.feedback-link{display:block;text-decoration:none;border-radius:12px;padding:12px;background:var(--ou-50);color:var(--ou-900);font-size:12px;font-weight:900}.feedback-link:active{transform:translateY(1px)}
+
+/* Timetable selector stays operable after automatic scrolling to the next bus. */
+#timetable-route-controls{
+  display:grid;
+  gap:9px;
+  padding:0 16px 10px;
+  -webkit-backdrop-filter:blur(16px);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(225,225,234,.92);
+}
+#timetable-route-controls .tt-current-status{margin-bottom:-2px}
+
+/* iOS Safari: preserve pinch zoom globally but disable double-tap zoom on repeated controls. */
+.app-shell button,
+.app-shell a,
+#timetable-route-controls select{
+  touch-action:manipulation;
+}
+.result-stepper button,
+#timetable-route-controls button{
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.result-stepper button:active{transform:scale(.985)}
+
+@media(max-width:380px){.location-assist{margin-left:14px;margin-right:14px}.result-stepper{gap:6px}.result-stepper button{padding:0 9px}#timetable-route-controls{padding-left:14px;padding-right:14px}}
