@@ -61,6 +61,9 @@ jobs:
           test -f source/ads.css
           test -f source/src/ui-system.css
           test -f source/src/view-lifecycle.css
+          test ! -e source/ui-v2.css
+          test ! -e source/ui-v3.css
+          test ! -e source/ui-v4.css
           test ! -e source/ui-v5.css
           test ! -e source/src/ui-foundation.css
           test ! -e source/src/ui-v10.css
@@ -94,7 +97,7 @@ jobs:
         run: |
           rm -rf "pages/${PREVIEW_PATH}"
           mkdir -p "pages/${PREVIEW_PATH}"
-          cp source/index.html source/share.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ads.css "pages/${PREVIEW_PATH}/"
+          cp source/index.html source/share.html source/manifest.webmanifest source/style.css source/ads.css "pages/${PREVIEW_PATH}/"
           cp -R source/assets source/data source/src source/lp "pages/${PREVIEW_PATH}/"
           touch pages/.nojekyll
       - name: Generate preview build manifest

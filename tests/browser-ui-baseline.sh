@@ -89,7 +89,6 @@ async function main() {
   const doc = frame.contentDocument;
   await waitFor(() => doc.body?.classList.contains("app-ready"), "Opening did not reach app-ready");
   await waitFor(() => !doc.querySelector("#app-boot"), "Opening splash was not removed");
-  await waitFor(() => doc.querySelector("link[data-ui-v3]"), "ui-v3 runtime stylesheet was not installed");
   await waitFor(() => doc.querySelector("#brand-assets-v2-style"), "brand runtime style was not installed");
   await waitFor(() => doc.querySelector("#timetable-route-controls"), "v3 timetable controls were not created");
   await waitFor(() => doc.querySelector("#result-stepper"), "search previous/next stepper was not created");
@@ -109,7 +108,7 @@ async function main() {
   assert(!doc.querySelector("#favorite-trips-v6")?.textContent.includes("便便"), "favorite trip label duplicated the 便 suffix");
 
   const stylesheetHrefs = [...doc.querySelectorAll('link[rel="stylesheet"]')].map((link) => link.getAttribute("href") || "");
-  for (const required of ["./style.css", "./ui-v2.css", "./ui-v4.css", "./src/ui-system.css", "./ui-v3.css"]) {
+  for (const required of ["./style.css", "./ads.css", "./src/ui-system.css"]) {
     assert(stylesheetHrefs.includes(required), `required presentation layer missing: ${required}`);
   }
 

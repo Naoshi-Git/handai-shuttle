@@ -42,14 +42,11 @@ test("structural compatibility rules are absorbed into ui-system", () => {
   assert.match(systemCss, /body\.ui-system \.journey-card\.is-favorite-trip/);
 });
 
-test("v3 and v4 behavior rely on static stylesheets instead of runtime injection", () => {
-  assert.match(html, /<link rel="stylesheet" href="\.\/ui-v4\.css" data-ui-v4>/);
-  assert.match(html, /<link rel="stylesheet" href="\.\/ui-v3\.css" data-ui-v3>/);
+test("versioned presentation files are retired while behavior modules stay presentation-free", () => {
+  assert.doesNotMatch(html, /ui-v[234]\.css|data-ui-v[234]/);
   for (const source of [v3Core, v4]) {
-    assert.doesNotMatch(source, /function installStyles|document\.createElement\("link"\)/);
+    assert.doesNotMatch(source, /function installStyles|document\.createElement\("link"\)|ui-v[234]\.css/);
   }
-  assert.doesNotMatch(v3Core, /ui-v3\.css/);
-  assert.doesNotMatch(v4, /ui-v4\.css/);
 });
 
 test("current behavior owner cannot reintroduce presentation shims", () => {
