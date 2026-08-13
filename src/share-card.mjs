@@ -1,4 +1,5 @@
 import { snapshotElementToPng } from "./dom-snapshot.mjs";
+import { mountShareSurface } from "./share-surface.mjs";
 import { ensureShareIdentity, shareLandingUrl } from "./share-identity.mjs";
 
 const APP_URL = "https://naoshi-git.github.io/handai-shuttle/";
@@ -38,11 +39,11 @@ function ensureDialog() {
   dialog.innerHTML = `
     <div class="share-card-shell">
       <header class="share-card-head">
-        <div><span>SHARE</span><h3>この表示を共有</h3></div>
+        <div><span>SHARE</span><h3>この便を共有</h3></div>
         <button type="button" class="share-card-close" aria-label="共有画面を閉じる">×</button>
       </header>
-      <div class="share-card-preview"><img id="share-card-image" alt="表示中の阪大シャトルUIのスナップショット"></div>
-      <p class="share-card-copy">表示中のカードを、そのまま画像で共有します。</p>
+      <div class="share-card-preview"><img id="share-card-image" alt="阪大シャトルの次便カード形式の共有画像"></div>
+      <p class="share-card-copy">どの画面から共有しても、ホームの次便カードと同じUIで画像化します。</p>
       <div class="share-card-actions">
         <button type="button" class="share-card-primary" id="share-card-native">画像を共有</button>
         <button type="button" class="share-card-secondary" id="share-card-copy">リンクだけコピー</button>
@@ -58,7 +59,7 @@ function ensureDialog() {
     if (!activeShare?.blob) return;
     ensureShareIdentity();
     const status = dialog.querySelector("#share-card-status");
-    const file = new File([activeShare.blob], "handai-shuttle-ui.png", { type: "image/png" });
+    const file = new File([activeShare.blob], "handai-shuttle.png", { type: "image/png" });
     const targetUrl = shareTargetUrl();
     const payload = { title: "阪大シャトル", text: shareText(activeShare.data), url: targetUrl };
 
@@ -92,17 +93,19 @@ function ensureDialog() {
   return dialog;
 }
 
-export async function openSharePreview(data, target = document.querySelector("#next-card")) {
+export async function openSharePreview(data) {
   const dialog = ensureDialog();
   const status = dialog.querySelector("#share-card-status");
   const nativeButton = dialog.querySelector("#share-card-native");
   const image = dialog.querySelector("#share-card-image");
 
-  if (status) status.textContent = "表示中のUIを画像化しています…";
+  if (status) status.textContent = "ホームと同じUIで共有画像を作成しています…";
   if (nativeButton) nativeButton.disabled = true;
 
+  let mounted = null;
   try {
-    const blob = await snapshotElementToPng(target, { scale: 3 });
+    mounted = await mountShareSurface(data);
+    const blob = await snapshotElementToPng(mounted.element, { scale: 3 });
     if (activePreviewUrl) URL.revokeObjectURL(activePreviewUrl);
     activePreviewUrl = URL.createObjectURL(blob);
     activeShare = { data, blob };
@@ -117,6 +120,8 @@ export async function openSharePreview(data, target = document.querySelector("#n
     activeShare = { data, blob: null };
     if (image) image.removeAttribute("src");
     if (status) status.textContent = `画像化できませんでした。${error?.message || "リンク共有をお試しください。"}`;
+  } finally {
+    mounted?.cleanup();
   }
 
   showDialog(dialog);
