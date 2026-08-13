@@ -1,24 +1,52 @@
 <!doctype html>
-<html lang="ja">
+<html lang="ja" data-boot-min-ms="900" data-boot-max-ms="1400">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#2d287f">
   <meta name="description" content="大阪大学の豊中・箕面・吹田キャンパス間を走る学内連絡バスの時刻検索Webアプリ">
   <title>阪大シャトル検索</title>
+  <style id="boot-critical">
+    html,body{margin:0;background:#2d287f;color:#fff}
+    body.app-booting{overflow:hidden}
+    body.app-booting .app-shell{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+    #app-boot.app-boot{position:fixed!important;inset:0!important;z-index:5000!important;display:grid!important;place-items:center!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;overflow:hidden;background:#2d287f;transition:opacity .3s cubic-bezier(.22,.72,.24,1),visibility .3s ease}
+    #app-boot .app-boot-stage{display:grid;justify-items:center;gap:9px;text-align:center;transform:translateY(-2vh)}
+    #app-boot .app-boot-logo{display:block;width:94px;height:94px;object-fit:contain;animation:boot-mark-in .54s cubic-bezier(.22,.72,.24,1) both}
+    #app-boot .app-boot-eyebrow{margin:7px 0 0;color:rgba(255,255,255,.68);font:650 9px/1.2 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;letter-spacing:.18em;animation:boot-copy-in .46s .08s cubic-bezier(.22,.72,.24,1) both}
+    #app-boot .app-boot-brand-name{margin:0;color:#fff;font:650 19px/1.2 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;letter-spacing:-.025em;animation:boot-copy-in .46s .11s cubic-bezier(.22,.72,.24,1) both}
+    #app-boot .app-boot-progress{display:block;width:44px;height:3px;margin-top:9px;border-radius:999px;background:rgba(255,255,255,.18);overflow:hidden;position:relative;animation:boot-copy-in .38s .18s ease both}
+    #app-boot .app-boot-progress:after{content:"";position:absolute;inset:0 auto 0 0;width:45%;border-radius:inherit;background:rgba(255,255,255,.78);animation:boot-progress .72s ease-in-out infinite}
+    body.app-ready #app-boot{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+    body.app-ready .app-shell{opacity:1!important;visibility:visible!important}
+    @keyframes boot-mark-in{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+    @keyframes boot-copy-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+    @keyframes boot-progress{0%{transform:translateX(-115%)}55%{transform:translateX(85%)}100%{transform:translateX(225%)}}
+    @media(prefers-reduced-motion:reduce){#app-boot .app-boot-logo,#app-boot .app-boot-eyebrow,#app-boot .app-boot-brand-name,#app-boot .app-boot-progress{animation:none}#app-boot .app-boot-progress:after{animation:none;transform:none;width:62%}}
+  </style>
+  <link rel="preload" href="./assets/brand/brand-symbol-white.svg" as="image" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./assets/brand/app-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./assets/brand/app-icon.svg">
   <link rel="stylesheet" href="./style.css">
-  <link rel="stylesheet" href="./ui-v2.css">
+  <link rel="stylesheet" href="./ads.css" data-ads-ui>
+  <link rel="stylesheet" href="./src/ui-system.css?v=share-card-rich-20260813" data-ui-system>
 </head>
-<body>
+<body class="app-booting ui-system">
+  <div class="app-boot" id="app-boot" role="status" aria-live="polite" aria-label="阪大シャトルを起動しています">
+    <div class="app-boot-stage">
+      <img class="app-boot-logo" src="./assets/brand/brand-symbol-white.svg" width="94" height="94" alt="">
+      <p class="app-boot-eyebrow">HANDAI SHUTTLE</p>
+      <p class="app-boot-brand-name">阪大シャトル</p>
+      <span class="app-boot-progress" aria-hidden="true"></span>
+    </div>
+  </div>
+
   <div class="app-shell">
     <header class="topbar">
-      <div class="brand-mark" aria-hidden="true">OU</div>
-      <div class="brand-copy">
-        <p class="eyebrow">THE UNIVERSITY OF OSAKA</p>
-        <h1>阪大シャトル</h1>
-      </div>
-      <button class="icon-button" id="refresh-button" type="button" aria-label="現在時刻で更新" title="現在時刻で更新">↻</button>
+      <div class="brand-mark"><img src="./assets/brand/brand-icon-rounded.svg" alt="" width="42" height="42"></div>
+      <div class="brand-copy"><h1>阪大シャトル</h1></div>
+      <button class="icon-button" id="refresh-button" type="button" aria-label="現在時刻で更新" title="現在時刻で更新" hidden>↻</button>
     </header>
     <div class="service-banner" id="service-banner" role="status"></div>
     <main>
@@ -79,7 +107,7 @@
           <button class="primary-button search-submit" type="submit">検索</button>
         </form>
         <section class="content-section results-section" id="results-section">
-          <div class="section-title-row"><div><p class="section-kicker">RESULT</p><h2 id="results-title">検索結果</h2></div><button class="text-button" id="favorite-current-button" type="button">☆ 保存</button></div>
+          <div class="section-title-row"><div><p class="section-kicker">RESULT</p><h2 id="results-title">検索結果</h2></div><button class="text-button" id="favorite-current-button" type="button">条件を保存</button></div>
           <div id="search-message"></div><div class="stack-list" id="search-results"></div>
         </section>
       </section>
@@ -113,6 +141,6 @@
     </form>
   </dialog>
   <script type="module" src="./src/app.mjs"></script>
-  <script type="module" src="./src/enhancements.mjs"></script>
+  <script type="module" src="./src/enhancements.mjs?v=share-card-final-layout-20260813"></script>
 </body>
 </html>

@@ -63,7 +63,7 @@ button { cursor: pointer; }
 }
 .brand-copy { flex: 1; min-width: 0; }
 .brand-copy h1 { margin: 1px 0 0; font-size: 20px; letter-spacing: -0.035em; }
-.eyebrow, .section-kicker {
+.section-kicker {
   margin: 0;
   color: var(--green-800);
   font-size: 10px;
@@ -212,14 +212,9 @@ button { cursor: pointer; }
 .page-heading h2 { margin: 5px 0 5px; font-size: 28px; letter-spacing: -.045em; }
 .page-heading p:last-child { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
 .search-panel, .settings-card { border: 1px solid var(--line); border-radius: 22px; padding: 16px; background: white; box-shadow: var(--shadow); }
-.route-fields { display: grid; grid-template-columns: 1fr 42px 1fr; gap: 8px; align-items: center; }
-.field-card { display: grid; gap: 5px; background: var(--green-50); border-radius: 16px; padding: 12px; }
-.field-card span, .input-field span, .sub-field span { color: var(--muted); font-size: 10px; font-weight: 800; }
-.field-card select { border: 0; background: transparent; color: var(--ink); font-weight: 800; font-size: 18px; width: 100%; }
+.input-field span { color: var(--muted); font-size: 10px; font-weight: 800; }
 .swap-button { border: 1px solid var(--line); background: white; color: var(--green-800); width: 40px; height: 40px; border-radius: 50%; font-size: 18px; }
-.detail-stop-row { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; margin-top: 10px; }
-.sub-field { display: grid; gap: 5px; }
-.sub-field select, .input-field input, .input-field select { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: white; color: var(--ink); padding: 11px; min-height: 44px; }
+.input-field input, .input-field select { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: white; color: var(--ink); padding: 11px; min-height: 44px; }
 .segmented { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 14px; padding: 4px; gap: 4px; margin-top: 16px; background: #f5f7f6; }
 .segmented button { border: 0; background: transparent; border-radius: 10px; min-height: 38px; color: var(--muted); font-size: 12px; font-weight: 800; }
 .segmented button.is-active { color: var(--green-950); background: white; box-shadow: 0 4px 12px rgba(35, 64, 56, .08); }
@@ -292,6 +287,4 @@ button { cursor: pointer; }
 @media (max-width: 380px) {
   .view { padding-left: 14px; padding-right: 14px; }
   .next-times { font-size: 31px; }
-  .route-fields { grid-template-columns: 1fr 36px 1fr; }
-  .field-card select { font-size: 16px; }
 }

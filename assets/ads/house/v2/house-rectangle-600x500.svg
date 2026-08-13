@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="500" viewBox="0 0 600 500" role="img" aria-label="阪大シャトル 次の便、すぐわかる。友達に送る">
+  <defs>
+    <linearGradient id="brandBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2D287F"/>
+      <stop offset="45%" stop-color="#393DCD"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="cta" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2D287F"/>
+      <stop offset="100%" stop-color="#6A42E8"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#2D287F" flood-opacity="0.14"/>
+    </filter>
+    <symbol id="brandIcon" viewBox="0 0 1024 1024">
+      <rect width="1024" height="1024" rx="220" fill="url(#brandBg)"/>
+      <g fill="#FFFFFF" transform="translate(162.000 216.823) scale(2.341137)">
+        <path d="M 131 165 L 132 166 L 131 167 L 132 195 L 137 212 L 142 222 L 149 232 L 162 244 L 177 252 L 190 256 L 201 257 L 202 258 L 226 258 L 227 257 L 233 257 L 234 256 L 242 255 L 259 248 L 273 238 L 284 225 L 289 216 L 294 201 L 294 196 L 295 195 L 295 165 L 293 167 L 285 170 L 275 170 L 264 165 L 265 166 L 265 183 L 264 184 L 264 190 L 263 191 L 262 199 L 257 210 L 250 219 L 241 226 L 229 231 L 220 232 L 219 233 L 202 232 L 190 228 L 185 225 L 177 218 L 169 207 L 164 191 L 164 184 L 163 183 L 164 167 L 162 169 L 156 171 L 146 172 L 139 170 Z"/>
+        <path d="M 8 169 L 11 173 L 11 175 L 15 183 L 25 196 L 36 206 L 45 212 L 57 218 L 62 219 L 68 222 L 72 222 L 78 224 L 84 224 L 85 225 L 110 225 L 111 224 L 117 224 L 118 223 L 125 222 L 128 220 L 125 214 L 125 211 L 122 202 L 122 198 L 121 197 L 120 198 L 108 199 L 107 200 L 91 200 L 90 199 L 84 199 L 80 197 L 77 197 L 59 187 L 46 173 L 39 159 L 32 166 L 24 170 L 15 171 Z"/>
+        <path d="M 177 151 L 178 152 L 224 152 L 225 151 L 228 151 L 229 152 L 230 151 L 232 152 L 237 152 L 238 151 L 239 152 L 240 151 L 245 151 L 246 152 L 250 151 L 252 152 L 253 151 L 255 152 L 255 138 L 180 138 L 179 140 L 179 147 Z"/>
+        <path d="M 43 138 L 43 152 L 122 152 L 121 138 Z"/>
+        <path d="M 275 128 L 271 130 L 264 138 L 264 141 L 263 142 L 264 151 L 269 158 L 275 161 L 280 161 L 281 162 L 282 161 L 286 161 L 293 157 L 296 153 L 298 148 L 298 142 L 295 135 L 290 130 L 286 128 Z"/>
+        <path d="M 12 128 L 6 131 L 1 137 L 0 140 L 0 150 L 1 153 L 6 159 L 13 162 L 20 162 L 27 159 L 31 155 L 34 149 L 34 140 L 30 133 L 22 128 Z"/>
+        <path d="M 147 123 L 137 127 L 134 130 L 130 139 L 130 147 L 132 153 L 137 159 L 144 162 L 152 163 L 162 159 L 166 155 L 170 147 L 170 138 L 168 133 L 163 127 L 157 124 Z"/>
+        <path d="M 264 35 L 264 119 L 265 120 L 265 123 L 264 124 L 275 119 L 286 119 L 293 122 L 295 124 L 295 35 Z"/>
+        <path d="M 4 75 L 4 79 L 2 85 L 2 94 L 1 95 L 1 125 L 8 120 L 11 120 L 12 119 L 23 119 L 33 124 L 32 103 L 33 102 L 33 89 L 34 88 L 34 84 L 38 71 L 43 61 L 48 54 L 61 41 L 76 32 L 88 28 L 92 28 L 93 27 L 117 27 L 118 28 L 127 29 L 143 36 L 152 42 L 164 54 L 171 64 L 176 75 L 178 85 L 179 86 L 179 90 L 180 91 L 180 129 L 211 129 L 210 128 L 210 124 L 211 123 L 210 122 L 211 119 L 211 105 L 210 104 L 211 103 L 210 102 L 209 82 L 204 65 L 198 52 L 188 37 L 174 23 L 159 13 L 149 8 L 137 4 L 134 4 L 129 2 L 124 2 L 123 1 L 116 1 L 115 0 L 94 0 L 93 1 L 86 1 L 85 2 L 73 4 L 52 13 L 36 24 L 21 40 L 10 58 Z"/>
+      </g>
+    </symbol>
+  </defs>
+
+  <rect x="1" y="1" width="598" height="498" rx="30" fill="#F8F7FF" stroke="#DCD9F2" stroke-width="2"/>
+  <circle cx="500" cy="86" r="112" fill="#ECE9FF" opacity="0.78"/>
+  <circle cx="548" cy="50" r="68" fill="#E1DBFF" opacity="0.68"/>
+
+  <use href="#brandIcon" x="42" y="36" width="100" height="100"/>
+  <text x="164" y="69" fill="#2D287F" font-size="21" font-weight="800" letter-spacing="1.8" font-family="Arial, Helvetica, sans-serif">HANDAI SHUTTLE</text>
+  <text x="164" y="113" fill="#171727" font-size="34" font-weight="800" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',sans-serif">阪大シャトル</text>
+
+  <text x="42" y="203" fill="#25206D" font-size="54" font-weight="850" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',sans-serif">次の便、</text>
+  <text x="42" y="263" fill="#3A33A1" font-size="54" font-weight="850" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',sans-serif">すぐわかる。</text>
+  <text x="43" y="303" fill="#6D6D80" font-size="20" font-weight="650" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',sans-serif">豊中・箕面・吹田の移動を、もっと迷わず。</text>
+
+  <g transform="translate(42 330)">
+    <rect width="142" height="42" rx="21" fill="#FFFFFF" stroke="#E1DFF1"/>
+    <text x="71" y="27" text-anchor="middle" fill="#393393" font-size="17" font-weight="800" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',sans-serif">次の便</text>
+  </g>
+  <g transform="translate(198 330)">
+    <rect width="142" height="42" rx="21" fill="#FFFFFF" stroke="#E1DFF1"/>
+    <text x="71" y="27" text-anchor="middle" fill="#393393" font-size="17" font-weight="800" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',sans-serif">最終便</text>
+  </g>
+  <g transform="translate(354 330)">
+    <rect width="166" height="42" rx="21" fill="#FFFFFF" stroke="#E1DFF1"/>
+    <text x="83" y="27" text-anchor="middle" fill="#393393" font-size="17" font-weight="800" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',sans-serif">混雑目安</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="42" y="397" width="516" height="66" rx="24" fill="url(#cta)"/>
+  </g>
+  <circle cx="90" cy="430" r="23" fill="#FFFFFF" opacity="0.98"/>
+  <path d="M80 431l19-10-8 20-4-7z" fill="#3B35A5"/>
+  <text x="127" y="440" fill="#FFFFFF" font-size="29" font-weight="800" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',sans-serif">友達に送る</text>
+  <path d="M509 430h20m-8-9 9 9-9 9" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -46,25 +46,87 @@ jobs:
           node --check source/src/brand-canvas.mjs
           node --check source/src/ui-v4.mjs
           node --check source/src/ui-v4-polish.mjs
+          node --check source/src/ui-v5.mjs
+          node --check source/src/route-preferences.mjs
+          node --check source/src/ui-v12.mjs
+          node --check source/src/ui-v13.mjs
+          node --check source/src/ui-current.mjs
+          node --check source/src/pwa.mjs
           node --check source/src/crowding-prediction.mjs
+          node --check source/src/share-identity.mjs
           node --check source/src/share-card.mjs
           node --check source/src/ads.mjs
           node --check source/data/location-points.mjs
+          test -f source/share.html
           test -f source/ads.css
+          test -f source/src/ui-system.css
+          test -f source/src/view-lifecycle.css
+          test ! -e source/ui-v2.css
+          test ! -e source/ui-v3.css
+          test ! -e source/ui-v4.css
+          test ! -e source/ui-v5.css
+          test ! -e source/src/ui-foundation.css
+          test ! -e source/src/ui-v10.css
+          test ! -e source/src/ui-v11.css
+          test ! -e source/src/ui-v12.css
+          test ! -e source/src/ui-v13.css
+          test ! -e source/src/ui-v14.css
+          test ! -e source/src/ui-v15.css
+          test ! -e source/src/ui-v16.css
+          test ! -e source/src/ui-current.css
+          test -f source/docs/UI-ARCHITECTURE.md
           test -f source/assets/brand/app-icon.svg
+          test -f source/assets/brand/app-icon-32.png
+          test -f source/assets/brand/app-icon-180.png
           test -f source/assets/brand/brand-icon-rounded.svg
+          test -f source/assets/brand/brand-symbol-white.svg
+          test -f source/assets/brand/splash-white.webp
+          test -f source/assets/brand/splash-black.webp
+          test -f source/assets/brand/splash-gradient.webp
           test -f source/assets/ads/house-share-640x180.svg
           test -f source/assets/ads/house-share-640x128.svg
+          test -f source/assets/help/install/ios-01-share.webp
+          test -f source/assets/help/install/ios-02-add-home.webp
+          test -f source/assets/help/install/ios-03-confirm.webp
           test -f source/lp/index.html
           test -f source/lp/lp.css
           node --test source/tests/*.test.mjs
+      - name: Browser UI baseline
+        run: bash source/tests/browser-ui-baseline.sh source
       - name: Prepare preview
         run: |
           rm -rf "pages/${PREVIEW_PATH}"
           mkdir -p "pages/${PREVIEW_PATH}"
-          cp source/index.html source/manifest.webmanifest source/style.css source/ui-v2.css source/ui-v3.css source/ui-v4.css source/ads.css "pages/${PREVIEW_PATH}/"
+          cp source/index.html source/share.html source/manifest.webmanifest source/style.css source/ads.css "pages/${PREVIEW_PATH}/"
           cp -R source/assets source/data source/src source/lp "pages/${PREVIEW_PATH}/"
           touch pages/.nojekyll
+      - name: Generate preview build manifest
+        env:
+          BUILD_SHA: ${{ github.event.pull_request.head.sha }}
+          TARGET_DIR: pages/${{ env.PREVIEW_PATH }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          root = os.environ["TARGET_DIR"]
+          allowed = {".html", ".css", ".js", ".mjs", ".json", ".webmanifest", ".svg", ".png", ".webp"}
+          assets = []
+          for base, _, files in os.walk(root):
+              for name in files:
+                  path = os.path.join(base, name)
+                  rel = os.path.relpath(path, root).replace(os.sep, "/")
+                  if rel == "version.json":
+                      continue
+                  if os.path.splitext(name)[1].lower() in allowed or name == "manifest.webmanifest":
+                      assets.append(rel)
+          payload = {
+              "build": os.environ["BUILD_SHA"],
+              "generatedAt": datetime.now(timezone.utc).isoformat(),
+              "assets": sorted(assets),
+          }
+          with open(os.path.join(root, "version.json"), "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, ensure_ascii=False, separators=(",", ":"))
+          PY
       - name: Publish preview
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}

@@ -5,63 +5,180 @@
 }
 
 .ad-slot {
+  box-sizing: border-box;
   width: 100%;
-  margin: 12px 0 16px;
+  margin: 11px 0 14px;
   display: flex;
   justify-content: center;
   contain: layout style;
 }
-
-.ad-card { width: 100%; box-sizing: border-box; }
-.house-ad-card { max-width: 328px; background: transparent; border: 0; }
-.ad-card-label {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin: 0 0 5px 4px;
-  color: var(--ad-muted);
-  font-size: 10px;
-  line-height: 1;
-  font-weight: 600;
-  letter-spacing: .04em;
+.ad-card {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
 }
-
+.house-ad-card {
+  width: 100%;
+  max-width: none;
+  background: transparent;
+  border: 0;
+}
+.ad-card-label {
+  position: absolute;
+  z-index: 2;
+  top: 5px;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.94);
+  color: #757587;
+  font-size: 8px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: .02em;
+  box-shadow: 0 1px 5px rgba(28,25,86,.08);
+  pointer-events: none;
+}
 .house-ad-creative {
   display: block;
-  width: min(100%, 320px);
-  aspect-ratio: var(--house-ad-ratio, 16 / 5);
-  margin: 0 auto;
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: var(--house-ad-ratio, 640 / 89);
+  margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 15px;
-  background: transparent;
-  overflow: hidden;
+  border-radius: 0;
+  background: #fff !important;
+  overflow: hidden !important;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
-
-.house-ad-creative picture,
 .house-ad-creative img {
   display: block;
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
-}
-
-.house-ad-creative img {
-  object-fit: contain;
+  border-radius: 0;
+  background: #fff !important;
+  object-fit: cover !important;
   object-position: center;
-  border-radius: inherit;
+}
+.house-ad-creative:active { transform: translateY(1px); }
+.house-ad-creative:focus-visible {
+  outline: 3px solid rgba(45, 40, 127, .25);
+  outline-offset: 3px;
 }
 
-.house-ad-creative:active { transform: translateY(1px); }
-.house-ad-creative:focus-visible { outline: 3px solid rgba(45, 40, 127, .25); outline-offset: 3px; }
-.ad-slot-search-results { margin-block: 12px; }
-.ad-slot-timetable-feed { margin-block: 8px 10px; }
-.ad-slot-timetable-feed .house-ad-card { max-width: 328px; }
-.ad-slot-timetable-feed .house-ad-creative { border-radius: 11px; }
+/* Search primary intentionally uses the shared compact horizontal creative. */
+.ad-slot-search-primary {
+  margin: 12px 0 18px;
+}
+.ad-slot-search-primary .house-ad-card,
+.ad-slot-search-primary .house-ad-creative {
+  width: 100%;
+  max-width: none;
+}
+.ad-slot-search-primary .house-ad-creative {
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Search inline uses the same finished creative; timetable inline stays compact. */
+.ad-slot-search-inline {
+  width: 100%;
+  margin: 12px 0 14px;
+}
+.ad-slot-timetable-inline {
+  width: 100%;
+  margin: 8px 0 10px;
+}
+.ad-slot-search-inline .house-ad-card,
+.ad-slot-timetable-inline .house-ad-card {
+  width: 100%;
+  max-width: none;
+}
+.ad-slot-search-inline .house-ad-creative,
+.ad-slot-search-inline .house-ad-creative img {
+  border-radius: 16px;
+}
+.ad-slot-search-inline .house-ad-creative {
+  overflow: hidden;
+  background: #fafafc;
+}
+.ad-slot-timetable-inline .house-ad-creative,
+.ad-slot-timetable-inline .house-ad-creative img {
+  border-radius: 12px;
+}
+.ad-slot-timetable-inline .house-ad-creative {
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Sticky timetable ad is a fully opaque layer. */
+.ad-slot-timetable-header {
+  position: sticky;
+  top: var(--app-topbar-height, 70px);
+  z-index: 19;
+  box-sizing: border-box;
+  width: auto;
+  margin: 0 -16px;
+  padding: 6px 16px 2px;
+  contain: none;
+  isolation: isolate;
+  background: #fff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom: 0;
+  box-shadow: none;
+}
+/* Paint a tiny overlap below the ad to eliminate Safari sub-pixel seams between sticky layers. */
+.ad-slot-timetable-header::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 4px;
+  background: #fff;
+  pointer-events: none;
+}
+.ad-slot-timetable-header .house-ad-card,
+.ad-slot-timetable-header .house-ad-creative {
+  width: 100%;
+  max-width: none;
+}
+.ad-slot-timetable-header .house-ad-creative,
+.ad-slot-timetable-header .house-ad-creative img {
+  border-radius: 12px;
+}
+.ad-slot-timetable-header .house-ad-creative {
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Selector overlaps the ad by 2px so scrolling rows can never flash through the join. */
+body.ui-system #timetable-route-controls {
+  top: calc(var(--app-topbar-height, 70px) + var(--tt-sticky-ad-height, 0px) - 2px) !important;
+  margin-top: -2px;
+  background: #fff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-top: 0;
+  border-bottom-color: rgba(225,225,234,.94);
+  box-shadow: 0 8px 18px rgba(31,27,99,.045);
+}
+
+.ad-slot-home-feed { margin: -12px 0 18px; }
+.ad-slot-home-feed .house-ad-card { width: 100%; max-width: none; }
+
 .adsense-ad-card {
   width: 100%;
   min-height: 100px;
@@ -70,11 +187,20 @@
   background: #fff;
   overflow: hidden;
 }
-.adsense-ad-card .ad-card-label { margin: 0; padding: 8px 10px 0; }
+.adsense-ad-card .ad-card-label {
+  position: static;
+  margin: 0;
+  padding: 8px 10px 0;
+  background: transparent;
+  box-shadow: none;
+}
 .adsense-mount { min-height: 84px; }
 
-@media (max-width: 365px) {
-  .ad-slot { margin-block: 10px 13px; }
-  .house-ad-card { max-width: 100%; }
-  .ad-card-label { margin-left: 2px; }
+@media (max-width: 380px) {
+  .ad-slot-timetable-header {
+    margin-left: -14px;
+    margin-right: -14px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }

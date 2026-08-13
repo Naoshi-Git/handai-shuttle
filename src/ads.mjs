@@ -1,29 +1,30 @@
+import { ensureShareIdentity, shareLandingUrl } from "./share-identity.mjs";
+
 const ADS_MODE_KEY = "handai-shuttle:ads-mode";
 const DEFAULT_MODE = "house";
 
 export const AD_PLACEMENTS = Object.freeze({
   HOME_FEED: "home-feed",
-  SEARCH_RESULTS: "search-results",
-  TIMETABLE_FEED: "timetable-feed"
+  SEARCH_PRIMARY: "search-primary",
+  SEARCH_INLINE: "search-inline",
+  TIMETABLE_HEADER: "timetable-header",
+  TIMETABLE_INLINE: "timetable-inline"
+});
+
+const COMPACT_HOUSE_CREATIVE = Object.freeze({
+  src: "./assets/ads/house/v2/house-banner-simple-640x89.webp",
+  width: 640,
+  height: 89,
+  ratio: "640 / 89",
+  alt: "阪大シャトル。次の便、すぐわかる。共有"
 });
 
 const HOUSE_CREATIVES = Object.freeze({
-  standard: {
-    svgSrc: "./assets/ads/house/house-mobile-320x100.svg",
-    pngSrc: "./assets/ads/house/house-mobile-320x100.png",
-    width: 320,
-    height: 100,
-    ratio: "16 / 5",
-    alt: "友達にも、次の便を。阪大シャトルを共有"
-  },
-  compact: {
-    svgSrc: "./assets/ads/house/house-mobile-320x50.svg",
-    pngSrc: "./assets/ads/house/house-mobile-320x50.png",
-    width: 320,
-    height: 50,
-    ratio: "32 / 5",
-    alt: "友達にも、次の便を。阪大シャトルを共有"
-  }
+  [AD_PLACEMENTS.HOME_FEED]: COMPACT_HOUSE_CREATIVE,
+  [AD_PLACEMENTS.SEARCH_PRIMARY]: COMPACT_HOUSE_CREATIVE,
+  [AD_PLACEMENTS.SEARCH_INLINE]: COMPACT_HOUSE_CREATIVE,
+  [AD_PLACEMENTS.TIMETABLE_HEADER]: COMPACT_HOUSE_CREATIVE,
+  [AD_PLACEMENTS.TIMETABLE_INLINE]: COMPACT_HOUSE_CREATIVE
 });
 
 export function getAdsMode() {
@@ -44,12 +45,11 @@ function installStyles() {
 }
 
 function shareUrl() {
-  const url = new URL(window.location.href);
-  url.hash = "";
-  return url.toString();
+  return shareLandingUrl();
 }
 
 async function shareHandaiShuttle(button) {
+  ensureShareIdentity();
   const payload = {
     title: "阪大シャトル",
     text: "阪大の学内連絡バス、次の便がすぐわかる。阪大シャトルを使ってみて。",
@@ -70,18 +70,12 @@ async function shareHandaiShuttle(button) {
 }
 
 function houseAdMarkup(placement) {
-  const creative = placement === AD_PLACEMENTS.TIMETABLE_FEED
-    ? HOUSE_CREATIVES.compact
-    : HOUSE_CREATIVES.standard;
-
+  const creative = HOUSE_CREATIVES[placement] || COMPACT_HOUSE_CREATIVE;
   return `
     <aside class="ad-card house-ad-card" data-ad-provider="house" aria-label="阪大シャトルの自社広告">
       <div class="ad-card-label"><span>自社広告</span></div>
       <button class="house-ad-creative" type="button" data-house-share aria-label="阪大シャトルを友達に共有する" style="--house-ad-ratio:${creative.ratio}">
-        <picture>
-          <source srcset="${creative.svgSrc}" type="image/svg+xml">
-          <img src="${creative.pngSrc}" width="${creative.width}" height="${creative.height}" alt="${creative.alt}" decoding="async">
-        </picture>
+        <img src="${creative.src}" width="${creative.width}" height="${creative.height}" alt="${creative.alt}" decoding="async">
       </button>
     </aside>`;
 }
@@ -94,10 +88,11 @@ function adsensePlaceholderMarkup() {
     </aside>`;
 }
 
-function createSlot(placement) {
+function createSlot(placement, key = placement) {
   const slot = document.createElement("div");
   slot.className = `ad-slot ad-slot-${placement}`;
   slot.dataset.adSlot = placement;
+  slot.dataset.adSlotKey = key;
   const mode = getAdsMode();
   slot.dataset.adMode = mode;
   slot.innerHTML = mode === "adsense" ? adsensePlaceholderMarkup() : houseAdMarkup(placement);
@@ -109,27 +104,59 @@ function createSlot(placement) {
   return slot;
 }
 
+function slotExists(key) {
+  return Boolean(document.querySelector(`[data-ad-slot-key="${key}"]`));
+}
+
 function insertHomeSlot() {
-  if (document.querySelector(`[data-ad-slot="${AD_PLACEMENTS.HOME_FEED}"]`)) return;
-  const upcomingSection = document.querySelector("#view-home .content-section.compact-section");
-  if (!upcomingSection) return;
-  upcomingSection.insertAdjacentElement("afterend", createSlot(AD_PLACEMENTS.HOME_FEED));
+  if (slotExists(AD_PLACEMENTS.HOME_FEED)) return;
+  const actions = document.querySelector("#view-home .quick-actions");
+  if (!actions) return;
+  actions.insertAdjacentElement("afterend", createSlot(AD_PLACEMENTS.HOME_FEED));
 }
 
-function insertSearchSlot() {
-  const container = document.querySelector("#search-results");
-  if (!container || container.querySelector(`[data-ad-slot="${AD_PLACEMENTS.SEARCH_RESULTS}"]`)) return;
-  const cards = [...container.children].filter((node) => node.matches?.(".journey-card, .round-result, .round-trip-card"));
-  if (cards.length < 2) return;
-  cards[1].insertAdjacentElement("afterend", createSlot(AD_PLACEMENTS.SEARCH_RESULTS));
+function insertSearchPrimarySlot() {
+  if (slotExists(AD_PLACEMENTS.SEARCH_PRIMARY)) return;
+  const form = document.querySelector("#search-form");
+  if (!form) return;
+  form.insertAdjacentElement("afterend", createSlot(AD_PLACEMENTS.SEARCH_PRIMARY));
 }
 
-function insertTimetableSlot() {
-  const container = document.querySelector("#timetable-list");
-  if (!container || container.querySelector(`[data-ad-slot="${AD_PLACEMENTS.TIMETABLE_FEED}"]`)) return;
-  const rows = [...container.children].filter((node) => node.matches?.("[data-tt-trip], .timetable-card"));
-  if (rows.length < 5) return;
-  rows[4].insertAdjacentElement("afterend", createSlot(AD_PLACEMENTS.TIMETABLE_FEED));
+function insertTimetableHeaderSlot() {
+  if (slotExists(AD_PLACEMENTS.TIMETABLE_HEADER)) return;
+  const controls = document.querySelector("#timetable-route-controls");
+  if (!controls) return;
+  controls.insertAdjacentElement("beforebegin", createSlot(AD_PLACEMENTS.TIMETABLE_HEADER));
+}
+
+function insertInlineSlots({ container, cardSelector, placement, every, max }) {
+  if (!container) return;
+  const cards = [...container.children].filter((node) => node.matches?.(cardSelector));
+  for (let index = every - 1, count = 1; index < cards.length && count <= max; index += every, count += 1) {
+    const key = `${placement}-${count}`;
+    if (slotExists(key)) continue;
+    cards[index].insertAdjacentElement("afterend", createSlot(placement, key));
+  }
+}
+
+function insertSearchInlineSlots() {
+  insertInlineSlots({
+    container: document.querySelector("#search-results"),
+    cardSelector: ".journey-card, .round-result, .round-trip-card",
+    placement: AD_PLACEMENTS.SEARCH_INLINE,
+    every: 4,
+    max: 2
+  });
+}
+
+function insertTimetableInlineSlots() {
+  insertInlineSlots({
+    container: document.querySelector("#timetable-list"),
+    cardSelector: "[data-tt-trip], .timetable-card",
+    placement: AD_PLACEMENTS.TIMETABLE_INLINE,
+    every: 8,
+    max: 2
+  });
 }
 
 export function refreshAdSlots() {
@@ -138,12 +165,18 @@ export function refreshAdSlots() {
     return;
   }
   insertHomeSlot();
-  insertSearchSlot();
-  insertTimetableSlot();
+  insertSearchPrimarySlot();
+  insertTimetableHeaderSlot();
+  insertSearchInlineSlots();
+  insertTimetableInlineSlots();
 }
 
 function observeDynamicFeeds() {
-  const targets = [document.querySelector("#search-results"), document.querySelector("#timetable-list")].filter(Boolean);
+  const targets = [
+    document.querySelector("#search-results"),
+    document.querySelector("#timetable-list"),
+    document.querySelector("#view-timetable")
+  ].filter(Boolean);
   let queued = false;
   const observer = new MutationObserver(() => {
     if (queued) return;
@@ -158,8 +191,10 @@ function observeDynamicFeeds() {
 
 export function initAds() {
   installStyles();
+  ensureShareIdentity();
   refreshAdSlots();
   observeDynamicFeeds();
+  window.setTimeout(refreshAdSlots, 300);
 }
 
 if (typeof document !== "undefined") {

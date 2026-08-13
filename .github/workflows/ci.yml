@@ -24,13 +24,50 @@ jobs:
           node --check src/brand-canvas.mjs
           node --check src/ui-v4.mjs
           node --check src/ui-v4-polish.mjs
+          node --check src/ui-v5.mjs
+          node --check src/route-preferences.mjs
+          node --check src/ui-v12.mjs
+          node --check src/ui-v13.mjs
+          node --check src/ui-current.mjs
+          node --check src/pwa.mjs
           node --check src/crowding-prediction.mjs
+          node --check src/share-identity.mjs
           node --check src/share-card.mjs
           node --check src/ads.mjs
           node --check data/location-points.mjs
+          test -f share.html
           test -f ads.css
+          test ! -e ui-v2.css
+          test ! -e ui-v3.css
+          test ! -e ui-v4.css
+          test -f src/ui-system.css
+          test -f src/view-lifecycle.css
+          test ! -e ui-v5.css
+          test ! -e src/ui-foundation.css
+          test ! -e src/ui-v10.css
+          test ! -e src/ui-v11.css
+          test ! -e src/ui-v12.css
+          test ! -e src/ui-v13.css
+          test ! -e src/ui-v14.css
+          test ! -e src/ui-v15.css
+          test ! -e src/ui-v16.css
+          test ! -e src/ui-current.css
+          test -f docs/UI-ARCHITECTURE.md
           test -f assets/brand/app-icon.svg
+          test -f assets/brand/app-icon-32.png
+          test -f assets/brand/app-icon-180.png
           test -f assets/brand/brand-icon-rounded.svg
+          test -f assets/brand/brand-symbol-white.svg
+          test -f assets/brand/splash-white.webp
+          test -f assets/brand/splash-black.webp
+          test -f assets/brand/splash-gradient.webp
           test -f assets/ads/house-share-640x180.svg
           test -f assets/ads/house-share-640x128.svg
+          test -f assets/help/install/ios-01-share.webp
+          test -f assets/help/install/ios-02-add-home.webp
+          test -f assets/help/install/ios-03-confirm.webp
           node --test tests/*.test.mjs
+      - name: Browser UI baseline
+        run: bash tests/browser-ui-baseline.sh .
+      - name: Browser computed style inventory
+        run: bash tests/browser-style-inventory.sh .

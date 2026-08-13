@@ -1,0 +1,143 @@
+{
+  "viewport": "390x844",
+  "targets": {
+    "home.#next-card": {
+      "computed": {
+        "border-radius": "24px",
+        "min-height": "220px",
+        "padding-top": "18px",
+        "padding-right": "18px",
+        "padding-bottom": "18px",
+        "padding-left": "18px",
+        "overflow": "hidden"
+      },
+      "geometry": { "width": 343, "height": 220, "tolerance": 2 }
+    },
+    "home..bottom-nav": {
+      "computed": {
+        "display": "grid",
+        "position": "fixed",
+        "border-radius": "30px",
+        "min-height": "60px",
+        "z-index": "1200",
+        "overflow": "hidden"
+      },
+      "geometry": { "width": 355, "height": 60, "tolerance": 2 }
+    },
+    "search.#search-form": {
+      "computed": {
+        "background-color": "rgb(255, 255, 255)",
+        "border-radius": "22px",
+        "padding-top": "10px",
+        "padding-right": "11px",
+        "padding-bottom": "11px",
+        "padding-left": "11px"
+      },
+      "geometry": { "width": 358, "height": 272, "tolerance": 3 }
+    },
+    "search..search-timing-button": {
+      "computed": {
+        "display": "grid",
+        "border-radius": "16px",
+        "min-height": "43px",
+        "gap": "8px"
+      },
+      "geometry": { "width": 336, "height": 43, "tolerance": 2 }
+    },
+    "timetable.#timetable-route-controls": {
+      "computed": {
+        "display": "grid",
+        "position": "sticky",
+        "background-color": "rgb(247, 247, 249)",
+        "padding-top": "8px",
+        "padding-right": "16px",
+        "padding-bottom": "10px",
+        "padding-left": "16px",
+        "gap": "9px",
+        "z-index": "21"
+      },
+      "geometry": { "width": 343, "height": 179, "tolerance": 4 }
+    },
+    "timetable..route-timetable-card": {
+      "computed": {
+        "display": "block",
+        "overflow": "hidden",
+        "padding-left": "14px",
+        "padding-right": "14px",
+        "position": "relative"
+      },
+      "geometry": { "width": 343, "height": 48, "tolerance": 2 }
+    },
+    "timetable..tt-compact-row": {
+      "computed": {
+        "display": "grid",
+        "min-height": "48px",
+        "padding-top": "7px",
+        "padding-right": "10px",
+        "padding-bottom": "7px",
+        "padding-left": "10px",
+        "gap": "8px"
+      },
+      "geometry": { "width": 315, "height": 48, "tolerance": 2 }
+    },
+    "settings.#settings-menu-v13": {
+      "computed": {
+        "display": "block",
+        "background-color": "rgb(255, 255, 255)",
+        "border-radius": "22px",
+        "overflow": "hidden"
+      },
+      "geometry": { "width": 358, "height": 324, "tolerance": 3 }
+    },
+    "settings..settings-nav-row-v13": {
+      "computed": {
+        "display": "grid",
+        "min-height": "54px",
+        "padding-top": "9px",
+        "padding-right": "14px",
+        "padding-bottom": "9px",
+        "padding-left": "14px",
+        "gap": "10px",
+        "position": "relative"
+      },
+      "geometry": { "width": 358, "height": 54, "tolerance": 2 }
+    },
+    "settings.#debug-feedback-card": {
+      "computed": {
+        "display": "block",
+        "background-color": "rgb(255, 255, 255)",
+        "color": "rgb(36, 36, 41)",
+        "padding-top": "2px",
+        "padding-right": "0px",
+        "padding-bottom": "14px",
+        "padding-left": "0px"
+      }
+    },
+    "settings.#debug-feedback-card p": {
+      "computed": {
+        "display": "block",
+        "color": "rgb(112, 112, 120)",
+        "font-size": "11px",
+        "font-weight": "400",
+        "line-height": "17.6px",
+        "padding-top": "0px",
+        "padding-right": "0px",
+        "padding-bottom": "0px",
+        "padding-left": "0px"
+      }
+    },
+    "settings.#debug-feedback-card .feedback-link": {
+      "computed": {
+        "display": "block",
+        "background-color": "rgba(0, 0, 0, 0)",
+        "color": "rgb(45, 40, 127)",
+        "font-size": "12px",
+        "font-weight": "900",
+        "padding-top": "12px",
+        "padding-right": "0px",
+        "padding-bottom": "12px",
+        "padding-left": "0px"
+      }
+    }
+  }
+}
