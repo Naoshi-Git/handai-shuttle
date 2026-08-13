@@ -232,4 +232,5 @@ updateSearchSummary();
 normalizeLabels();
 observeHomeRerenders();
 
-void import("./features-v3.mjs");
+// Keep behavioral modules aligned with the cache-busted semantic stylesheet after a share-card update.
+void import("./features-v3.mjs?share-card-20260813");
