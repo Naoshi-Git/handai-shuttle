@@ -143,8 +143,9 @@ test("選択便をブランド付きPNG共有カードとして共有できる",
   assert.match(share, /shareLandingUrl/);
   assert.match(share, /選択した便/);
   assert.match(share, /混雑目安/);
-  assert.doesNotMatch(share, /移動前に、阪大シャトル。/);
-  assert.doesNotMatch(share, /最終便/);
+  assert.match(share, /移動前に、阪大シャトル。/);
+  assert.match(share, /次の便が、すぐわかる。/);
+  assert.match(share, /最終便/);
   assert.match(identity, /share\.html/);
   assert.match(identity, /new URL\("share\.html", base\)/);
   assert.match(css, /share-card-dialog/);
