@@ -1,5 +1,7 @@
 const BRAND_ICON_URL = new URL("../assets/brand/brand-icon-rounded.svg", import.meta.url).href;
 const DISPLAY_URL = "naoshi-git.github.io/handai-shuttle/";
+const SHARE_CARD_WIDTH = 343;
+const SHARE_STAGE_PADDING = 12;
 
 function text(value, fallback = "") {
   return String(value || fallback).replace(/\s+/g, " ").trim();
@@ -80,35 +82,33 @@ function setNextCardData(card, data) {
   const textNodes = metaValues.map((value) => {
     const item = document.createElement("span");
     item.textContent = value;
+    item.style.flex = "0 0 auto";
+    item.style.maxWidth = "none";
+    item.style.overflow = "visible";
+    item.style.textOverflow = "clip";
     meta.append(item);
     return item;
   });
   meta.append(crowdingIcon(data?.crowdingLevel));
 
-  // Share snapshots preserve Top's visual language, but keep short values such
-  // as "30分" from shrinking into "3…" when the card is rasterized offscreen.
-  meta.style.overflow = "visible";
-  textNodes.forEach((item) => {
-    item.style.flexShrink = "0";
-    item.style.maxWidth = "none";
-    item.style.overflow = "visible";
-    item.style.textOverflow = "clip";
-  });
+  // Only the stop-detail pill may shrink, but it must never stretch to fill the
+  // row. Short values such as "30分" always keep their intrinsic width.
   const originItem = textNodes.at(-1);
   if (originItem && textNodes.length >= 3) {
-    originItem.style.flex = "1 1 auto";
+    originItem.style.flex = "0 1 auto";
     originItem.style.minWidth = "0";
+    originItem.style.maxWidth = "112px";
     originItem.style.overflow = "hidden";
     originItem.style.textOverflow = "ellipsis";
   }
 }
 
-function createPromo(width) {
+function createPromo() {
   const promo = document.createElement("section");
   promo.setAttribute("aria-label", "阪大シャトルの案内");
   promo.style.cssText = [
     `box-sizing:border-box`,
-    `width:${width}px`,
+    `width:${SHARE_CARD_WIDTH}px`,
     `margin-top:12px`,
     `padding:12px 13px`,
     `display:grid`,
@@ -129,12 +129,25 @@ function createPromo(width) {
   icon.style.cssText = "display:block;width:38px;height:38px";
 
   const copy = document.createElement("div");
-  copy.style.cssText = "min-width:0;display:grid;gap:2px";
-  copy.innerHTML = `
-    <strong style="font-size:13px;line-height:1.25;font-weight:800;color:#2d287f">阪大シャトル</strong>
-    <span style="font-size:9.5px;line-height:1.4;font-weight:600;color:#5f5f69">次の便・最終便・混雑目安を、すぐ確認。</span>
-    <span style="font-size:8.5px;line-height:1.35;font-weight:600;color:#85858e">${DISPLAY_URL} ・ 大阪大学 非公式Webアプリ</span>`;
+  copy.style.cssText = "min-width:0;display:grid;gap:1px";
 
+  const title = document.createElement("strong");
+  title.textContent = "阪大シャトル";
+  title.style.cssText = "font-size:13px;line-height:1.25;font-weight:800;color:#2d287f;white-space:nowrap";
+
+  const tagline = document.createElement("span");
+  tagline.textContent = "次の便・最終便・混雑目安を、すぐ確認。";
+  tagline.style.cssText = "font-size:9.5px;line-height:1.4;font-weight:600;color:#5f5f69;white-space:nowrap";
+
+  const url = document.createElement("span");
+  url.textContent = DISPLAY_URL;
+  url.style.cssText = "font-size:8.5px;line-height:1.35;font-weight:600;color:#85858e;white-space:nowrap";
+
+  const disclaimer = document.createElement("span");
+  disclaimer.textContent = "大阪大学 非公式Webアプリ";
+  disclaimer.style.cssText = "font-size:8.5px;line-height:1.35;font-weight:600;color:#85858e;white-space:nowrap";
+
+  copy.append(title, tagline, url, disclaimer);
   promo.append(icon, copy);
   return { promo, icon };
 }
@@ -143,7 +156,6 @@ export async function mountShareSurface(data) {
   const source = document.querySelector("#next-card");
   if (!(source instanceof HTMLElement)) throw new Error("Topの次便カードが見つかりませんでした");
 
-  const width = Math.max(300, Math.round(source.getBoundingClientRect().width || source.offsetWidth || 343));
   const stage = document.createElement("div");
   stage.dataset.shareSnapshotSurface = "true";
   stage.style.cssText = [
@@ -152,19 +164,21 @@ export async function mountShareSurface(data) {
     `top:0`,
     `z-index:-1`,
     `box-sizing:border-box`,
-    `width:${width + 24}px`,
-    `padding:12px`,
+    `width:${SHARE_CARD_WIDTH + SHARE_STAGE_PADDING * 2}px`,
+    `padding:${SHARE_STAGE_PADDING}px`,
     `background:#f6f6f8`,
     `font-family:${getComputedStyle(document.body).fontFamily}`,
     `pointer-events:none`
   ].join(";");
 
   const card = source.cloneNode(true);
-  card.style.width = `${width}px`;
+  card.style.width = `${SHARE_CARD_WIDTH}px`;
+  card.style.minWidth = `${SHARE_CARD_WIDTH}px`;
+  card.style.maxWidth = `${SHARE_CARD_WIDTH}px`;
   card.style.margin = "0";
   setNextCardData(card, data);
 
-  const { promo, icon } = createPromo(width);
+  const { promo, icon } = createPromo();
   stage.append(card, promo);
   document.body.append(stage);
 
@@ -182,4 +196,4 @@ export async function mountShareSurface(data) {
   };
 }
 
-export { DISPLAY_URL };
+export { DISPLAY_URL, SHARE_CARD_WIDTH };
