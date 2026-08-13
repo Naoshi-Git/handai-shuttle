@@ -254,8 +254,8 @@ function drawShareCard(data) {
 
   let featureX = 124;
   featureX += drawPill(ctx, "次の便", featureX, 974, { fill: "#f0effa", color: "#2d287f", height: 42, padX: 17, size: 18 }) + 9;
-  featureX += drawPill(ctx, "最終便", featureX, 1018, { fill: "#f0effa", color: "#2d287f", height: 42, padX: 17, size: 18 }) + 9;
-  drawPill(ctx, "混雑目安", featureX, 1018, { fill: "#f0effa", color: "#2d287f", height: 42, padX: 17, size: 18 });
+  featureX += drawPill(ctx, "最終便", featureX, 974, { fill: "#f0effa", color: "#2d287f", height: 42, padX: 17, size: 18 }) + 9;
+  drawPill(ctx, "混雑目安", featureX, 974, { fill: "#f0effa", color: "#2d287f", height: 42, padX: 17, size: 18 });
 
   fillRoundRect(ctx, 124, 1042, 832, 50, 25, "#2d287f");
   ctx.fillStyle = "#fff";
