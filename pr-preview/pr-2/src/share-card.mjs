@@ -106,7 +106,11 @@ export async function openSharePreview(data, target = document.querySelector("#n
     if (activePreviewUrl) URL.revokeObjectURL(activePreviewUrl);
     activePreviewUrl = URL.createObjectURL(blob);
     activeShare = { data, blob };
-    if (image) image.src = activePreviewUrl;
+    if (image) {
+      image.style.aspectRatio = "auto";
+      image.style.height = "auto";
+      image.src = activePreviewUrl;
+    }
     if (nativeButton) nativeButton.disabled = false;
     if (status) status.textContent = "";
   } catch (error) {
