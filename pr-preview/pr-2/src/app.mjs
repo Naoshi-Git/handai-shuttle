@@ -298,9 +298,25 @@ function renderHome() {
   campusOptions();
 }
 
+function resetSearchPresentation(message = "出発地・到着地と時刻を選んで、「検索」を押してください。") {
+  state.currentSearch = null;
+  $("#results-title").textContent = "検索結果";
+  $("#search-message").innerHTML = `<div class="message search-guidance">${message}</div>`;
+  $("#search-results").innerHTML = "";
+  $("#result-stepper")?.classList.add("is-hidden");
+  $("#favorite-current-button").hidden = true;
+}
+
+function invalidateSearchPresentation() {
+  if (!state.currentSearch) return;
+  resetSearchPresentation("条件を変更しました。「検索」を押して結果を更新してください。");
+}
+
 function setSearchMode(mode) {
+  const changed = state.searchMode !== mode;
   state.searchMode = mode;
   $$('[data-mode]').forEach((button) => button.classList.toggle("is-active", button.dataset.mode === mode));
+  if (changed) invalidateSearchPresentation();
 }
 
 function updateSearchOptions() {
@@ -334,6 +350,7 @@ function openSearch({
   $("#search-time").value = parts.time;
   setSearchMode(mode);
   updateSearchOptions();
+  resetSearchPresentation();
   setView("search");
 
   if (useNow) {
@@ -433,6 +450,8 @@ function executeSearch() {
     roundTrip,
     stayMinutes
   };
+  $("#favorite-current-button").hidden = false;
+  $("#favorite-current-button").textContent = "条件を保存";
 
   addRecentRoute({ origin: originCampus, destination: destinationCampus, directOnly });
   $("#results-title").textContent = routeLabel(originCampus, destinationCampus);
@@ -602,11 +621,19 @@ function bindEvents() {
     $("#origin-campus").value = $("#destination-campus").value;
     $("#destination-campus").value = origin;
     updateSearchOptions();
+    invalidateSearchPresentation();
   });
 
-  $("#origin-campus").addEventListener("change", updateSearchOptions);
-  $("#destination-campus").addEventListener("change", updateSearchOptions);
-  $("#round-trip").addEventListener("change", updateSearchOptions);
+  const updateSearchConditions = () => {
+    updateSearchOptions();
+    invalidateSearchPresentation();
+  };
+  ["#origin-campus", "#destination-campus", "#round-trip"].forEach((selector) => {
+    $(selector).addEventListener("change", updateSearchConditions);
+  });
+  ["#origin-stop", "#destination-stop", "#search-date", "#search-time", "#direct-only", "#stay-minutes"].forEach((selector) => {
+    $(selector).addEventListener("change", invalidateSearchPresentation);
+  });
 
   $$('[data-mode]').forEach((button) => {
     button.addEventListener("click", () => setSearchMode(button.dataset.mode));
@@ -647,6 +674,7 @@ function init() {
   $("#default-campus").value = state.currentCampus;
   bindEvents();
   updateSearchOptions();
+  resetSearchPresentation();
   renderHome();
   renderTimetable();
   renderSettings();
